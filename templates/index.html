@@ -1,0 +1,2493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMSF Document Intelligence & Agent Orchestration Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --surface-color: #ffffff;
+            --surface-border: #e2e8f0;
+            --primary: #00AF5A;
+            --primary-glow: rgba(0, 175, 90, 0.08);
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --success: #00AF5A;
+            --success-glow: rgba(0, 175, 90, 0.1);
+            --warning: #eab308;
+            --warning-glow: rgba(234, 179, 8, 0.1);
+            --danger: #ef4444;
+            --danger-glow: rgba(239, 68, 68, 0.1);
+            --info: #2AA6DE;
+            --info-glow: rgba(42, 166, 222, 0.1);
+            --font-display: 'Poppins', sans-serif;
+            --font-sans: 'Poppins', sans-serif;
+            --sidebar-width: 320px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 5% 5%, rgba(0, 175, 90, 0.04) 0%, transparent 45%),
+                radial-gradient(circle at 95% 95%, rgba(42, 166, 222, 0.04) 0%, transparent 45%);
+            background-attachment: fixed;
+        }
+
+        /* SuperRecords Double Header Styles */
+        .superrecords-top-bar {
+            background-color: #151B2D;
+            color: #ffffff;
+            font-size: 0.8rem;
+            padding: 0.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 36px;
+            z-index: 20;
+            flex-shrink: 0;
+        }
+
+        .top-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .new-request-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-family: var(--font-sans);
+            transition: all 0.2s ease;
+        }
+
+        .new-request-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .user-dropdown {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .user-avatar {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* White Main Header with Logo & Tabs */
+        .superrecords-main-header {
+            background-color: #ffffff;
+            border-bottom: 1px solid var(--surface-border);
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+            z-index: 15;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+            flex-shrink: 0;
+        }
+
+        .brand-area {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .brand-logo-circle {
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(0, 175, 90, 0.3);
+        }
+
+        .brand-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: -0.01em;
+        }
+
+        .header-tabs-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            height: 100%;
+        }
+
+        /* Content wrapper layout */
+        .main-body-container {
+            display: flex;
+            flex: 1;
+            min-height: 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Floating background bubble graphics */
+        .floating-decoration {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1;
+            user-select: none;
+        }
+
+        .bubble-percent {
+            left: 20px;
+            top: 250px;
+            width: 85px;
+            height: 85px;
+            background: #00AF5A;
+            border-radius: 50% 50% 50% 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 2.2rem;
+            font-weight: 800;
+            box-shadow: 0 10px 25px rgba(0, 175, 90, 0.25);
+            opacity: 0.15;
+            animation: float-bubble-left 7s ease-in-out infinite;
+        }
+
+        .bubble-like {
+            right: 40px;
+            top: 180px;
+            width: 75px;
+            height: 75px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 50% 50% 0 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            opacity: 0.25;
+            animation: float-bubble-right 8s ease-in-out infinite;
+        }
+
+        .bubble-shield {
+            right: 80px;
+            bottom: 60px;
+            width: 90px;
+            height: 110px;
+            opacity: 0.15;
+            animation: float-bubble-shield 9s ease-in-out infinite;
+        }
+
+        @keyframes float-bubble-left {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(3deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        @keyframes float-bubble-right {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(15px) rotate(-4deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        @keyframes float-bubble-shield {
+            0% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-12px) scale(1.02) rotate(2deg); }
+            100% { transform: translateY(0px) scale(1); }
+        }
+
+        /* Sidebar Styling */
+        aside {
+            width: var(--sidebar-width);
+            background: #ffffff;
+            border-right: 1px solid var(--surface-border);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            flex-shrink: 0;
+            z-index: 10;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.02);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--surface-border);
+        }
+
+        .logo-icon {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, var(--primary), var(--info));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+
+        .logo-text h1 {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            color: var(--text-main);
+        }
+
+        .logo-text p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .sidebar-section {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .sidebar-section-title {
+            font-family: var(--font-display);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        .select-input {
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid var(--surface-border);
+            color: var(--text-main);
+            padding: 0.75rem;
+            border-radius: 10px;
+            font-family: var(--font-sans);
+            font-size: 0.9rem;
+            outline: none;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .select-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--info) 100%);
+            color: #fff;
+            border: none;
+            padding: 0.8rem;
+            border-radius: 10px;
+            font-family: var(--font-display);
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 15px rgba(0, 175, 90, 0.25);
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(0, 175, 90, 0.45);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        /* Jobs list */
+        .jobs-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            overflow-y: auto;
+            max-height: 350px;
+            padding-right: 0.25rem;
+        }
+
+        .job-item {
+            background: #f8fafc;
+            border: 1px solid var(--surface-border);
+            border-radius: 8px;
+            padding: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .job-item:hover {
+            background: #f1f5f9;
+            border-color: rgba(0, 0, 0, 0.12);
+        }
+
+        .job-item.active {
+            background: var(--primary-glow);
+            border-color: var(--primary);
+        }
+
+        .job-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.25rem;
+        }
+
+        .job-item-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .job-item-date {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .job-item-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+        }
+
+        /* Status Badges */
+        .badge {
+            padding: 0.2rem 0.5rem;
+            border-radius: 30px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            border: 1px solid transparent;
+        }
+
+        .badge-queued { background: rgba(0, 0, 0, 0.04); color: var(--text-muted); border-color: var(--surface-border); }
+        .badge-processing_docs { background: var(--info-glow); color: var(--info); border-color: rgba(42, 166, 222, 0.25); }
+        .badge-pending_processor_review { background: var(--warning-glow); color: var(--warning); border-color: rgba(245, 158, 11, 0.25); }
+        .badge-processing_review { background: var(--info-glow); color: var(--info); border-color: rgba(42, 166, 222, 0.25); }
+        .badge-pending_reviewer_approval { background: rgba(167, 139, 250, 0.1); color: #7c3aed; border-color: rgba(167, 139, 250, 0.2); }
+        .badge-completed { background: var(--success-glow); color: var(--success); border-color: rgba(0, 175, 90, 0.2); }
+        .badge-failed { background: var(--danger-glow); color: var(--danger); border-color: rgba(239, 68, 68, 0.2); }
+
+        /* Main Workspace Area */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        header.top-header {
+            background: #ffffff;
+            border-bottom: 1px solid var(--surface-border);
+            padding: 1.25rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.01);
+        }
+
+        .header-info h2 {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .header-info p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .workspace-content {
+            padding: 2rem;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        /* Tabs Navigation */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 1px solid var(--surface-border);
+            margin-bottom: 2rem;
+            padding-bottom: 0.5rem;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-family: var(--font-display);
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 0.6rem 1.25rem;
+            cursor: pointer;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--primary);
+            background: rgba(0, 175, 90, 0.03);
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            background: var(--primary-glow);
+            border: 1px solid rgba(0, 175, 90, 0.2);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--surface-color);
+            border: 1px solid var(--surface-border);
+            border-radius: 16px;
+            padding: 1.75rem;
+            margin-bottom: 1.75rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        }
+
+        .card-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding-bottom: 0.75rem;
+        }
+
+        .card-title {
+            font-family: var(--font-display);
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* Forms and inputs */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .text-input {
+            background: #ffffff;
+            border: 1px solid var(--surface-border);
+            border-radius: 8px;
+            color: var(--text-main);
+            padding: 0.6rem 0.8rem;
+            font-family: var(--font-sans);
+            font-size: 0.9rem;
+            outline: none;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.01);
+        }
+
+        .text-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 8px var(--primary-glow);
+        }
+
+        /* Timeline / Agent Orchestration */
+        .timeline {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 10%;
+            width: 80%;
+            height: 2px;
+            background: var(--surface-border);
+            z-index: 1;
+        }
+
+        .timeline-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            z-index: 2;
+        }
+
+        .timeline-node {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            border: 2px solid var(--surface-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-step.active .timeline-node {
+            border-color: var(--primary);
+            background: var(--primary-glow);
+            box-shadow: 0 0 15px var(--primary-glow);
+            color: var(--primary);
+        }
+
+        .timeline-step.completed .timeline-node {
+            border-color: var(--success);
+            background: var(--success-glow);
+            color: #fff;
+        }
+
+        .timeline-label {
+            font-family: var(--font-display);
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.1rem;
+        }
+
+        .timeline-owner {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .owner-badge {
+            background: rgba(0, 0, 0, 0.04);
+            color: var(--text-main);
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+        }
+
+        /* Terminal Logging */
+        .terminal-log {
+            background: #0f172a;
+            border: 1px solid var(--surface-border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.82rem;
+            color: #10b981;
+            height: 250px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.8);
+        }
+
+        .terminal-line {
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+
+        .terminal-line.error { color: var(--danger); }
+        .terminal-line.warn { color: var(--warning); }
+        .terminal-line.info { color: var(--info); }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            width: 100%;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            font-family: var(--font-display);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid var(--surface-border);
+            background: #f8fafc;
+        }
+
+        td {
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.85rem;
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background: rgba(0, 0, 0, 0.01);
+        }
+
+        .val-num {
+            font-family: var(--font-display);
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .file-link {
+            color: var(--primary);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-weight: 600;
+            background: rgba(0, 175, 90, 0.05);
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            border: 1px solid rgba(0, 175, 90, 0.12);
+            font-size: 0.75rem;
+        }
+
+        .file-link:hover {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .btn-action {
+            background: #ffffff;
+            border: 1px solid var(--surface-border);
+            color: var(--text-main);
+            padding: 0.4rem 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.78rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+
+        .btn-action:hover {
+            color: #fff;
+            border-color: var(--primary);
+            background: var(--primary);
+        }
+
+        .row-approved {
+            border-left: 3px solid var(--success);
+        }
+
+        .row-suggested {
+            border-left: 3px solid var(--info);
+        }
+
+        /* Lead Schedules Layout */
+        .recon-layout {
+            display: grid;
+            grid-template-columns: 2.2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Notes board design */
+        .notes-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .note-card {
+            background: #ffffff;
+            border: 1px solid var(--surface-border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.01);
+        }
+
+        .note-card-title {
+            font-family: var(--font-display);
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .note-textarea {
+            width: 100%;
+            height: 120px;
+            background: #f8fafc;
+            border: 1px solid var(--surface-border);
+            border-radius: 8px;
+            color: var(--text-main);
+            padding: 0.5rem;
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            outline: none;
+            resize: none;
+        }
+
+        .note-textarea:focus {
+            border-color: var(--primary);
+        }
+
+        /* Sidebar stats */
+        .stat-card-aside {
+            background: #f8fafc;
+            border: 1px solid var(--surface-border);
+            border-radius: 12px;
+            padding: 1rem;
+        }
+
+        .stat-card-aside-title {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-card-aside-value {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* Modal styling */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.4);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal {
+            background: #ffffff;
+            border: 1px solid var(--surface-border);
+            border-radius: 16px;
+            width: 550px;
+            max-width: 90%;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding-bottom: 0.5rem;
+        }
+
+        .modal-header h3 {
+            font-family: var(--font-display);
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.4rem;
+            cursor: pointer;
+        }
+
+        .modal-close:hover {
+            color: var(--primary);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--surface-border);
+            color: var(--text-main);
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        /* Exception Log List */
+        .exceptions-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .exception-item {
+            background: #fef2f2;
+            border: 1px solid #fee2e2;
+            border-radius: 8px;
+            padding: 0.85rem 1rem;
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .exception-item.warning {
+            background: #fffbeb;
+            border: 1px solid #fef3c7;
+        }
+
+        .exception-icon {
+            font-size: 1.1rem;
+            line-height: 1;
+        }
+
+        .exception-content h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 0.1rem;
+        }
+
+        .exception-content p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Info box */
+        .info-box {
+            background: var(--primary-glow);
+            border: 1px solid rgba(0, 175, 90, 0.2);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            font-size: 0.85rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-box-icon {
+            font-size: 1.3rem;
+            color: var(--primary);
+        }
+
+        /* Playbook settings table custom input */
+        .playbook-kw-input {
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid var(--surface-border);
+            color: var(--text-main);
+            padding: 0.4rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        .playbook-kw-input:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .welcome-screen {
+            text-align: center;
+            padding: 5rem 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            background: var(--surface-color);
+            border: 1px solid var(--surface-border);
+            border-radius: 20px;
+        }
+
+        .welcome-icon {
+            font-size: 3.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--info));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .welcome-screen h3 {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .welcome-screen p {
+            max-width: 480px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Checkbox items */
+        .check-box-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .check-box-item {
+            background: #f8fafc;
+            border: 1px solid var(--surface-border);
+            border-radius: 6px;
+            padding: 0.6rem 0.8rem;
+            font-size: 0.8rem;
+        }
+
+        .check-box-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+        }
+
+        .check-box-item-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.1rem;
+        }
+
+        .chk-pass { color: var(--success); }
+        .chk-fail { color: var(--danger); }
+        .chk-na { color: var(--text-muted); }
+
+        /* Checklist & Status Badges Styling */
+        .checklist-cat-row {
+            background: rgba(59, 130, 246, 0.05) !important;
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 0.9rem;
+        }
+        .checklist-cat-row td {
+            padding: 0.6rem 1rem !important;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.15) !important;
+        }
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            border: 1px solid transparent;
+        }
+        .status-badge.verified {
+            background: var(--success-glow);
+            color: var(--success);
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+        .status-badge.missing {
+            background: var(--danger-glow);
+            color: var(--danger);
+            border-color: rgba(239, 68, 68, 0.2);
+        }
+        .status-badge.na {
+            background: rgba(255,255,255,0.03);
+            color: var(--text-muted);
+            border-color: var(--surface-border);
+        }
+        .badge-table {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            border: 1px solid transparent;
+        }
+        .badge-verified {
+            background: var(--success-glow);
+            color: var(--success);
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+        .badge-na {
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-muted);
+            border-color: var(--surface-border);
+        }
+
+        @media (max-width: 1024px) {
+            .recon-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SuperRecords Portal Double Header -->
+    <div class="superrecords-top-bar">
+        <div class="top-bar-left">
+            <span>Need Help? call us now</span>
+            <span style="font-weight: 700; color: #ffffff;">1800 278 737</span>
+        </div>
+        <div class="top-bar-right">
+            <button class="new-request-btn">
+                <span>✉</span> New Request
+            </button>
+            <div class="user-dropdown">
+                <div class="user-avatar">A</div>
+                <span>Andrew</span>
+                <span style="font-size: 0.65rem;">▼</span>
+            </div>
+        </div>
+    </div>
+
+    <header class="superrecords-main-header">
+        <div class="brand-area">
+            <div class="brand-logo-circle">
+                <!-- Checkmark logo -->
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color: white;"><path d="M20 6L9 17l-5-5"/></svg>
+            </div>
+            <span class="brand-name">ABC Accounting Inc.</span>
+        </div>
+        
+        <!-- Header Menu Navigation Tabs -->
+        <div class="header-tabs-container">
+            <div class="header-tab tab-btn active" id="tab-btn-docs" onclick="switchTab('docs-tab')">
+                <span class="tab-icon">📋</span>
+                <span class="tab-label">Step 1 - Doc Intel</span>
+            </div>
+            <div class="header-tab tab-btn disabled" id="tab-btn-orch" onclick="switchTab('orch-tab')">
+                <span class="tab-icon">🤖</span>
+                <span class="tab-label">Step 2 - Orchestration &amp; Data Intel</span>
+            </div>
+            <div class="header-tab disabled">
+                <span class="tab-icon">👥</span>
+                <span class="tab-label">Clients</span>
+            </div>
+            <div class="header-tab disabled">
+                <span class="tab-icon">💼</span>
+                <span class="tab-label">Jobs</span>
+            </div>
+            <div class="header-tab disabled">
+                <span class="tab-icon">📑</span>
+                <span class="tab-label">Order Docs</span>
+            </div>
+            <div class="header-tab disabled">
+                <span class="tab-icon">📊</span>
+                <span class="tab-label">Reports</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Body Container -->
+    <div class="main-body-container">
+
+    <!-- Sidebar -->
+    <aside>
+        <div class="logo-area">
+            <span class="logo-icon">▲</span>
+            <div class="logo-text">
+                <h1>SMSF Orchestrator</h1>
+                <p>Doc Intelligence Platform</p>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <span class="sidebar-section-title">Configure Audit Job</span>
+            
+            <div class="form-group">
+                <label for="fund-select">Select Fund</label>
+                <select id="fund-select" class="select-input" onchange="loadActiveFundPlaybook()">
+                    <!-- Dynamic options -->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="playbook-select">Active Playbook</label>
+                <select id="playbook-select" class="select-input">
+                    <option value="Accounting_Audit">Accounting &amp; Audit (Full)</option>
+                    <option value="Accounting">Accounting (Limited Ledger)</option>
+                </select>
+            </div>
+
+            <button class="btn-primary" onclick="createNewJob()">
+                <span>🚀</span> Run Audit Pipeline
+            </button>
+        </div>
+
+        <div class="sidebar-section" style="margin-top: 1rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span class="sidebar-section-title">Job Executions</span>
+                <span style="font-size: 0.65rem; color:var(--primary); cursor:pointer; font-weight:700;" onclick="refreshJobsList()">🔄 REFRESH</span>
+            </div>
+            <div class="jobs-list" id="jobs-list-container">
+                <!-- Loaded dynamically -->
+            </div>
+        </div>
+
+        <div class="sidebar-section" style="margin-top: auto;">
+            <div class="stat-card-aside">
+                <div class="stat-card-aside-title">Connected Engine</div>
+                <div class="stat-card-aside-value" style="font-size:0.9rem; font-weight:600; color:var(--success); display:flex; align-items:center; gap:0.3rem;">
+                    <span>●</span> OpenRouter x-ai/grok-4.20
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Top Header -->
+        <header class="top-header">
+            <div class="header-info">
+                <h2 id="top-title-fund">No Fund Selected</h2>
+                <p id="top-subtitle-abn">Select or run a job to get started</p>
+            </div>
+            <div class="header-actions">
+                <span id="global-status-badge" class="badge badge-queued">● IDLE</span>
+            </div>
+        </header>
+
+        <!-- Dynamic Content Workspace -->
+        <div class="workspace-content">
+            
+            <!-- Default Welcome Screen when no active job is selected -->
+            <div id="welcome-view" class="welcome-screen">
+                <div class="welcome-icon">⚡</div>
+                <h3>Welcome to SMSF Orchestrator</h3>
+                <p>This scaled system enables document classification across multiple funds, custom playbooks, automated reviewer audits, and human-in-the-loop review escalations.</p>
+                <div style="display:flex; gap:1rem; margin-top:0.5rem;">
+                    <span class="badge badge-queued">1. Select a fund</span>
+                    <span class="badge badge-queued">2. Pick a playbook</span>
+                    <span class="badge badge-queued">3. Run the pipeline</span>
+                </div>
+            </div>
+
+            <!-- Main Tab View (only visible when a job is loaded) -->
+            <div id="main-job-view" style="display: none;">
+                
+
+
+                <!-- TAB 1: Document Intelligence -->
+                <div id="docs-tab" class="tab-content active">
+                    <div class="recon-layout">
+                        <!-- Left Column: Classified documents & signoff -->
+                        <div class="docs-left-col">
+                            <div class="info-box" id="docs-info-box">
+                                <span class="info-box-icon">💡</span>
+                                <div>
+                                    <strong>Step 1 - Document Intelligence:</strong> Review the AI-suggested categories and extracted metadata. You can click <strong>Override / Edit</strong> to correct any AI suggestions, add processor comments, and sign off below. Submitting will create the finalized documents in the <code>workpaper</code> directory.
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-header-flex">
+                                    <span class="card-title">Classified Audit Workpapers</span>
+                                    <span id="docs-reviewed-count" style="font-size:0.8rem; color:var(--text-muted);">0 of 0 approved</span>
+                                </div>
+                                <div class="table-container">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Original File</th>
+                                                <th>Classified Target Name</th>
+                                                <th>Playbook Category</th>
+                                                <th>Extracted Metadata</th>
+                                                <th>Verification Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="docs-table-tbody">
+                                            <!-- Populated dynamically -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Unprocessed/Errors section -->
+                            <div class="card" id="unprocessed-files-card" style="display: none; border-color: rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.01);">
+                                <span class="card-title" style="color:var(--danger); display:flex; align-items:center; gap:0.4rem;">
+                                    <span>⚠️</span> Non-PDF or Failed File Exceptions
+                                </span>
+                                <div class="table-container" style="margin-top: 1rem;">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Filename</th>
+                                                <th>Source Path</th>
+                                                <th>Exception Reason</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="unprocessed-table-tbody">
+                                            <!-- Dynamic -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Processor Sign-off Card -->
+                            <div class="card" id="processor-signoff-card">
+                                <span class="card-title">Human Processor Sign-off Escalation</span>
+                                <div class="form-group full-width" style="margin: 1rem 0;">
+                                    <label for="processor-notes-input">Processor Notes &amp; Escalation Comments</label>
+                                    <textarea id="processor-notes-input" class="note-textarea" placeholder="Add any ledger discrepancies, missing client details, or bookkeeping issues noted..."></textarea>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <p style="font-size:0.8rem; color:var(--text-muted);">Submitting processor review compiles approved files and triggers the AI Reviewer Agent to calculate financial lead schedules.</p>
+                                    <button class="btn-primary" id="btn-processor-signoff" onclick="submitProcessorReview()">
+                                        ✍️ Submit Processor Sign-Off
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Playbook Keyword Configurations (Reference Rules) -->
+                        <div class="playbook-right-col">
+                            <div class="card">
+                                <div class="card-header-flex" style="flex-direction: column; align-items: flex-start; gap: 0.5rem;">
+                                    <span class="card-title" id="playbook-manager-title">Playbook Manager</span>
+                                    <p style="font-size: 0.8rem; color: var(--text-muted);" id="playbook-manager-subtitle">Define customized keywords used by AI during Document Classification for the playbook</p>
+                                </div>
+
+                                <div class="table-container" style="max-height: 600px; overflow-y: auto; padding-right: 0.25rem;">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Playbook Category</th>
+                                                <th>Keywords / Matching Rules</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="playbook-rules-tbody">
+                                            <!-- Dynamic rows of text inputs -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div style="margin-top: 1.5rem;">
+                                    <button class="btn-primary" onclick="savePlaybookConfig()" style="width: 100%; font-size:0.85rem; padding:0.6rem;">
+                                        💾 Save Playbook Changes
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: Agent Orchestration & Data Intelligence -->
+                <div id="orch-tab" class="tab-content">
+                    <div class="card">
+                        <div class="card-header-flex">
+                            <span class="card-title">Active Orchestration Flow</span>
+                            <span id="orchestration-progress-text" style="font-size:0.85rem; font-weight:700; color:var(--primary);">0%</span>
+                        </div>
+                        
+                        <!-- Agent timeline graph -->
+                        <div class="timeline">
+                            <div class="timeline-step" id="timeline-step-1">
+                                <div class="timeline-node">🤖</div>
+                                <span class="timeline-label">AI Processor</span>
+                                <span class="timeline-owner"><span class="owner-badge">AI Agent</span></span>
+                            </div>
+                            <div class="timeline-step" id="timeline-step-2">
+                                <div class="timeline-node">✍️</div>
+                                <span class="timeline-label">Human Processor</span>
+                                <span class="timeline-owner"><span class="owner-badge" style="background:var(--warning-glow); color:var(--warning)">Human HITL</span></span>
+                            </div>
+                            <div class="timeline-step" id="timeline-step-3">
+                                <div class="timeline-node">🔍</div>
+                                <span class="timeline-label">AI Reviewer</span>
+                                <span class="timeline-owner"><span class="owner-badge">AI Agent</span></span>
+                            </div>
+                            <div class="timeline-step" id="timeline-step-4">
+                                <div class="timeline-node">🔑</div>
+                                <span class="timeline-label">Human Reviewer</span>
+                                <span class="timeline-owner"><span class="owner-badge" style="background:var(--success-glow); color:var(--success)">Human Sign-off</span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header-flex">
+                            <span class="card-title">Agent Execution Logs</span>
+                            <span style="font-size:0.8rem; color:var(--success); font-family:monospace;">antigravity_core_shell</span>
+                        </div>
+                        <div class="terminal-log" id="terminal-log-container">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Locked View (if Phase 2 hasn't run) -->
+                    <div id="data-intelligence-locked" class="welcome-screen" style="padding: 3rem 1rem;">
+                        <div class="welcome-icon">🔒</div>
+                        <h3>Financial Reconciliation Locked</h3>
+                        <p>Document checklist status, lead schedules, and audit calculations will populate here once the <strong>AI Reviewer Agent</strong> executes reconciliations (after Human Processor sign-off).</p>
+                    </div>
+
+                    <!-- Unlocked View (populates on Phase 2 completion) -->
+                    <div id="data-intelligence-unlocked" style="display:none;">
+                        
+                        <!-- Checklist Table -->
+                        <div class="card">
+                            <div class="card-header-flex">
+                                <span class="card-title">Document Audit Checklist Verification</span>
+                                <span id="checklist-summary-badge" class="status-badge verified">0 of 0 verified</span>
+                            </div>
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Checklist Category</th>
+                                            <th>Required Document Item</th>
+                                            <th>Verification Status</th>
+                                            <th>Attached Files (in workpapers/)</th>
+                                            <th>AI Auditor Comments / Notes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="checklist-table-tbody">
+                                        <!-- Loaded dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 3-Way Notes Board -->
+                        <div class="notes-board">
+                            <div class="note-card" style="border-top: 3px solid var(--warning);">
+                                <span class="note-card-title">✍️ Processor Escalation Notes</span>
+                                <textarea id="board-processor-notes" class="note-textarea" readonly></textarea>
+                            </div>
+                            <div class="note-card" style="border-top: 3px solid var(--info);">
+                                <span class="note-card-title">🔍 AI Reviewer Notes</span>
+                                <textarea id="board-reviewer-notes" class="note-textarea" placeholder="AI reviewer recommendations will appear here..."></textarea>
+                            </div>
+                            <div class="note-card" style="border-top: 3px solid var(--success);">
+                                <span class="note-card-title">🛡️ Auditor Exceptions Log</span>
+                                <div style="flex:1; overflow-y:auto; max-height:120px;" id="board-auditor-exceptions">
+                                    <!-- Dynamic Exceptions -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Lead Schedules (Cash & Portfolio) -->
+                        <div class="recon-layout">
+                            <div class="card" style="margin-bottom: 0;">
+                                <div class="card-header-flex">
+                                    <span class="card-title">Cash Lead Schedule</span>
+                                    <span style="font-size:0.8rem; color:var(--text-muted);" id="cash-reconciled-time">As of 30 June 2025</span>
+                                </div>
+                                <div class="table-container">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Account Name &amp; Number</th>
+                                                <th>BSB</th>
+                                                <th class="val-num">Opening Bal (1 Jul 24)</th>
+                                                <th class="val-num">Closing Bal (30 Jun 25)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="cash-tbody">
+                                            <!-- Dynamic -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <div class="card" style="margin-bottom: 0;">
+                                <span class="card-title">Cash Verification Checks</span>
+                                <div class="check-box-list" id="cash-checks-list">
+                                    <!-- Dynamic -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Portfolio Schedule -->
+                        <div class="recon-layout">
+                            <div class="card" style="margin-bottom: 0;">
+                                <div class="card-header-flex">
+                                    <span class="card-title">Securities Portfolio Valuation</span>
+                                    <span style="font-size:0.8rem; color:var(--text-muted);">SIS Reg 8.02B Market Valuation Check</span>
+                                </div>
+                                <div class="table-container">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Asset Period</th>
+                                                <th class="val-num">Total Cost ($)</th>
+                                                <th class="val-num">Market Value ($)</th>
+                                                <th class="val-num">Est. Annual Income ($)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="portfolio-tbody">
+                                            <!-- Dynamic -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="card" style="margin-bottom: 0;">
+                                <span class="card-title" id="mxt-recon-header-title">MXT Registry Check</span>
+                                <div class="check-box-list">
+                                    <div class="check-box-item">
+                                        <div class="check-box-item-header">
+                                            <span style="font-weight:600;">Pricing Variance Check</span>
+                                            <span class="chk-fail" id="mxt-variance-badge">Variance</span>
+                                        </div>
+                                        <div class="check-box-item-desc" id="mxt-variance-text">Reconciling MXT Registry NAV vs Ledger...</div>
+                                    </div>
+                                    <div class="check-box-item">
+                                        <div class="check-box-item-header">
+                                            <span style="font-weight:600;">Managed Fund Distributions</span>
+                                            <span class="chk-pass">Pass</span>
+                                        </div>
+                                        <div class="check-box-item-desc" id="mxt-distribution-text">Income distributions matched across tax statement...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tax & Members Schedule -->
+                        <div class="recon-layout" style="margin-top: 1.5rem;">
+                            <div class="card" style="margin-bottom: 0;">
+                                <span class="card-title">ATO Tax Reconciliation Ledger</span>
+                                <div class="table-container">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>ATO Account Ledger</th>
+                                                <th class="val-num">Balance 30-Jun-25 ($)</th>
+                                                <th>Reconciliation Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tax-tbody">
+                                            <!-- Dynamic -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted);" id="tax-return-outstanding-text">
+                                    Outstanding Returns: FY25 - Outstanding.
+                                </div>
+                            </div>
+
+                            <div class="card" style="margin-bottom: 0;">
+                                <span class="card-title">Member Total Superannuation Balance (TSB)</span>
+                                <div style="display:flex; flex-direction:column; gap:0.5rem; font-size:0.82rem;">
+                                    <div style="display:flex; justify-content:space-between;">
+                                        <span style="color:var(--text-muted);">Member Name:</span>
+                                        <strong id="member-name-text" style="color:#fff;">Andrea Martignoni</strong>
+                                    </div>
+                                    <div style="display:flex; justify-content:space-between;">
+                                        <span style="color:var(--text-muted);">Tax File Number (TFN):</span>
+                                        <strong id="member-tfn-text">139 809 744</strong>
+                                    </div>
+                                    <div style="display:flex; justify-content:space-between; margin-top:0.3rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top:0.3rem;">
+                                        <span style="color:var(--text-muted);">FY24 Audited TSB:</span>
+                                        <strong id="member-tsb-2024-text">$2,159,140.32</strong>
+                                    </div>
+                                    <div style="display:flex; justify-content:space-between;">
+                                        <span style="color:var(--text-muted);">FY25 ATO Ledger TSB:</span>
+                                        <strong id="member-tsb-2025-text" style="color:var(--warning);">$8,680.99</strong>
+                                    </div>
+                                    <div style="background:rgba(245,158,11,0.05); border: 1px solid rgba(245,158,11,0.15); padding:0.5rem; border-radius:6px; font-size:0.75rem; margin-top:0.25rem;" id="member-finding-desc">
+                                        discrepancy notes here
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Final Audit Completion Sign-off Card -->
+                        <div class="card" style="margin-top: 1.5rem;" id="reviewer-signoff-card">
+                            <span class="card-title">Human Auditor &amp; Reviewer Final sign-off</span>
+                            <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1rem;">Submit final review to sign off the financial ledger. This action marks the job as <strong>Completed</strong>.</p>
+                            <div style="display:flex; justify-content:flex-end;">
+                                <button class="btn-primary" onclick="submitFinalReview()">
+                                    🛡️ Complete Job &amp; Sign-Off Report
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+    </div> <!-- Close .main-body-container -->
+
+    <!-- HITL Document Override Modal -->
+    <div class="modal-overlay" id="override-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Override Document Classification</h3>
+                <button class="modal-close" onclick="closeOverrideModal()">×</button>
+            </div>
+            
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label for="modal-filename">Selected File</label>
+                    <input type="text" id="modal-filename" class="text-input" readonly style="background:rgba(255,255,255,0.02)">
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="modal-category">Correct Category</label>
+                    <select id="modal-category" class="select-input">
+                        <!-- Dynamic list of playbook categories -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="modal-accnum">Bank Account Number (If statement)</label>
+                    <input type="text" id="modal-accnum" class="text-input" placeholder="e.g. 06716720642566">
+                </div>
+
+                <div class="form-group">
+                    <label for="modal-amount">Amount (If Accountancy / Invoice)</label>
+                    <input type="text" id="modal-amount" class="text-input" placeholder="e.g. 270.41">
+                </div>
+
+                <div class="form-group">
+                    <label for="modal-date">Valuation Date (If Portfolio Valuation)</label>
+                    <input type="text" id="modal-date" class="text-input" placeholder="e.g. 30.06.25">
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="modal-notes">Processor Review Notes</label>
+                    <input type="text" id="modal-notes" class="text-input" placeholder="Add notes for auditor regarding values, missing parts, or changes...">
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeOverrideModal()">Cancel</button>
+                <button class="btn-primary" onclick="saveFileOverride()">Save Changes &amp; Approve</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating background decorations -->
+    <div class="floating-decoration bubble-percent">%</div>
+    <div class="floating-decoration bubble-like">👍</div>
+    <div class="floating-decoration bubble-shield">
+        <svg viewBox="0 0 24 24" width="90" height="110" fill="#00AF5A" style="filter: drop-shadow(0 8px 25px rgba(0,175,90,0.25));">
+            <path d="M12 2L3 5v6c0 5.5 3.8 10.7 9 12 5.2-1.3 9-6.5 9-12V5l-9-3z" />
+            <path d="M12 8a3 3 0 00-3 3v2h6v-2a3 3 0 00-3-3zm-3 5h6v5H9v-5z" fill="white" />
+        </svg>
+    </div>
+
+    <!-- Script Section -->
+    <script>
+        let funds = [];
+        let jobs = [];
+        let activeJob = null;
+        let selectedFileIndex = null;
+        let pollingInterval = null;
+
+        // On document load
+        window.addEventListener('load', () => {
+            fetchFunds();
+            fetchJobs();
+            // Start regular refresh of executions list
+            setInterval(fetchJobs, 10000);
+        });
+
+        function fetchFunds() {
+            fetch('/api/funds')
+                .then(res => res.json())
+                .then(data => {
+                    funds = data;
+                    populateFundDropdown();
+                    loadActiveFundPlaybook();
+                })
+                .catch(err => console.error("Error loading funds list:", err));
+        }
+
+        function populateFundDropdown() {
+            const select = document.getElementById("fund-select");
+            select.innerHTML = "";
+            funds.forEach(fund => {
+                const opt = document.createElement("option");
+                opt.value = fund.id;
+                opt.textContent = fund.name;
+                select.appendChild(opt);
+            });
+        }
+
+        function fetchJobs() {
+            fetch('/api/jobs')
+                .then(res => res.json())
+                .then(data => {
+                    jobs = data;
+                    renderJobsList();
+                })
+                .catch(err => console.error("Error listing jobs:", err));
+        }
+
+        function renderJobsList() {
+            const container = document.getElementById("jobs-list-container");
+            container.innerHTML = "";
+            
+            if (jobs.length === 0) {
+                container.innerHTML = `<div style="text-align:center; font-size:0.75rem; color:var(--text-muted); padding:1rem;">No historical jobs found.</div>`;
+                return;
+            }
+
+            jobs.forEach(job => {
+                const div = document.createElement("div");
+                div.className = `job-item ${activeJob && activeJob.job_id === job.job_id ? 'active' : ''}`;
+                div.onclick = () => selectJob(job.job_id);
+
+                let statusText = job.status.replace("_", " ").toUpperCase();
+                div.innerHTML = `
+                    <div class="job-item-header">
+                        <span class="job-item-title">${job.fund_name}</span>
+                        <span class="job-item-date">${job.created_at.split(" ")[1]}</span>
+                    </div>
+                    <div class="job-item-desc">${job.job_type.replace("_", " & ")}</div>
+                    <span class="badge badge-${job.status}">● ${statusText}</span>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function selectJob(jobId) {
+            fetch(`/api/jobs/${jobId}/details`)
+                .then(res => res.json())
+                .then(job => {
+                    activeJob = job;
+                    renderJobsList(); // refresh active highlight
+                    updateJobUIState();
+                    
+                    // If job is processing, set up polling
+                    if (job.status === "processing_docs" || job.status === "processing_review") {
+                        startPolling(job.job_id);
+                    } else {
+                        stopPolling();
+                    }
+                })
+                .catch(err => console.error("Error loading job details:", err));
+        }
+
+        function startPolling(jobId) {
+            stopPolling();
+            pollingInterval = setInterval(() => {
+                fetch(`/api/jobs/${jobId}/details`)
+                    .then(res => res.json())
+                    .then(job => {
+                        if (activeJob && activeJob.job_id === jobId) {
+                            activeJob = job;
+                            updateJobUIState();
+                        }
+                        if (job.status !== "processing_docs" && job.status !== "processing_review") {
+                            stopPolling();
+                            fetchJobs(); // refresh list to update badge
+                        }
+                    });
+            }, 3000);
+        }
+
+        function stopPolling() {
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+                pollingInterval = null;
+            }
+        }
+
+        function refreshJobsList() {
+            fetchJobs();
+            if (activeJob) {
+                selectJob(activeJob.job_id);
+            }
+        }
+
+        function createNewJob() {
+            const fundId = document.getElementById("fund-select").value;
+            const jobType = document.getElementById("playbook-select").value;
+
+            fetch('/api/jobs/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fund_id: fundId, job_type: jobType })
+            })
+            .then(res => res.json())
+            .then(res => {
+                fetchJobs();
+                selectJob(res.job_id);
+                switchTab('orch-tab'); // jump to timeline to show progress
+            })
+            .catch(err => console.error("Error initiating audit job:", err));
+        }
+
+        function updateJobUIState() {
+            if (!activeJob) {
+                document.getElementById("welcome-view").style.display = "flex";
+                document.getElementById("main-job-view").style.display = "none";
+                document.getElementById("top-title-fund").textContent = "No Fund Selected";
+                document.getElementById("top-subtitle-abn").textContent = "Select or run a job to get started";
+                
+                // Disable and reset top horizontal tabs
+                document.getElementById('tab-btn-docs').classList.add('disabled');
+                document.getElementById('tab-btn-orch').classList.add('disabled');
+                document.getElementById('tab-btn-docs').classList.remove('active');
+                document.getElementById('tab-btn-orch').classList.remove('active');
+                return;
+            }
+
+            // Hide welcome screen, show tab content
+            document.getElementById("welcome-view").style.display = "none";
+            document.getElementById("main-job-view").style.display = "block";
+
+            // Enable horizontal tabs
+            document.getElementById('tab-btn-docs').classList.remove('disabled');
+            document.getElementById('tab-btn-orch').classList.remove('disabled');
+
+            // Header state
+            document.getElementById("top-title-fund").textContent = activeJob.fund_name;
+            document.getElementById("top-subtitle-abn").textContent = `ABN: ${activeJob.abn} | ID: ${activeJob.job_id}`;
+            
+            const badge = document.getElementById("global-status-badge");
+            badge.className = `badge badge-${activeJob.status}`;
+            badge.textContent = `● ${activeJob.status.replace("_", " ").toUpperCase()}`;
+
+            // Tab 1: Document Intelligence Table
+            renderDocumentsTable();
+
+            // Tab 2: Agent Orchestration Timeline
+            renderTimeline();
+
+            // Tab 3: Data Intelligence Tables
+            renderDataIntelligence();
+
+            // Tab 4: Playbook Manager Settings
+            renderPlaybookManager();
+        }
+
+        function renderDocumentsTable() {
+            const tbody = document.getElementById("docs-table-tbody");
+            tbody.innerHTML = "";
+            
+            const files = activeJob.files || [];
+            
+            if (files.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:2rem;">No documents classified yet. Job status is: <strong>${activeJob.status}</strong></td></tr>`;
+                document.getElementById("docs-reviewed-count").textContent = `0 of 0 approved`;
+                return;
+            }
+
+            let approvedCount = 0;
+            files.forEach((file, idx) => {
+                const isApproved = file.status === "Approved";
+                if (isApproved) approvedCount++;
+                
+                const tr = document.createElement("tr");
+                tr.className = isApproved ? "row-approved" : "row-suggested";
+
+                let metadataHtml = "";
+                if (file.category.includes("Bank Statement") && file.account_number) {
+                    metadataHtml = `Account: <strong>${file.account_number}</strong>`;
+                } else if (file.category.includes("Accountancy") && file.amount) {
+                    metadataHtml = `Amount: <strong>$${file.amount}</strong>`;
+                } else if (file.category.includes("Audit Invoice") && file.amount) {
+                    metadataHtml = `Amount: <strong>$${file.amount}</strong>`;
+                } else if (file.category.includes("Portfolio Valuation") && file.date) {
+                    metadataHtml = `Date: <strong>${file.date}</strong>`;
+                } else {
+                    metadataHtml = "-";
+                }
+
+                // If approved by processor or review completed, show final pdf link
+                let fileLinkHtml = `<strong>${file.original_name}</strong>`;
+                if (file.classified_name && file.classified_name !== "[Split and grouped by account]") {
+                    const servePhase = (activeJob.status === "processing_docs" || activeJob.status === "pending_processor_review") ? "staging" : "workpaper";
+                    fileLinkHtml = `<a class="file-link" href="/api/jobs/${activeJob.job_id}/file/${servePhase}/${file.classified_name}" target="_blank">📄 ${file.classified_name}</a>`;
+                }
+
+                let btnHtml = "";
+                // Human processor editing only enabled during processor review phase
+                if (activeJob.status === "pending_processor_review") {
+                    btnHtml = `<button class="btn-action" onclick="openOverrideModal(${idx})">✏️ Override</button>`;
+                } else {
+                    btnHtml = `<span style="font-size:0.75rem; color:var(--text-muted)">Locked</span>`;
+                }
+
+                let statusBadgeClass = isApproved ? "badge-verified" : "badge-na";
+                let statusLabel = isApproved ? "Verified & Approved" : "AI Suggested";
+                
+                tr.innerHTML = `
+                    <td>${file.original_name}</td>
+                    <td>${fileLinkHtml}</td>
+                    <td><strong>${file.category}</strong></td>
+                    <td>${metadataHtml}</td>
+                    <td><span class="badge-table ${statusBadgeClass}">● ${statusLabel}</span><br><span style="font-size:0.7rem; color:var(--text-muted);">${file.notes || ''}</span></td>
+                    <td>${btnHtml}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById("docs-reviewed-count").textContent = `${approvedCount} of ${files.length} verified & approved`;
+
+            // Unprocessed files table
+            const unprocessed = activeJob.unprocessed_files || [];
+            const unprocessedCard = document.getElementById("unprocessed-files-card");
+            const unprocessedTbody = document.getElementById("unprocessed-table-tbody");
+            
+            if (unprocessed.length > 0) {
+                unprocessedCard.style.display = "block";
+                unprocessedTbody.innerHTML = "";
+                unprocessed.forEach(file => {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                        <td style="color:var(--danger); font-weight:600;">${file.filename}</td>
+                        <td style="font-size:0.78rem; font-family:monospace; color:var(--text-muted);">${file.path}</td>
+                        <td style="font-size:0.8rem; color:var(--text-muted);">${file.reason}</td>
+                    `;
+                    unprocessedTbody.appendChild(tr);
+                });
+            } else {
+                unprocessedCard.style.display = "none";
+            }
+
+            // Processor Sign-off Card disabled/enabled
+            const textarea = document.getElementById("processor-notes-input");
+            const btnSignoff = document.getElementById("btn-processor-signoff");
+            
+            if (activeJob.status === "pending_processor_review") {
+                textarea.disabled = false;
+                textarea.value = activeJob.processor_notes || "";
+                btnSignoff.disabled = false;
+                btnSignoff.style.opacity = 1;
+            } else {
+                textarea.disabled = true;
+                textarea.value = activeJob.processor_notes || "Processor Review Sign-off completed.";
+                btnSignoff.disabled = true;
+                btnSignoff.style.opacity = 0.5;
+            }
+        }
+
+        function renderTimeline() {
+            // Reset steps
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`timeline-step-${i}`).className = "timeline-step";
+            }
+
+            const status = activeJob.status;
+            const pctText = document.getElementById("orchestration-progress-text");
+            pctText.textContent = `${activeJob.progress_percent}%`;
+
+            if (status === "processing_docs") {
+                document.getElementById("timeline-step-1").className = "timeline-step active";
+            } else if (status === "pending_processor_review") {
+                document.getElementById("timeline-step-1").className = "timeline-step completed";
+                document.getElementById("timeline-step-2").className = "timeline-step active";
+            } else if (status === "processing_review") {
+                document.getElementById("timeline-step-1").className = "timeline-step completed";
+                document.getElementById("timeline-step-2").className = "timeline-step completed";
+                document.getElementById("timeline-step-3").className = "timeline-step active";
+            } else if (status === "pending_reviewer_approval") {
+                document.getElementById("timeline-step-1").className = "timeline-step completed";
+                document.getElementById("timeline-step-2").className = "timeline-step completed";
+                document.getElementById("timeline-step-3").className = "timeline-step completed";
+                document.getElementById("timeline-step-4").className = "timeline-step active";
+            } else if (status === "completed") {
+                document.getElementById("timeline-step-1").className = "timeline-step completed";
+                document.getElementById("timeline-step-2").className = "timeline-step completed";
+                document.getElementById("timeline-step-3").className = "timeline-step completed";
+                document.getElementById("timeline-step-4").className = "timeline-step completed";
+            }
+
+            // Fill logs terminal
+            const container = document.getElementById("terminal-log-container");
+            container.innerHTML = "";
+            const logs = activeJob.logs || [];
+            logs.forEach(log => {
+                const div = document.createElement("div");
+                div.className = "terminal-line";
+                if (log.includes("ERROR") || log.includes("failed")) {
+                    div.classList.add("error");
+                } else if (log.includes("Warning") || log.includes("variance") || log.includes("Missing")) {
+                    div.classList.add("warn");
+                } else if (log.includes("AI Reviewer") || log.includes("AI Processor")) {
+                    div.classList.add("info");
+                }
+                div.textContent = log;
+                container.appendChild(div);
+            });
+            
+            // Scroll to bottom
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function renderDataIntelligence() {
+            const lockedView = document.getElementById("data-intelligence-locked");
+            const unlockedView = document.getElementById("data-intelligence-unlocked");
+            
+            // Reconciliations only visible if reviewed/reviewing
+            if (activeJob.status === "processing_docs" || activeJob.status === "pending_processor_review") {
+                lockedView.style.display = "block";
+                unlockedView.style.display = "none";
+                return;
+            }
+
+            lockedView.style.display = "none";
+            unlockedView.style.display = "block";
+
+            // Render Notes Board values
+            document.getElementById("board-processor-notes").value = activeJob.processor_notes || "None.";
+            
+            const revNotesInput = document.getElementById("board-reviewer-notes");
+            revNotesInput.value = activeJob.reviewer_notes || "";
+            
+            if (activeJob.status === "pending_reviewer_approval") {
+                revNotesInput.disabled = false;
+                document.getElementById("reviewer-signoff-card").style.display = "block";
+            } else {
+                revNotesInput.disabled = true;
+                document.getElementById("reviewer-signoff-card").style.display = "none";
+            }
+
+            // Auditor exceptions board
+            const exceptionsList = document.getElementById("board-auditor-exceptions");
+            exceptionsList.innerHTML = "";
+            const exceptions = activeJob.auditor_notes || [];
+            
+            if (exceptions.length === 0) {
+                exceptionsList.innerHTML = `<div style="font-size:0.75rem; color:var(--text-muted);">No exceptions found. Ledger is clean.</div>`;
+            } else {
+                exceptions.forEach(exc => {
+                    const item = document.createElement("div");
+                    item.style.fontSize = "0.75rem";
+                    item.style.marginBottom = "0.25rem";
+                    item.style.color = exc.type === "error" ? "var(--danger)" : "var(--warning)";
+                    item.innerHTML = `<strong>${exc.type === "error" ? '🚨' : '⚠️'} ${exc.title}</strong><br>${exc.description}`;
+                    exceptionsList.appendChild(item);
+                });
+            }
+
+            const results = activeJob.results;
+            if (!results) return;
+
+            // Render Checklist Status Table
+            const chkTbody = document.getElementById("checklist-table-tbody");
+            chkTbody.innerHTML = "";
+            const checklist = results.checklist || {};
+            
+            let totalChecklistItems = 0;
+            let verifiedChecklistItems = 0;
+            
+            Object.entries(checklist).forEach(([category, items]) => {
+                const catTr = document.createElement("tr");
+                catTr.className = "checklist-cat-row";
+                catTr.innerHTML = `
+                    <td colspan="5" style="color: var(--primary); font-family: var(--font-display); font-size: 0.95rem; font-weight:700;">📂 ${category}</td>
+                `;
+                chkTbody.appendChild(catTr);
+                
+                Object.entries(items).forEach(([itemName, itemDetails]) => {
+                    totalChecklistItems++;
+                    const status = itemDetails.status;
+                    if (status === "Verified") verifiedChecklistItems++;
+                    
+                    const tr = document.createElement("tr");
+                    
+                    let statusBadgeClass = "na";
+                    if (status === "Verified") statusBadgeClass = "verified";
+                    else if (status === "Missing") statusBadgeClass = "missing";
+                    
+                    let statusHtml = `<span class="status-badge ${statusBadgeClass}">● ${status}</span>`;
+                    
+                    let filesHtml = "-";
+                    if (itemDetails.files && itemDetails.files.length > 0) {
+                        filesHtml = itemDetails.files.map(f => 
+                            `<a class="file-link" href="/api/jobs/${activeJob.job_id}/file/workpaper/${f}" target="_blank">📄 ${f}</a>`
+                        ).join(" ");
+                    }
+                    
+                    tr.innerHTML = `
+                        <td style="color: var(--text-muted); font-size: 0.8rem; padding-left: 2rem;">${category}</td>
+                        <td style="font-weight: 600; color: #fff;">${itemName}</td>
+                        <td>${statusHtml}</td>
+                        <td><div style="display:flex; flex-direction:row; flex-wrap:wrap; gap:0.4rem;">${filesHtml}</div></td>
+                        <td style="color: var(--text-muted); font-size: 0.82rem;">${itemDetails.notes || '-'}</td>
+                    `;
+                    chkTbody.appendChild(tr);
+                });
+            });
+            
+            document.getElementById("checklist-summary-badge").textContent = `${verifiedChecklistItems} of ${totalChecklistItems} verified`;
+
+            // Render Cash Lead Schedule
+            const cash = results.cash_reconciliation || { accounts: [], audit_checks: [] };
+            const cashTbody = document.getElementById("cash-tbody");
+            cashTbody.innerHTML = "";
+            let cashOpenTotal = 0;
+            let cashCloseTotal = 0;
+
+            cash.accounts.forEach(acc => {
+                cashOpenTotal += acc.opening_bal_1jul24;
+                cashCloseTotal += acc.closing_bal_30jun25;
+
+                // Match statement download link
+                let fileLinkHtml = "";
+                const cleanAccNum = acc.number.replace(" ", "").replace("-", "");
+                const matchedFile = (activeJob.files || []).find(f => f.classified_name && f.classified_name.includes(cleanAccNum));
+                if (matchedFile) {
+                    fileLinkHtml = `<br><a class="file-link" style="margin-top:0.2rem;" href="/api/jobs/${activeJob.job_id}/file/workpaper/${matchedFile.classified_name}" target="_blank">📄 Statement Ledger</a>`;
+                }
+
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td style="font-weight:600; color:#fff;">${acc.name}<br><span style="font-size:0.75rem; color:var(--text-muted);">${acc.number}</span>${fileLinkHtml}</td>
+                    <td>${acc.bsb}</td>
+                    <td class="val-num">$${acc.opening_bal_1jul24.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                    <td class="val-num" style="color:var(--success); font-weight:700;">$${acc.closing_bal_30jun25.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                `;
+                cashTbody.appendChild(tr);
+            });
+
+            // Cash Total Row
+            const cashTotalTr = document.createElement("tr");
+            cashTotalTr.style.background = "rgba(255,255,255,0.03)";
+            cashTotalTr.style.fontWeight = "700";
+            cashTotalTr.style.borderTop = "2px solid var(--surface-border)";
+            cashTotalTr.innerHTML = `
+                <td>TOTAL RECONCILED CASH AT BANK</td>
+                <td>-</td>
+                <td class="val-num">$${cashOpenTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                <td class="val-num" style="color:var(--success);">$${cashCloseTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+            `;
+            cashTbody.appendChild(cashTotalTr);
+
+            // Cash checks sidebar
+            const checksList = document.getElementById("cash-checks-list");
+            checksList.innerHTML = "";
+            cash.audit_checks.forEach(chk => {
+                const item = document.createElement("div");
+                item.className = "check-box-item";
+                
+                let badgeClass = "chk-pass";
+                if (chk.status === "Fail") badgeClass = "chk-fail";
+                else if (chk.status === "N/A") badgeClass = "chk-na";
+
+                item.innerHTML = `
+                    <div class="check-box-item-header">
+                        <span style="font-weight:600;">${chk.description}</span>
+                        <span class="${badgeClass}">${chk.status}</span>
+                    </div>
+                    <div class="check-box-item-desc">${chk.details}</div>
+                `;
+                checksList.appendChild(item);
+            });
+
+            // Render Portfolio schedule
+            const portfolio = results.portfolio_reconciliation || { totals: { opening_1jul24: {}, closing_30jun25: {} }, mxt_reconciliation: {}, distribution_check: {} };
+            const portTbody = document.getElementById("portfolio-tbody");
+            portTbody.innerHTML = "";
+
+            const totals = portfolio.totals;
+            const openCost = totals.opening_1jul24.total_cost || 0;
+            const openMv = totals.opening_1jul24.total_market_value || 0;
+            const openInc = totals.opening_1jul24.estimated_annual_income || 0;
+            
+            const closeCost = totals.closing_30jun25.total_cost || 0;
+            const closeMv = totals.closing_30jun25.total_market_value || 0;
+            const closeInc = totals.closing_30jun25.estimated_annual_income || 0;
+
+            const trOpen = document.createElement("tr");
+            trOpen.innerHTML = `
+                <td>Opening Portfolio (01 Jul 2024)</td>
+                <td class="val-num">$${openCost.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                <td class="val-num">$${openMv.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                <td class="val-num">$${openInc.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+            `;
+            portTbody.appendChild(trOpen);
+
+            const trClose = document.createElement("tr");
+            trClose.innerHTML = `
+                <td>Closing Portfolio (30 Jun 2025)</td>
+                <td class="val-num">$${closeCost.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                <td class="val-num" style="color:var(--success);">$${closeMv.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                <td class="val-num">$${closeInc.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+            `;
+            portTbody.appendChild(trClose);
+
+            // Portfolio Net Variation
+            const trVar = document.createElement("tr");
+            trVar.style.background = "rgba(255,255,255,0.03)";
+            trVar.style.fontWeight = "700";
+            trVar.innerHTML = `
+                <td>NET PORTFOLIO VARIATION</td>
+                <td class="val-num">$${(closeCost - openCost).toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                <td class="val-num" style="color:var(--success);">$${(closeMv - openMv).toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                <td class="val-num">$${(closeInc - openInc).toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+            `;
+            portTbody.appendChild(trVar);
+
+            // Portfolio MXT check
+            const mxt = portfolio.mxt_reconciliation || {};
+            document.getElementById("mxt-recon-header-title").textContent = mxt.description || "Investment Asset Verification Check";
+            
+            const badgeVar = document.getElementById("mxt-variance-badge");
+            if (mxt.variance_value > 0) {
+                badgeVar.className = "chk-fail";
+                badgeVar.textContent = `+$${mxt.variance_value.toFixed(2)}`;
+            } else {
+                badgeVar.className = "chk-pass";
+                badgeVar.textContent = "Reconciled";
+            }
+            
+            document.getElementById("mxt-variance-text").innerHTML = `
+                Reconciling MXT holding at 30/06/2025 (${mxt.broker_units ? mxt.broker_units.toLocaleString() : 0} units):<br>
+                • Broker Market Value: <strong>$${(mxt.broker_market_value || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}</strong> (price $${mxt.broker_price || 0}/u)<br>
+                • Registry NAV Value: <strong>$${(mxt.registry_market_value || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}</strong> (price $${mxt.registry_price || 0}/u)<br>
+                • Close vs NAV Variance: <strong style="color:var(--warning);">+$${(mxt.variance_value || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}</strong>
+            `;
+
+            const dist = portfolio.distribution_check || {};
+            document.getElementById("mxt-distribution-text").innerHTML = `
+                Metrics Tax Statement Distribution: <strong>$${(dist.mxt_tax_statement_distribution || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}</strong><br>
+                Automic Registry Periodic statement: <strong>$${(dist.mxt_periodic_statement_distribution || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}</strong><br>
+                Tax Return Net Trust Income (13U): <strong>$${(dist.tax_return_share_of_income_13u || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}</strong><br>
+                Reconciliation status: <strong>${dist.reconciliation || 'Pass'}</strong>
+            `;
+
+            // Tax ledger
+            const tax = results.tax_reconciliation || { accounts: [], outstanding_returns: {} };
+            const taxTbody = document.getElementById("tax-tbody");
+            taxTbody.innerHTML = "";
+            
+            tax.accounts.forEach(acc => {
+                const tr = document.createElement("tr");
+                let badgeClass = acc.status === "Reconciled" ? "badge-verified" : "badge-na";
+                tr.innerHTML = `
+                    <td style="font-weight:600; color:#fff;">${acc.name}</td>
+                    <td class="val-num">$${(acc.balance_30jun25 || 0).toFixed(2)}</td>
+                    <td><span class="badge-table ${badgeClass}">● ${acc.status}</span><br><span style="font-size:0.72rem; color:var(--text-muted);">${acc.notes || ''}</span></td>
+                `;
+                taxTbody.appendChild(tr);
+            });
+
+            const returnYear = Object.keys(tax.outstanding_returns || {'FY25': ''})[0] || 'FY25';
+            const returnStatus = tax.outstanding_returns[returnYear] || 'Outstanding';
+            document.getElementById("tax-return-outstanding-text").innerHTML = `
+                <strong>Outstanding Returns:</strong> ${returnYear} - <span style="color:var(--warning); font-weight:700;">${returnStatus}</span><br>
+                <span style="font-size:0.75rem; color:var(--text-muted);">${tax.outstanding_returns.details || ''}</span>
+            `;
+
+            // Member reconciliation
+            const member = results.member_reconciliation || {};
+            document.getElementById("member-name-text").textContent = member.name || "N/A";
+            document.getElementById("member-tfn-text").textContent = member.tfn || "N/A";
+            document.getElementById("member-tsb-2024-text").textContent = `$${(member.tsb_2024 || 0).toLocaleString(undefined, {minimumFractionDigits:2})}`;
+            document.getElementById("member-tsb-2025-text").textContent = `$${(member.tsb_2025 || 0).toLocaleString(undefined, {minimumFractionDigits:2})}`;
+            document.getElementById("member-finding-desc").textContent = member.audit_finding || "No findings.";
+        }
+
+        function renderPlaybookManager() {
+            const tbody = document.getElementById("playbook-rules-tbody");
+            tbody.innerHTML = "";
+
+            const fundId = activeJob.fund_id;
+            const fund = funds.find(f => f.id === fundId);
+            if (!fund) return;
+
+            document.getElementById("playbook-manager-title").textContent = `Playbook Keyword Editor: ${fund.name}`;
+            document.getElementById("playbook-manager-subtitle").textContent = `Define customized keywords used by AI during Document Classification for the ${activeJob.job_type.replace("_", " & ")} playbook`;
+
+            const kws = fund.keywords || {};
+            const jobKws = kws[activeJob.job_type] || {};
+
+            if (Object.keys(jobKws).length === 0) {
+                tbody.innerHTML = `<tr><td colspan="2" style="text-align:center; color:var(--text-muted); padding:2rem;">No playbook categories defined for job type: ${activeJob.job_type}</td></tr>`;
+                return;
+            }
+
+            Object.entries(jobKws).forEach(([cat, val]) => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td style="font-weight:600; color:#fff; vertical-align:top; padding-top:1.2rem;">${cat}</td>
+                    <td>
+                        <input type="text" class="playbook-kw-input" data-category="${cat}" value="${val}" style="padding:0.6rem; font-size:0.9rem;">
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function loadActiveFundPlaybook() {
+            // Reset job UI to welcome if no active job, or keep active job.
+            // If they change select dropdown, we can show details of playbook if they go to playbook tab.
+            if (activeJob) {
+                // If they change fund selection on left bar but haven't run pipeline yet,
+                // we don't automatically override the active job panel until they select an execution.
+            }
+        }
+
+        function savePlaybookConfig() {
+            const fundId = activeJob.fund_id;
+            const fund = funds.find(f => f.id === fundId);
+            if (!fund) return;
+
+            const inputs = document.querySelectorAll(".playbook-kw-input");
+            const newKws = {};
+            inputs.forEach(input => {
+                const cat = input.getAttribute("data-category");
+                newKws[cat] = input.value;
+            });
+
+            // Update local object
+            if (!fund.keywords) fund.keywords = {};
+            fund.keywords[activeJob.job_type] = newKws;
+
+            // Submit back to api
+            fetch('/api/funds', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(fund)
+            })
+            .then(res => res.json())
+            .then(res => {
+                alert("Playbook keywords updated successfully!");
+                fetchFunds();
+            })
+            .catch(err => alert("Failed to save playbook config: " + err));
+        }
+
+        // HITL Override Modal functions
+        function openOverrideModal(index) {
+            selectedFileIndex = index;
+            const file = activeJob.files[index];
+
+            document.getElementById("modal-filename").value = file.original_name;
+            
+            // Pop categories dropdown
+            const catSelect = document.getElementById("modal-category");
+            catSelect.innerHTML = "";
+            
+            const fund = funds.find(f => f.id === activeJob.fund_id);
+            const jobKws = (fund && fund.keywords) ? (fund.keywords[activeJob.job_type] || {}) : {};
+            
+            Object.keys(jobKws).forEach(cat => {
+                const opt = document.createElement("option");
+                opt.value = cat;
+                opt.textContent = cat;
+                if (cat === file.category) opt.selected = true;
+                catSelect.appendChild(opt);
+            });
+
+            // If not found in playbook, add current file category as option
+            if (!Object.keys(jobKws).includes(file.category)) {
+                const opt = document.createElement("option");
+                opt.value = file.category;
+                opt.textContent = file.category;
+                opt.selected = true;
+                catSelect.appendChild(opt);
+            }
+
+            document.getElementById("modal-accnum").value = file.account_number || "";
+            document.getElementById("modal-amount").value = file.amount || "";
+            document.getElementById("modal-date").value = file.date || "";
+            document.getElementById("modal-notes").value = file.notes || "";
+
+            document.getElementById("override-modal").style.display = "flex";
+        }
+
+        function closeOverrideModal() {
+            document.getElementById("override-modal").style.display = "none";
+            selectedFileIndex = null;
+        }
+
+        function saveFileOverride() {
+            if (selectedFileIndex === null) return;
+            
+            const file = activeJob.files[selectedFileIndex];
+            file.category = document.getElementById("modal-category").value;
+            file.account_number = document.getElementById("modal-accnum").value.trim() || null;
+            file.amount = document.getElementById("modal-amount").value.trim() || null;
+            file.date = document.getElementById("modal-date").value.trim() || null;
+            file.notes = document.getElementById("modal-notes").value.trim();
+            file.status = "Approved"; // marked as manually approved
+
+            renderDocumentsTable();
+            closeOverrideModal();
+        }
+
+        function submitProcessorReview() {
+            if (!activeJob) return;
+
+            const processorNotes = document.getElementById("processor-notes-input").value;
+            
+            // Mark all suggested files as approved if they weren't manually overridden
+            activeJob.files.forEach(f => {
+                if (f.status !== "Approved") {
+                    f.status = "Approved";
+                }
+            });
+
+            fetch(`/api/jobs/${activeJob.job_id}/processor-review`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    files: activeJob.files,
+                    processor_notes: processorNotes
+                })
+            })
+            .then(res => res.json())
+            .then(res => {
+                selectJob(activeJob.job_id); // reload details to start polling Phase 2
+                switchTab('orch-tab'); // jump to logs/timeline
+            })
+            .catch(err => console.error("Error signing off processor review:", err));
+        }
+
+        function submitFinalReview() {
+            if (!activeJob) return;
+
+            const revNotes = document.getElementById("board-reviewer-notes").value;
+            
+            fetch(`/api/jobs/${activeJob.job_id}/reviewer-review`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    reviewer_notes: revNotes
+                })
+            })
+            .then(res => res.json())
+            .then(res => {
+                alert("Job successfully sign-off and completed!");
+                refreshJobsList();
+            })
+            .catch(err => console.error("Error signing off reviewer review:", err));
+        }
+
+        // Navigation
+        function switchTab(tabId) {
+            if (!activeJob) return; // Prevent switching tabs if no active job is selected
+
+            const contents = document.querySelectorAll(".tab-content");
+            const buttons = document.querySelectorAll(".tab-btn");
+
+            contents.forEach(content => {
+                content.classList.remove("active");
+            });
+            buttons.forEach(btn => {
+                btn.classList.remove("active");
+            });
+
+            document.getElementById(tabId).classList.add("active");
+            
+            // Highlight button
+            if (tabId === 'docs-tab') document.getElementById('tab-btn-docs').classList.add('active');
+            else if (tabId === 'orch-tab') document.getElementById('tab-btn-orch').classList.add('active');
+        }
+    </script>
+</body>
+</html>

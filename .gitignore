@@ -1,0 +1,25 @@
+# Environment
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# Runtime output
+jobs/*
+!jobs/.gitkeep
+output/
+
+# Fund source documents (client PDFs — never commit)
+docs/*
+!docs/.gitkeep
+
+# macOS
+.DS_Store
+
+# Scratch / temp
+*.tmp

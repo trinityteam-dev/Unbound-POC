@@ -107,11 +107,11 @@ Task 2.1 produces the structured rows. There are two ways to do it; the data con
 
 **Done when:** A model is chosen and set as the default for the reconciliation engine, with evidence of consistent structured output.
 
-- [ ] **4.1** Run Stories 2–3 engine against ADMCM sample with three candidate models: `x-ai/grok-4.20`, `google/gemini-2.5-flash`, `anthropic/claude-sonnet-4-6`
-- [ ] **4.2** Evaluate each model on: JSON schema compliance, transaction tagging accuracy, query readability, latency, cost per run
-- [ ] **4.3** Document findings in `docs/model_selection_notes.md`
-- [ ] **4.4** Set chosen model as the default in `run_reconciliation_call()` and `run_query_generation_call()`; update fallback model accordingly
-- [ ] **4.5** If text-based transaction extraction (Story 2, Approach A) shows accuracy problems, evaluate the multimodal/vision fallback — send the rendered statement page as a base64 image to a vision-capable model instead of extracted text. Requires extending `query_openrouter()` to support image message parts. Documented here as a contingency, not a committed task.
+- [x] **4.1** Run Stories 2–3 engine against ADMCM sample with three candidate models: `x-ai/grok-4.20`, `google/gemini-2.5-flash`, `anthropic/claude-sonnet-4-6`
+- [x] **4.2** Evaluate each model on: JSON schema compliance, transaction tagging accuracy, query readability, latency, cost per run
+- [x] **4.3** Document findings in `docs/model_selection_notes.md`
+- [x] **4.4** Set chosen model as the default in `run_reconciliation_call()` and `run_query_generation_call()`; update fallback model accordingly
+- [x] **4.5** If text-based transaction extraction (Story 2, Approach A) shows accuracy problems, evaluate the multimodal/vision fallback — send the rendered statement page as a base64 image to a vision-capable model instead of extracted text. Requires extending `query_openrouter()` to support image message parts. Documented here as a contingency, not a committed task.
 
 ---
 

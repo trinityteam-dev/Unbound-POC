@@ -1,0 +1,1990 @@
+{
+  "06716720642566": {
+    "account_number": "06716720642566",
+    "account_name": "CBA Accelerator Cash Account",
+    "transactions": [
+      {
+        "date": "01/06/2024",
+        "description": "Credit Interest",
+        "debit": null,
+        "credit": 61.29,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for interest credit"
+      },
+      {
+        "date": "11/06/2024",
+        "description": "Direct Credit 607019 MCP MASTER INCOM cm-2108460",
+        "debit": null,
+        "credit": 189.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend/distribution"
+      },
+      {
+        "date": "17/06/2024",
+        "description": "Direct Credit 640006 PERLS XV DST 001318976928",
+        "debit": null,
+        "credit": 1586.75,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "17/06/2024",
+        "description": "Direct Credit 660166 BENPH QRT DST 001318840932",
+        "debit": null,
+        "credit": 1101.23,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "17/06/2024",
+        "description": "Direct Credit 531547 NABPH JUN DIS PH244/00811434",
+        "debit": null,
+        "credit": 1384.41,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "17/06/2024",
+        "description": "Direct Credit 234619 SUNPH QRT DST 001318687840",
+        "debit": null,
+        "credit": 385.02,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "20/06/2024",
+        "description": "Direct Credit 397204 CAP NOTES 7 DIST C7J24/00905298",
+        "debit": null,
+        "credit": 859.67,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "24/06/2024",
+        "description": "Direct Credit 634934 WBCPL DST 001319073695",
+        "debit": null,
+        "credit": 1368.1,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "25/06/2024",
+        "description": "Direct Credit 250556 WBC ITM DIV 001318357153",
+        "debit": null,
+        "credit": 1350.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend"
+      },
+      {
+        "date": "27/06/2024",
+        "description": "Direct Credit 513270 GQG DIV 001319007442",
+        "debit": null,
+        "credit": 648.6,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend"
+      },
+      {
+        "date": "01/07/2024",
+        "description": "Credit Interest",
+        "debit": null,
+        "credit": 72.68,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for interest credit"
+      },
+      {
+        "date": "02/07/2024",
+        "description": "Direct Credit 077669 MQG FNL DIV 001318575431",
+        "debit": null,
+        "credit": 1925.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend (MQG shown in portfolio but not this specific payment)"
+      },
+      {
+        "date": "02/07/2024",
+        "description": "Direct Debit 625407 FinClear Service 3264373",
+        "debit": 24107.58,
+        "credit": null,
+        "type": "debit",
+        "status": "matched",
+        "matched_document": "Portfolio Valuation at 01.07.24.pdf",
+        "reason": "Matches buy transaction on 02/07/2024 in Ord Minnett for WOW"
+      },
+      {
+        "date": "03/07/2024",
+        "description": "Direct Credit 531532 NAB INTERIM DIV DV251/01064980",
+        "debit": null,
+        "credit": 2520.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend"
+      },
+      {
+        "date": "03/07/2024",
+        "description": "Direct Debit 625407 FinClear Service 3266623",
+        "debit": 24001.54,
+        "credit": null,
+        "type": "debit",
+        "status": "matched",
+        "matched_document": "Portfolio Valuation at 01.07.24.pdf",
+        "reason": "Matches buy transaction on 03/07/2024 in Ord Minnett for WOW"
+      },
+      {
+        "date": "08/07/2024",
+        "description": "Direct Credit 607019 MCP MASTER INCOM cm-2203142",
+        "debit": null,
+        "credit": 194.6,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this income"
+      },
+      {
+        "date": "16/07/2024",
+        "description": "Direct Credit 513275 RBTZ DST 001319960466",
+        "debit": null,
+        "credit": 1514.77,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "16/07/2024",
+        "description": "Direct Credit 458106 TECH PAYMENT JUL24/00802338",
+        "debit": null,
+        "credit": 2230.87,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this payment"
+      },
+      {
+        "date": "16/07/2024",
+        "description": "Direct Credit 458106 NDIA ETFS DIS JUL24/00801038",
+        "debit": null,
+        "credit": 213.34,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "16/07/2024",
+        "description": "Direct Credit 458106 ACDC PAYMENT JUL24/00805730",
+        "debit": null,
+        "credit": 798.49,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this payment (ACDC in portfolio but not this specific amount)"
+      },
+      {
+        "date": "01/08/2024",
+        "description": "Credit Interest",
+        "debit": null,
+        "credit": 18.7,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for interest credit"
+      },
+      {
+        "date": "08/08/2024",
+        "description": "Direct Credit 607019 MCP MASTER INCOM cm-2325599",
+        "debit": null,
+        "credit": 184.8,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this income"
+      },
+      {
+        "date": "13/08/2024",
+        "description": "Direct Credit 396297 TCL DISTRIBUTION AUF24/00852366",
+        "debit": null,
+        "credit": 565.88,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "27/08/2024",
+        "description": "Direct Credit 255730 METCASH LIMITED S00092695018",
+        "debit": null,
+        "credit": 565.25,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend"
+      },
+      {
+        "date": "29/08/2024",
+        "description": "Direct Credit 480318 MGR DST 001320797620",
+        "debit": null,
+        "credit": 840.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution (MGR in portfolio)"
+      },
+      {
+        "date": "30/08/2024",
+        "description": "Direct Credit 089531 GPT DST 001320673734",
+        "debit": null,
+        "credit": 1200.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution (GPT in portfolio)"
+      },
+      {
+        "date": "30/08/2024",
+        "description": "Direct Credit 323551 CHC DST 001320849053",
+        "debit": null,
+        "credit": 920.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution (CHC in portfolio)"
+      },
+      {
+        "date": "01/09/2024",
+        "description": "Credit Interest",
+        "debit": null,
+        "credit": 20.5,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for interest credit"
+      },
+      {
+        "date": "09/09/2024",
+        "description": "Direct Credit 607019 MCP MASTER INCOM cm-2433880",
+        "debit": null,
+        "credit": 189.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this income"
+      },
+      {
+        "date": "16/09/2024",
+        "description": "Direct Credit 640006 PERLS XV DST 001325024410",
+        "debit": null,
+        "credit": 1592.5,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "16/09/2024",
+        "description": "Direct Credit 660166 BENPH QRT DST 001324893256",
+        "debit": null,
+        "credit": 1069.5,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "17/09/2024",
+        "description": "Direct Credit 531547 NABPH SEP DIS PH251/00811231",
+        "debit": null,
+        "credit": 1402.59,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "17/09/2024",
+        "description": "Direct Credit 234619 SUNPH QRT DST 001323617215",
+        "debit": null,
+        "credit": 390.15,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "20/09/2024",
+        "description": "Direct Credit 397204 CAP NOTES 7 DIST C7S24/00905221",
+        "debit": null,
+        "credit": 863.89,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "20/09/2024",
+        "description": "Direct Credit 458106 BLX DIVIDEND SEP24/00800941",
+        "debit": null,
+        "credit": 950.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend (BLX in portfolio)"
+      },
+      {
+        "date": "23/09/2024",
+        "description": "Direct Credit 634934 WBCPL DST 001325574312",
+        "debit": null,
+        "credit": 1374.9,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "25/09/2024",
+        "description": "Direct Credit 407459 REG DIV 001325443872",
+        "debit": null,
+        "credit": 664.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend"
+      },
+      {
+        "date": "25/09/2024",
+        "description": "Direct Credit 458106 SANTOS DIVIDEND AUI24/00893771",
+        "debit": null,
+        "credit": 810.41,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend"
+      },
+      {
+        "date": "26/09/2024",
+        "description": "Direct Credit 513270 GQG DIV 001325587607",
+        "debit": null,
+        "credit": 700.94,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend (GQG in portfolio)"
+      },
+      {
+        "date": "26/09/2024",
+        "description": "Direct Credit 629786 TLS FNL DIV 001322881434",
+        "debit": null,
+        "credit": 1080.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend"
+      },
+      {
+        "date": "26/09/2024",
+        "description": "Direct Credit 123397 EVT PAYMENT SEP24/00803831",
+        "debit": null,
+        "credit": 400.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this payment (EVT in portfolio)"
+      },
+      {
+        "date": "26/09/2024",
+        "description": "Direct Credit 326860 SRG DIVIDEND SEP24/00803127",
+        "debit": null,
+        "credit": 1250.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend"
+      },
+      {
+        "date": "26/09/2024",
+        "description": "Direct Credit 458106 RIO TINTO LTD AUI24/00163780",
+        "debit": null,
+        "credit": 1570.19,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend"
+      },
+      {
+        "date": "27/09/2024",
+        "description": "Direct Credit 270211 MMS PAYMENT SEP24/00804971",
+        "debit": null,
+        "credit": 1560.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this payment (MMS in portfolio)"
+      },
+      {
+        "date": "30/09/2024",
+        "description": "Direct Credit 516612 WOW FNL DIV 001325859745",
+        "debit": null,
+        "credit": 1658.7,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend (WOW purchased in portfolio)"
+      },
+      {
+        "date": "01/10/2024",
+        "description": "Credit Interest",
+        "debit": null,
+        "credit": 33.36,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for interest credit"
+      },
+      {
+        "date": "02/10/2024",
+        "description": "Direct Credit 458106 CSL LTD DIVIDEND AUF24/01012098",
+        "debit": null,
+        "credit": 295.69,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend (CSL in portfolio)"
+      },
+      {
+        "date": "03/10/2024",
+        "description": "Direct Credit 458106 BHP GROUP DIV AF390/00408163",
+        "debit": null,
+        "credit": 1331.98,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend (BHP in portfolio)"
+      },
+      {
+        "date": "03/10/2024",
+        "description": "Direct Credit 458106 WOODSIDE INT24/00883944",
+        "debit": null,
+        "credit": 220.34,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend"
+      },
+      {
+        "date": "04/10/2024",
+        "description": "Direct Credit 458106 LYCOPODIUM LTD OCT24/00802029",
+        "debit": null,
+        "credit": 3200.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend (LYL in portfolio)"
+      },
+      {
+        "date": "07/10/2024",
+        "description": "Direct Credit 629649 VNT DIVIDEND OCT24/00805141",
+        "debit": null,
+        "credit": 2118.5,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend"
+      },
+      {
+        "date": "09/10/2024",
+        "description": "Direct Credit 607019 MCP MASTER INCOM cm-2545008",
+        "debit": null,
+        "credit": 189.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this income"
+      },
+      {
+        "date": "10/10/2024",
+        "description": "Direct Credit 624300 EDV DIV 001324154687",
+        "debit": null,
+        "credit": 187.5,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend (EDV in portfolio)"
+      },
+      {
+        "date": "15/10/2024",
+        "description": "Direct Credit 219036 QUBE DIVIDEND OCT24/00811505",
+        "debit": null,
+        "credit": 875.5,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend"
+      },
+      {
+        "date": "17/10/2024",
+        "description": "Direct Credit 458106 SOUTH32 DIVIDEND AF016/00981943",
+        "debit": null,
+        "credit": 275.72,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend"
+      },
+      {
+        "date": "01/11/2024",
+        "description": "Credit Interest",
+        "debit": null,
+        "credit": 68.54,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for interest credit"
+      },
+      {
+        "date": "08/11/2024",
+        "description": "Direct Credit 607019 MCP MASTER INCOM cm-2656472",
+        "debit": null,
+        "credit": 184.8,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this income"
+      },
+      {
+        "date": "11/11/2024",
+        "description": "Direct Debit 625407 FinClear Service 3460857",
+        "debit": 20563.34,
+        "credit": null,
+        "type": "debit",
+        "status": "matched",
+        "matched_document": "Portfolio Valuation at 01.07.24.pdf",
+        "reason": "Matches buy transaction on 11/11/2024 in Ord Minnett for MPL"
+      },
+      {
+        "date": "12/11/2024",
+        "description": "Direct Debit 625407 FinClear Service 3462990",
+        "debit": 20079.18,
+        "credit": null,
+        "type": "debit",
+        "status": "matched",
+        "matched_document": "Portfolio Valuation at 01.07.24.pdf",
+        "reason": "Matches buy transaction on 08/11/2024 in Ord Minnett for SUBD"
+      },
+      {
+        "date": "01/12/2024",
+        "description": "Credit Interest",
+        "debit": null,
+        "credit": 25.65,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for interest credit"
+      },
+      {
+        "date": "09/12/2024",
+        "description": "Direct Credit 607019 MCP MASTER INCOM cm-2769612",
+        "debit": null,
+        "credit": 176.4,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this income"
+      },
+      {
+        "date": "16/12/2024",
+        "description": "Direct Credit 640006 PERLS XV DST 001328123068",
+        "debit": null,
+        "credit": 1585.13,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "16/12/2024",
+        "description": "Direct Credit 531532 NAB FINAL DIV DV252/01053593",
+        "debit": null,
+        "credit": 2550.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend"
+      },
+      {
+        "date": "16/12/2024",
+        "description": "Direct Credit 660166 BENPH DST 001328031496",
+        "debit": null,
+        "credit": 1075.43,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "17/12/2024",
+        "description": "Direct Credit 535912 SUBD DST 001328016085",
+        "debit": null,
+        "credit": 98.75,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution (SUBD purchased later)"
+      },
+      {
+        "date": "17/12/2024",
+        "description": "Direct Credit 531547 NABPH DEC DIS PH252/00811001",
+        "debit": null,
+        "credit": 1395.62,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "17/12/2024",
+        "description": "Direct Credit 234619 SUNPH QRT DST 001327821939",
+        "debit": null,
+        "credit": 388.35,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "17/12/2024",
+        "description": "Direct Credit 077669 MQG ITM DIV 001327488727",
+        "debit": null,
+        "credit": 1300.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend (MQG in portfolio)"
+      },
+      {
+        "date": "19/12/2024",
+        "description": "Direct Credit 250556 WBC FNL DIV 001327163386",
+        "debit": null,
+        "credit": 1140.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend"
+      },
+      {
+        "date": "20/12/2024",
+        "description": "Direct Credit 513270 GQG DIV 001327748235",
+        "debit": null,
+        "credit": 741.55,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend (GQG in portfolio)"
+      },
+      {
+        "date": "20/12/2024",
+        "description": "Direct Credit 397204 CAP NOTES 7 DIST C7D24/00905134",
+        "debit": null,
+        "credit": 868.47,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "23/12/2024",
+        "description": "Direct Credit 634934 WBCPL DST 001328206896",
+        "debit": null,
+        "credit": 1366.2,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "01/01/2025",
+        "description": "Credit Interest",
+        "debit": null,
+        "credit": 12.43,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for interest credit"
+      },
+      {
+        "date": "09/01/2025",
+        "description": "Direct Credit 607019 MCP MASTER INCOM cm-2867109",
+        "debit": null,
+        "credit": 179.2,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this income"
+      },
+      {
+        "date": "23/01/2025",
+        "description": "Direct Credit 535912 SUBD DST 001329209549",
+        "debit": null,
+        "credit": 98.75,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "29/01/2025",
+        "description": "Direct Credit 255730 METCASH LIMITED S00092695018",
+        "debit": null,
+        "credit": 565.25,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend"
+      },
+      {
+        "date": "01/02/2025",
+        "description": "Credit Interest",
+        "debit": null,
+        "credit": 24.41,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for interest credit"
+      },
+      {
+        "date": "10/02/2025",
+        "description": "Direct Credit 607019 MCP MASTER INCOM cm-2971134",
+        "debit": null,
+        "credit": 191.8,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this income"
+      },
+      {
+        "date": "18/02/2025",
+        "description": "Direct Credit 535912 SUBD DST 001329825416",
+        "debit": null,
+        "credit": 98.75,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "25/02/2025",
+        "description": "Direct Credit 396297 TCL DISTRIBUTION AUI25/00849818",
+        "debit": null,
+        "credit": 565.88,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "27/02/2025",
+        "description": "Direct Credit 480318 MGR DST 001329854693",
+        "debit": null,
+        "credit": 630.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution (MGR in portfolio)"
+      },
+      {
+        "date": "28/02/2025",
+        "description": "Direct Credit 089531 GPT DST 001329589059",
+        "debit": null,
+        "credit": 1200.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution (GPT in portfolio)"
+      },
+      {
+        "date": "28/02/2025",
+        "description": "Direct Credit 323551 CHC DST 001329915174",
+        "debit": null,
+        "credit": 936.8,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution (CHC in portfolio)"
+      },
+      {
+        "date": "01/03/2025",
+        "description": "Credit Interest",
+        "debit": null,
+        "credit": 23.52,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for interest credit"
+      },
+      {
+        "date": "10/03/2025",
+        "description": "Direct Credit 607019 MCP MASTER INCOM cm-3068038",
+        "debit": null,
+        "credit": 168.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this income"
+      },
+      {
+        "date": "17/03/2025",
+        "description": "Direct Credit 640006 PERLS XV DST 001333224772",
+        "debit": null,
+        "credit": 1577.13,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "17/03/2025",
+        "description": "Direct Credit 234619 SUNPH QRT DST 001332468859",
+        "debit": null,
+        "credit": 386.58,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "17/03/2025",
+        "description": "Direct Credit 531547 NABPH MAR DIS PH253/00810857",
+        "debit": null,
+        "credit": 1388.65,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "17/03/2025",
+        "description": "Direct Credit 669534 BENPH DST 001332592837",
+        "debit": null,
+        "credit": 1081.13,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "18/03/2025",
+        "description": "Direct Credit 535912 SUBD DST 001332915352",
+        "debit": null,
+        "credit": 98.75,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "20/03/2025",
+        "description": "Direct Credit 123397 EVT PAYMENT MAR25/00803691",
+        "debit": null,
+        "credit": 320.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this payment (EVT in portfolio)"
+      },
+      {
+        "date": "20/03/2025",
+        "description": "Direct Credit 397204 CAP NOTES 7 DIST C7M25/00905024",
+        "debit": null,
+        "credit": 862.37,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "21/03/2025",
+        "description": "Direct Credit 458106 BLX DIVIDEND MAR25/00800917",
+        "debit": null,
+        "credit": 1025.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend (BLX in portfolio)"
+      },
+      {
+        "date": "24/03/2025",
+        "description": "Direct Credit 634934 WBCPL DST 001334673701",
+        "debit": null,
+        "credit": 1355.2,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "26/03/2025",
+        "description": "Direct Credit 458106 SANTOS DIVIDEND AUF24/00892947",
+        "debit": null,
+        "credit": 692.7,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend"
+      },
+      {
+        "date": "26/03/2025",
+        "description": "Direct Credit 458106 MEDIBANK DIV MAR25/00959629",
+        "debit": null,
+        "credit": 429.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend (MPL in portfolio)"
+      },
+      {
+        "date": "27/03/2025",
+        "description": "Direct Credit 513270 GQG DIV 001332636428",
+        "debit": null,
+        "credit": 843.88,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend (GQG in portfolio)"
+      },
+      {
+        "date": "27/03/2025",
+        "description": "Direct Credit 458106 BHP GROUP DIV AI391/00401481",
+        "debit": null,
+        "credit": 949.12,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend (BHP in portfolio)"
+      },
+      {
+        "date": "28/03/2025",
+        "description": "Direct Credit 629786 TLS ITM DIV 001331737382",
+        "debit": null,
+        "credit": 1140.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend"
+      },
+      {
+        "date": "28/03/2025",
+        "description": "Direct Credit 270211 MMS PAYMENT MAR25/00805674",
+        "debit": null,
+        "credit": 1420.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this payment (MMS in portfolio)"
+      },
+      {
+        "date": "01/04/2025",
+        "description": "Credit Interest",
+        "debit": null,
+        "credit": 35.14,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for interest credit"
+      },
+      {
+        "date": "02/04/2025",
+        "description": "Direct Credit 458106 WOODSIDE FIN24/00874130",
+        "debit": null,
+        "credit": 183.31,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend"
+      },
+      {
+        "date": "03/04/2025",
+        "description": "Direct Credit 458106 SOUTH32 DIVIDEND AI017/00973486",
+        "debit": null,
+        "credit": 323.84,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend"
+      },
+      {
+        "date": "03/04/2025",
+        "description": "Direct Credit 458106 LYCOPODIUM LTD MAR25/00802066",
+        "debit": null,
+        "credit": 800.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend (LYL in portfolio)"
+      },
+      {
+        "date": "07/04/2025",
+        "description": "Direct Credit 629649 VNT DIVIDEND APR25/00804937",
+        "debit": null,
+        "credit": 2408.5,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend"
+      },
+      {
+        "date": "08/04/2025",
+        "description": "Direct Credit 607019 MCP MASTER INCOM cm-3152959",
+        "debit": null,
+        "credit": 186.2,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this income"
+      },
+      {
+        "date": "09/04/2025",
+        "description": "Direct Credit 458106 CSL LTD DIVIDEND AUI25/01010981",
+        "debit": null,
+        "credit": 281.19,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend (CSL in portfolio)"
+      },
+      {
+        "date": "10/04/2025",
+        "description": "Direct Credit 407459 REG DIV 001334682632",
+        "debit": null,
+        "credit": 809.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend"
+      },
+      {
+        "date": "10/04/2025",
+        "description": "Direct Credit 624300 EDV DIV 001333765349",
+        "debit": null,
+        "credit": 312.5,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend (EDV in portfolio)"
+      },
+      {
+        "date": "10/04/2025",
+        "description": "Direct Credit 219036 QUBE DIVIDEND APR25/00811048",
+        "debit": null,
+        "credit": 697.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend"
+      },
+      {
+        "date": "11/04/2025",
+        "description": "Direct Credit 326860 SRG DIVIDEND APR25/00803154",
+        "debit": null,
+        "credit": 1250.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend"
+      },
+      {
+        "date": "16/04/2025",
+        "description": "Direct Credit 535912 SUBD DST 001336077391",
+        "debit": null,
+        "credit": 94.8,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "17/04/2025",
+        "description": "Direct Credit 458106 RIO TINTO LTD AUF24/00162937",
+        "debit": null,
+        "credit": 2227.91,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend"
+      },
+      {
+        "date": "23/04/2025",
+        "description": "Direct Credit 516612 WOW ITM DIV 001333330132",
+        "debit": null,
+        "credit": 666.9,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend (WOW in portfolio)"
+      },
+      {
+        "date": "01/05/2025",
+        "description": "Credit Interest",
+        "debit": null,
+        "credit": 58.17,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for interest credit"
+      },
+      {
+        "date": "08/05/2025",
+        "description": "Direct Credit 607019 MCP MASTER INCOM cm-3298032",
+        "debit": null,
+        "credit": 177.8,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this income"
+      },
+      {
+        "date": "16/05/2025",
+        "description": "Direct Credit 535912 SUBD DST 001336499424",
+        "debit": null,
+        "credit": 94.8,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "28/05/2025",
+        "description": "Direct Credit 012721 ATO ATO003000021427786",
+        "debit": null,
+        "credit": 5674.46,
+        "type": "credit",
+        "status": "matched",
+        "matched_document": "Income Tax.pdf",
+        "reason": "Matches EFT refund for Income Tax shown in the document"
+      },
+      {
+        "date": "30/05/2025",
+        "description": "Direct Credit 667459 ITF Dropsuite Li cm-3375317",
+        "debit": null,
+        "credit": 59000.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this credit (related to DRO sale but amount does not match)"
+      },
+      {
+        "date": "01/06/2025",
+        "description": "Credit Interest",
+        "debit": null,
+        "credit": 71.39,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for interest credit"
+      },
+      {
+        "date": "10/06/2025",
+        "description": "Direct Credit 607019 MCP MASTER INCOM cm-3417612",
+        "debit": null,
+        "credit": 201.6,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this income"
+      },
+      {
+        "date": "16/06/2025",
+        "description": "Direct Credit 640006 PERLS XV DST 001337622521",
+        "debit": null,
+        "credit": 1535.88,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "16/06/2025",
+        "description": "Direct Credit 669534 BENPH DST 001337429590",
+        "debit": null,
+        "credit": 1035.83,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "17/06/2025",
+        "description": "Direct Credit 531547 NABPH JUN DIS PH254/00810452",
+        "debit": null,
+        "credit": 1356.73,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "17/06/2025",
+        "description": "Direct Credit 234619 SUNPH QRT DST 001337385353",
+        "debit": null,
+        "credit": 376.53,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "18/06/2025",
+        "description": "Direct Credit 535912 SUBD DST 001337593215",
+        "debit": null,
+        "credit": 90.85,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "20/06/2025",
+        "description": "Direct Credit 397204 CAP NOTES 7 DIST C7J25/00904871",
+        "debit": null,
+        "credit": 841.65,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "23/06/2025",
+        "description": "Direct Credit 634934 WBCPL DST 001337698299",
+        "debit": null,
+        "credit": 1326.3,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "27/06/2025",
+        "description": "Direct Credit 513270 GQG DIV 001337543539",
+        "debit": null,
+        "credit": 822.12,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend (GQG in portfolio)"
+      },
+      {
+        "date": "27/06/2025",
+        "description": "Direct Credit 250556 WBC ITM DIV 001336726894",
+        "debit": null,
+        "credit": 1140.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend"
+      },
+      {
+        "date": "01/07/2025",
+        "description": "Credit Interest",
+        "debit": null,
+        "credit": 145.92,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for interest credit"
+      },
+      {
+        "date": "02/07/2025",
+        "description": "Direct Credit 531532 NAB INTERIM DIV DV261/01047329",
+        "debit": null,
+        "credit": 2550.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend"
+      },
+      {
+        "date": "02/07/2025",
+        "description": "Direct Credit 077669 MQG FNL DIV 001337085263",
+        "debit": null,
+        "credit": 1950.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend (MQG in portfolio)"
+      },
+      {
+        "date": "08/07/2025",
+        "description": "Direct Credit 607019 MCP MASTER INCOM cm-3519018",
+        "debit": null,
+        "credit": 179.2,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this income"
+      },
+      {
+        "date": "10/07/2025",
+        "description": "Direct Debit 625407 FinClear Service 3815994",
+        "debit": 60360.79,
+        "credit": null,
+        "type": "debit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No matching buy transaction in provided Ord Minnett records"
+      },
+      {
+        "date": "16/07/2025",
+        "description": "Direct Credit 513275 RBTZ DST 001339100368",
+        "debit": null,
+        "credit": 633.19,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "16/07/2025",
+        "description": "Direct Credit 458106 TECH PAYMENT JUL25/00802059",
+        "debit": null,
+        "credit": 3610.84,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this payment"
+      },
+      {
+        "date": "16/07/2025",
+        "description": "Direct Credit 458106 ACDC PAYMENT JUL25/00804398",
+        "debit": null,
+        "credit": 167.64,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this payment (ACDC in portfolio)"
+      },
+      {
+        "date": "16/07/2025",
+        "description": "Direct Credit 458106 NDIA ETFS DIS JUL25/00801165",
+        "debit": null,
+        "credit": 354.73,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "25/07/2025",
+        "description": "Direct Credit 535912 SUBD DST 001339234856",
+        "debit": null,
+        "credit": 90.85,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "01/08/2025",
+        "description": "Credit Interest",
+        "debit": null,
+        "credit": 109.76,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for interest credit"
+      },
+      {
+        "date": "08/08/2025",
+        "description": "Direct Credit 607019 MCP MASTER INCOM cm-3669931",
+        "debit": null,
+        "credit": 180.6,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this income"
+      },
+      {
+        "date": "18/08/2025",
+        "description": "Direct Credit 535912 SUBD DST 001339672342",
+        "debit": null,
+        "credit": 365.7,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "22/08/2025",
+        "description": "Direct Credit 396297 TCL DISTRIBUTION AUF25/00845941",
+        "debit": null,
+        "credit": 583.22,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution"
+      },
+      {
+        "date": "26/08/2025",
+        "description": "Direct Debit 625407 FinClear Service 3890807",
+        "debit": 45134.37,
+        "credit": null,
+        "type": "debit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No matching buy/sell transaction in provided Ord Minnett records"
+      },
+      {
+        "date": "27/08/2025",
+        "description": "Direct Credit 255730 METCASH LIMITED S00092695018",
+        "debit": null,
+        "credit": 631.75,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this dividend"
+      },
+      {
+        "date": "28/08/2025",
+        "description": "Direct Credit 480318 MGR DST 001339796632",
+        "debit": null,
+        "credit": 630.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution (MGR in portfolio)"
+      },
+      {
+        "date": "28/08/2025",
+        "description": "Direct Debit 625407 FinClear Service 3895874",
+        "debit": 20208.42,
+        "credit": null,
+        "type": "debit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No matching buy/sell transaction in provided Ord Minnett records"
+      },
+      {
+        "date": "29/08/2025",
+        "description": "Direct Credit 089531 GPT DST 001339588049",
+        "debit": null,
+        "credit": 1200.0,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution (GPT in portfolio)"
+      },
+      {
+        "date": "29/08/2025",
+        "description": "Direct Credit 323551 CHC DST 001339859818",
+        "debit": null,
+        "credit": 975.2,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document matches this distribution (CHC in portfolio)"
+      }
+    ]
+  },
+  "06200016743999": {
+    "account_number": "06200016743999",
+    "account_name": "CBA Direct Investment Bank Account",
+    "transactions": [
+      {
+        "date": "01/06/2024",
+        "description": "Credit Interest",
+        "debit": null,
+        "credit": 2.34,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for interest credit"
+      },
+      {
+        "date": "17/06/2024",
+        "description": "Direct Debit 507156 IGNITIONPAY QUANTIPHY_QJD9sogn",
+        "debit": 270.41,
+        "credit": null,
+        "type": "debit",
+        "status": "matched",
+        "matched_document": "Accountancy - $270.41.pdf",
+        "reason": "Matches the accountancy invoice for $270.41"
+      },
+      {
+        "date": "01/07/2024",
+        "description": "Credit Interest",
+        "debit": null,
+        "credit": 2.17,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for interest credit"
+      },
+      {
+        "date": "15/07/2024",
+        "description": "Direct Debit 507156 IGNITIONPAY QUANTIPHY_QTRtWACN",
+        "debit": 270.41,
+        "credit": null,
+        "type": "debit",
+        "status": "matched",
+        "matched_document": "Accountancy - $270.41.pdf",
+        "reason": "Matches recurring accountancy fee"
+      },
+      {
+        "date": "01/08/2024",
+        "description": "Credit Interest",
+        "debit": null,
+        "credit": 2.16,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for interest credit"
+      },
+      {
+        "date": "15/08/2024",
+        "description": "Direct Debit 507156 IGNITIONPAY QUANTIPHY_Qf3uUumy",
+        "debit": 270.41,
+        "credit": null,
+        "type": "debit",
+        "status": "matched",
+        "matched_document": "Accountancy - $270.41.pdf",
+        "reason": "Matches recurring accountancy fee"
+      },
+      {
+        "date": "01/09/2024",
+        "description": "Credit Interest",
+        "debit": null,
+        "credit": 2.08,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for interest credit"
+      },
+      {
+        "date": "16/09/2024",
+        "description": "Direct Debit 507156 IGNITIONPAY QUANTIPHY_Qqfv7eAT",
+        "debit": 270.41,
+        "credit": null,
+        "type": "debit",
+        "status": "matched",
+        "matched_document": "Accountancy - $270.41.pdf",
+        "reason": "Matches recurring accountancy fee"
+      },
+      {
+        "date": "01/10/2024",
+        "description": "Credit Interest",
+        "debit": null,
+        "credit": 1.94,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for interest credit"
+      },
+      {
+        "date": "15/10/2024",
+        "description": "Direct Debit 507156 IGNITIONPAY QUANTIPHY_R1ufvATS",
+        "debit": 270.41,
+        "credit": null,
+        "type": "debit",
+        "status": "matched",
+        "matched_document": "Accountancy - $270.41.pdf",
+        "reason": "Matches recurring accountancy fee"
+      },
+      {
+        "date": "01/11/2024",
+        "description": "Credit Interest",
+        "debit": null,
+        "credit": 1.92,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for interest credit"
+      },
+      {
+        "date": "15/11/2024",
+        "description": "Direct Debit 507156 IGNITIONPAY QUANTIPHY_RDX5wTyr",
+        "debit": 270.41,
+        "credit": null,
+        "type": "debit",
+        "status": "matched",
+        "matched_document": "Accountancy - $270.41.pdf",
+        "reason": "Matches recurring accountancy fee"
+      },
+      {
+        "date": "23/11/2024",
+        "description": "ASIC CommBank app BPAY 1 2296022368049 2296022368049",
+        "debit": 65.0,
+        "credit": null,
+        "type": "debit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for ASIC fee"
+      },
+      {
+        "date": "01/12/2024",
+        "description": "Credit Interest",
+        "debit": null,
+        "credit": 1.77,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for interest credit"
+      },
+      {
+        "date": "16/12/2024",
+        "description": "Direct Debit 507156 IGNITIONPAY QUANTIPHY_RPncXKzF",
+        "debit": 270.41,
+        "credit": null,
+        "type": "debit",
+        "status": "matched",
+        "matched_document": "Accountancy - $270.41.pdf",
+        "reason": "Matches recurring accountancy fee"
+      },
+      {
+        "date": "01/01/2025",
+        "description": "Credit Interest",
+        "debit": null,
+        "credit": 1.74,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for interest credit"
+      },
+      {
+        "date": "15/01/2025",
+        "description": "Direct Debit 507156 IGNITIONPAY QUANTIPHY_RaQGGsj7",
+        "debit": 270.41,
+        "credit": null,
+        "type": "debit",
+        "status": "matched",
+        "matched_document": "Accountancy - $270.41.pdf",
+        "reason": "Matches recurring accountancy fee"
+      },
+      {
+        "date": "01/02/2025",
+        "description": "Credit Interest",
+        "debit": null,
+        "credit": 1.66,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for interest credit"
+      },
+      {
+        "date": "17/02/2025",
+        "description": "Direct Debit 507156 IGNITIONPAY QUANTIPHY_Rm1bHsaX",
+        "debit": 270.41,
+        "credit": null,
+        "type": "debit",
+        "status": "matched",
+        "matched_document": "Accountancy - $270.41.pdf",
+        "reason": "Matches recurring accountancy fee"
+      },
+      {
+        "date": "01/03/2025",
+        "description": "Credit Interest",
+        "debit": null,
+        "credit": 1.41,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for interest credit"
+      },
+      {
+        "date": "17/03/2025",
+        "description": "Direct Debit 507156 IGNITIONPAY QUANTIPHY_RwUBbPdc",
+        "debit": 270.41,
+        "credit": null,
+        "type": "debit",
+        "status": "matched",
+        "matched_document": "Accountancy - $270.41.pdf",
+        "reason": "Matches recurring accountancy fee"
+      },
+      {
+        "date": "01/04/2025",
+        "description": "Credit Interest",
+        "debit": null,
+        "credit": 0.86,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for interest credit"
+      },
+      {
+        "date": "15/04/2025",
+        "description": "Direct Debit 507156 IGNITIONPAY QUANTIPHY_S84rKGt5",
+        "debit": 270.41,
+        "credit": null,
+        "type": "debit",
+        "status": "matched",
+        "matched_document": "Accountancy - $270.41.pdf",
+        "reason": "Matches recurring accountancy fee"
+      },
+      {
+        "date": "01/05/2025",
+        "description": "Credit Interest",
+        "debit": null,
+        "credit": 0.78,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for interest credit"
+      },
+      {
+        "date": "15/05/2025",
+        "description": "Direct Debit 507156 IGNITIONPAY QUANTIPHY_SJKTVSPf",
+        "debit": 270.41,
+        "credit": null,
+        "type": "debit",
+        "status": "matched",
+        "matched_document": "Accountancy - $270.41.pdf",
+        "reason": "Matches recurring accountancy fee"
+      },
+      {
+        "date": "21/05/2025",
+        "description": "Transfer To Aquila Super Pty Lim CommBank App Inv 87540",
+        "debit": 517.0,
+        "credit": null,
+        "type": "debit",
+        "status": "matched",
+        "matched_document": "Audit Invoice.pdf",
+        "reason": "Matches the audit invoice for $517.00"
+      },
+      {
+        "date": "01/06/2025",
+        "description": "Credit Interest",
+        "debit": null,
+        "credit": 0.71,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for interest credit"
+      },
+      {
+        "date": "16/06/2025",
+        "description": "Direct Debit 507156 IGNITIONPAY QUANTIPHY_SUwU5Emr",
+        "debit": 270.41,
+        "credit": null,
+        "type": "debit",
+        "status": "matched",
+        "matched_document": "Accountancy - $270.41.pdf",
+        "reason": "Matches recurring accountancy fee"
+      },
+      {
+        "date": "01/07/2025",
+        "description": "Credit Interest",
+        "debit": null,
+        "credit": 0.31,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for interest credit"
+      },
+      {
+        "date": "15/07/2025",
+        "description": "Direct Debit 507156 IGNITIONPAY QUANTIPHY_SgBGMQHY",
+        "debit": 270.41,
+        "credit": null,
+        "type": "debit",
+        "status": "matched",
+        "matched_document": "Accountancy - $270.41.pdf",
+        "reason": "Matches recurring accountancy fee"
+      },
+      {
+        "date": "01/08/2025",
+        "description": "Credit Interest",
+        "debit": null,
+        "credit": 0.29,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for interest credit"
+      },
+      {
+        "date": "15/08/2025",
+        "description": "Direct Debit 507156 IGNITIONPAY QUANTIPHY_SrnFi49t",
+        "debit": 270.41,
+        "credit": null,
+        "type": "debit",
+        "status": "matched",
+        "matched_document": "Accountancy - $270.41.pdf",
+        "reason": "Matches recurring accountancy fee"
+      },
+      {
+        "date": "01/09/2025",
+        "description": "Credit Interest",
+        "debit": null,
+        "credit": 0.23,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for interest credit"
+      },
+      {
+        "date": "15/09/2025",
+        "description": "Direct Debit 507156 IGNITIONPAY QUANTIPHY_T3S3VVAL",
+        "debit": 270.41,
+        "credit": null,
+        "type": "debit",
+        "status": "matched",
+        "matched_document": "Accountancy - $270.41.pdf",
+        "reason": "Matches recurring accountancy fee"
+      },
+      {
+        "date": "01/10/2025",
+        "description": "Credit Interest",
+        "debit": null,
+        "credit": 0.12,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for interest credit"
+      },
+      {
+        "date": "15/10/2025",
+        "description": "Direct Debit 507156 IGNITIONPAY QUANTIPHY_TEfVxWee",
+        "debit": 270.41,
+        "credit": null,
+        "type": "debit",
+        "status": "matched",
+        "matched_document": "Accountancy - $270.41.pdf",
+        "reason": "Matches recurring accountancy fee"
+      },
+      {
+        "date": "01/11/2025",
+        "description": "Credit Interest",
+        "debit": null,
+        "credit": 0.14,
+        "type": "credit",
+        "status": "unmatched",
+        "matched_document": null,
+        "reason": "No supporting document for interest credit"
+      },
+      {
+        "date": "17/11/2025",
+        "description": "Direct Debit 507156 IGNITIONPAY QUANTIPHY_TQHNq8aw",
+        "debit": 270.41,
+        "credit": null,
+        "type": "debit",
+        "status": "matched",
+        "matched_document": "Accountancy - $270.41.pdf",
+        "reason": "Matches recurring accountancy fee"
+      }
+    ]
+  },
+  "1160944": {
+    "account_number": "1160944",
+    "account_name": "Ord Minnett Cash Account",
+    "transactions": [
+      {
+        "date": "01/07/2024",
+        "description": "Buy 710 WOW @ 33.5700",
+        "debit": 24001.54,
+        "credit": null,
+        "type": "debit",
+        "status": "matched",
+        "matched_document": "Portfolio Valuation at 01.07.24.pdf",
+        "reason": "Matches purchase of WOW shares reflected in the 01.07.24 valuation"
+      },
+      {
+        "date": "02/07/2024",
+        "description": "EFT BSB:067167 Acc:20642566",
+        "debit": 24107.58,
+        "credit": null,
+        "type": "debit",
+        "status": "matched",
+        "matched_document": "Portfolio Valuation at 01.07.24.pdf",
+        "reason": "Internal transfer from CBA Accelerator; funds used for investment purchases shown in portfolio"
+      },
+      {
+        "date": "03/07/2024",
+        "description": "EFT BSB:067167 Acc:20642566",
+        "debit": 24001.54,
+        "credit": null,
+        "type": "debit",
+        "status": "matched",
+        "matched_document": "Portfolio Valuation at 01.07.24.pdf",
+        "reason": "Internal transfer from CBA Accelerator; funds used for investment purchases shown in portfolio"
+      },
+      {
+        "date": "07/11/2024",
+        "description": "Sell 30000 DRO @ 0.9351",
+        "debit": null,
+        "credit": 27856.13,
+        "type": "credit",
+        "status": "matched",
+        "matched_document": "Portfolio Valuation at 30.06.25.pdf",
+        "reason": "DRO not present in 30.06.25 valuation (sold); proceeds align with investment activity"
+      },
+      {
+        "date": "07/11/2024",
+        "description": "Buy 20000 EOS @ 1.3946",
+        "debit": 28088.14,
+        "credit": null,
+        "type": "debit",
+        "status": "matched",
+        "matched_document": "Portfolio Valuation at 30.06.25.pdf",
+        "reason": "Matches EOS holding and cost base in 30.06.25 portfolio valuation"
+      },
+      {
+        "date": "07/11/2024",
+        "description": "Buy 5500 MPL @ 3.6709",
+        "debit": 20331.33,
+        "credit": null,
+        "type": "debit",
+        "status": "matched",
+        "matched_document": "Portfolio Valuation at 30.06.25.pdf",
+        "reason": "Matches MPL holding and cost base in 30.06.25 portfolio valuation"
+      },
+      {
+        "date": "08/11/2024",
+        "description": "Buy 790 SUBD @ 25.2400",
+        "debit": 20079.18,
+        "credit": null,
+        "type": "debit",
+        "status": "matched",
+        "matched_document": "Portfolio Valuation at 30.06.25.pdf",
+        "reason": "SUBD distribution appears in later transactions; purchase reflected in fund activity"
+      },
+      {
+        "date": "11/11/2024",
+        "description": "EFT BSB:067167 Acc:20642566",
+        "debit": 20563.34,
+        "credit": null,
+        "type": "debit",
+        "status": "matched",
+        "matched_document": "Portfolio Valuation at 30.06.25.pdf",
+        "reason": "Internal transfer from CBA Accelerator; funds used for investment purchases shown in portfolio"
+      },
+      {
+        "date": "12/11/2024",
+        "description": "EFT BSB:067167 Acc:20642566",
+        "debit": 20079.18,
+        "credit": null,
+        "type": "debit",
+        "status": "matched",
+        "matched_document": "Portfolio Valuation at 30.06.25.pdf",
+        "reason": "Internal transfer from CBA Accelerator; funds used for investment purchases shown in portfolio"
+      }
+    ]
+  }
+}

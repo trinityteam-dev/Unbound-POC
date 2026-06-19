@@ -7,6 +7,13 @@ import subprocess
 import requests
 from pypdf import PdfReader, PdfWriter
 
+# Phase 2 model selection (Story 4 — benchmarked 2026-06-19)
+# Winner: x-ai/grok-4.20 — 3/3 known matches, numeric schema, good query grouping, ~60s
+# Fallback: google/gemini-2.5-flash (string amounts, weaker grouping but functional)
+# Rejected: anthropic/claude-sonnet-4-6 (empty response — prompt too large for context)
+PHASE2_DEFAULT_MODEL = "x-ai/grok-4.20"
+PHASE2_FALLBACK_MODEL = "google/gemini-2.5-flash"
+
 # Helper to find executables
 def find_executable(name, default_path):
     path = shutil.which(name)
@@ -1052,7 +1059,7 @@ def build_phase2_context(job_id, fund_profile, job_record):
     }
 
 
-def _parse_via_llm(text, account, api_key):
+def _parse_via_llm(text, account, api_key, model=None):
     """LLM-based transaction parser for Approach A (swappable with _parse_via_regex)."""
     system_prompt = """You are an expert at parsing Australian bank statement text.
 Extract every transaction from the provided bank statement text and return them as structured JSON.
@@ -1088,11 +1095,12 @@ Rules:
         api_key, system_prompt, user_content,
         response_format={"type": "json_object"},
         timeout=180,
+        **({"model": model} if model else {}),
     )
     return json.loads(res)
 
 
-def extract_transactions_from_statement(pdf_path, account, api_key):
+def extract_transactions_from_statement(pdf_path, account, api_key, model=None):
     """Extract structured transaction rows from a bank statement PDF (Approach A — LLM-based).
 
     Returns a list of transaction dicts: { date, description, debit, credit, balance, raw_line }.
@@ -1121,7 +1129,7 @@ def extract_transactions_from_statement(pdf_path, account, api_key):
         except Exception as e:
             raise RuntimeError(f"OCR fallback failed for {pdf_path}: {e}")
 
-    result = _parse_via_llm(text, account, api_key)
+    result = _parse_via_llm(text, account, api_key, model=model)
     transactions = result.get("transactions", [])
 
     if not transactions and len(text.strip()) > 50:
@@ -1260,26 +1268,33 @@ def build_reconciliation_prompt(phase2_context, transactions_by_account):
     return system_prompt, user_content
 
 
-def run_reconciliation_call(phase2_context, api_key, update_progress):
+def run_reconciliation_call(phase2_context, api_key, update_progress,
+                            model=PHASE2_DEFAULT_MODEL,
+                            transactions_by_account=None):
     """Run LLM Call 1 for Story 2: extract transactions then reconcile against supporting docs.
 
     Returns reconciliation_results dict keyed by account number.
-    """
-    transactions_by_account = {}
 
-    for account in phase2_context.get("bank_accounts", []):
-        statement_path = account.get("statement_path")
-        if not statement_path:
-            print(
-                f"[Phase 2] Skipping account {account['number']} ({account['name']}) "
-                "— no statement file",
-                file=sys.stderr,
+    Pass `transactions_by_account` to skip extraction (useful for benchmarking multiple models
+    against the same pre-extracted transactions).
+    """
+    if transactions_by_account is None:
+        transactions_by_account = {}
+        for account in phase2_context.get("bank_accounts", []):
+            statement_path = account.get("statement_path")
+            if not statement_path:
+                print(
+                    f"[Phase 2] Skipping account {account['number']} ({account['name']}) "
+                    "— no statement file",
+                    file=sys.stderr,
+                )
+                continue
+            update_progress(None, f"Phase 2: Parsing transactions for {account['name']}...")
+            transactions = extract_transactions_from_statement(
+                statement_path, account, api_key, model=model
             )
-            continue
-        update_progress(None, f"Phase 2: Parsing transactions for {account['name']}...")
-        transactions = extract_transactions_from_statement(statement_path, account, api_key)
-        if transactions:
-            transactions_by_account[account["number"]] = transactions
+            if transactions:
+                transactions_by_account[account["number"]] = transactions
 
     if not transactions_by_account:
         print("[Phase 2] WARNING: no transactions extracted from any account.", file=sys.stderr)
@@ -1291,6 +1306,7 @@ def run_reconciliation_call(phase2_context, api_key, update_progress):
     res = query_openrouter(
         api_key, system_prompt, user_content,
         response_format={"type": "json_object"},
+        model=model,
         timeout=240,
     )
     result = json.loads(res)
@@ -1370,7 +1386,8 @@ def build_query_generation_prompt(unmatched_transactions, fund_name):
     return system_prompt, user_content
 
 
-def run_query_generation_call(unmatched_transactions, fund_name, api_key, update_progress):
+def run_query_generation_call(unmatched_transactions, fund_name, api_key, update_progress,
+                              model=PHASE2_DEFAULT_MODEL):
     """Run LLM Call 2 for Story 3: group unmatched transactions and generate client queries.
 
     Returns queries list: [{ id, category, query_text, transactions }]
@@ -1388,6 +1405,7 @@ def run_query_generation_call(unmatched_transactions, fund_name, api_key, update
     res = query_openrouter(
         api_key, system_prompt, user_content,
         response_format={"type": "json_object"},
+        model=model,
         timeout=180,
     )
     result = json.loads(res)

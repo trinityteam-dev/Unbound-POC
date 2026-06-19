@@ -10,8 +10,8 @@ The following items require extending Phase 1 code. **No changes will be made un
 | # | Change | File | Reason |
 |---|---|---|---|
 | P1-A | Add `Tax Statement Metrics` and `F25 Periodic Statement Metrics` to ADMCM playbook keywords | `funds_config.json` | These categories are missing, causing misclassification. Story 1 intake depends on correctly classified workpapers. |
-| P1-B | Add `Reconciliation Notes` category to `determine_target_filename()` | `core_engine.py` | Required so a fund-specific instructions PDF classifies into workpaper as `Reconciliation Notes.pdf` for Phase 2 to consume. |
-| P1-C | Add `Reconciliation Notes` to each fund's playbook keywords | `funds_config.json` | Pairs with P1-B. Without it, AI is never offered the category. |
+| P1-B | Exclude the `Additional Notes` subfolder from Phase 1's `os.walk` scan in `classify_papers()` | `core_engine.py` | Reconciliation notes live at `data/<fund>/Additional Notes/` and are read directly by Phase 2. Phase 1 must not attempt to classify these files. |
+| P1-C | Adopt `Additional Notes` as a reserved subfolder convention — no config change needed | — | Phase 2 derives the path as `{fund_profile["folder_path"]}/Additional Notes/`. Any PDF found there is treated as a reconciliation instruction file. No keyword or category entry required. |
 | P1-D | Remove the two hardcoded `audit_checks` from `cash_reconciliation` in `reconcile_papers()` | `core_engine.py` | These check the ATO refund and Ord Minnett EFT at summary level — Story 2 will surface the same transactions with full detail. Remove at Story 7 integration to avoid duplication. |
 | P1-E | Replace `run_ai_reviewer_phase()` call in `run_phase2_worker` with new Phase 2 engine | `app.py` | Story 7 integration point. Existing `reconcile_papers()` (checklist + lead schedules) must still run alongside the new engine, not be replaced. Confirm approach before Story 7. |
 
@@ -21,10 +21,10 @@ The following items require extending Phase 1 code. **No changes will be made un
 
 **Done when:** `build_phase2_context()` returns a valid, structured context dict from any completed Phase 1 job. Smoke-tested against ADMCM.
 
-- [ ] **1.1** Confirm Phase 1 touch-points P1-A, P1-B, P1-C are approved and applied
+- [ ] **1.1** Confirm Phase 1 touch-points P1-A and P1-B are approved and applied (P1-C requires no code change)
 - [ ] **1.2** Write `build_phase2_context(job_id, fund_profile, job_record)` in `core_engine.py`
   - Partitions `job["files"]` into `bank_accounts` (one entry per fund account, with `statement_path`) and `supporting_documents` (all non-bank-statement files)
-  - Exposes `reconciliation_notes_path` as a dedicated field (separate from supporting documents)
+  - Resolves `reconciliation_notes_path` by scanning `{fund_profile["folder_path"]}/Additional Notes/` for any PDF files — exposed as a dedicated field, separate from supporting documents; `None` if the folder is absent or empty
   - Includes `processor_notes`, `unprocessed_files`, `fund_id`, `job_type`
   - Logs a warning (not error) for any bank account in `fund_profile` with no matching statement file
 - [ ] **1.3** Call `build_phase2_context()` at the start of `run_phase2_worker` in `app.py`; store result as `job["phase2_context"]`

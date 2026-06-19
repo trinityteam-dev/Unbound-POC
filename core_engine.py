@@ -90,7 +90,7 @@ def ocr_pdf_single_page(filepath, page_idx, scratch_dir):
         else:
             raise RuntimeError("Tesseract output file not found")
 
-def query_openrouter(api_key, system_prompt, user_content, response_format=None, model="x-ai/grok-4.20"):
+def query_openrouter(api_key, system_prompt, user_content, response_format=None, model="x-ai/grok-4.20", timeout=120):
     """Generic OpenRouter query helper with fallback model option."""
     url = "https://openrouter.ai/api/v1/chat/completions"
     headers = {
@@ -99,7 +99,7 @@ def query_openrouter(api_key, system_prompt, user_content, response_format=None,
         "HTTP-Referer": "https://github.com/google/doc-intelligence",
         "X-Title": "SMSF Document Intelligence"
     }
-    
+
     payload = {
         "model": model,
         "messages": [
@@ -112,7 +112,7 @@ def query_openrouter(api_key, system_prompt, user_content, response_format=None,
         payload["response_format"] = response_format
 
     try:
-        response = requests.post(url, headers=headers, json=payload, timeout=60)
+        response = requests.post(url, headers=headers, json=payload, timeout=timeout)
         response.raise_for_status()
         res_data = response.json()
         choices = res_data.get("choices", [])
@@ -122,7 +122,7 @@ def query_openrouter(api_key, system_prompt, user_content, response_format=None,
     except Exception as e:
         if model == "x-ai/grok-4.20":
             print(f"Grok model query failed: {e}. Trying fallback model google/gemini-2.5-flash...")
-            return query_openrouter(api_key, system_prompt, user_content, response_format, model="google/gemini-2.5-flash")
+            return query_openrouter(api_key, system_prompt, user_content, response_format, model="google/gemini-2.5-flash", timeout=timeout)
         raise e
 
 def discover_fund_profile(input_dir, api_key, scratch_dir):
@@ -314,9 +314,10 @@ def classify_papers(input_dir, workpapers_dir, fund_profile, api_key, scratch_di
     """Processes, OCRs, classifies files, and dynamically splits/groups bank statement pages by account."""
     os.makedirs(workpapers_dir, exist_ok=True)
     
-    # Recursively find all files
+    # Recursively find all files, excluding the Additional Notes subfolder (read directly by Phase 2)
     all_files = []
-    for root, _, files in os.walk(input_dir):
+    for root, dirs, files in os.walk(input_dir):
+        dirs[:] = [d for d in dirs if d != "Additional Notes"]
         for file in files:
             if not file.startswith("."):
                 all_files.append(os.path.join(root, file))
@@ -973,6 +974,493 @@ JSON Schema:
                 ai_results["tax_reconciliation"]["outstanding_returns"]["details"] = "Not required under Accounting Playbook."
 
     return ai_results
+
+def build_phase2_context(job_id, fund_profile, job_record):
+    """Builds the structured context dict consumed by every Phase 2 function.
+
+    Returns:
+        dict with keys: fund_id, job_type, bank_accounts, supporting_documents,
+        reconciliation_notes_path, processor_notes, unprocessed_files
+    """
+    workpaper_dir = os.path.join(os.getcwd(), "jobs", job_id, "workpaper")
+
+    # Map account number -> file record for all bank statement files
+    account_numbers = {acc["number"] for acc in fund_profile.get("bank_accounts", [])}
+    bank_account_map = {}
+    for f in job_record.get("files", []):
+        acct = f.get("account_number")
+        if acct and acct in account_numbers:
+            bank_account_map[acct] = f
+
+    # One entry per fund account; warn if no matching statement was found
+    bank_accounts = []
+    for acc in fund_profile.get("bank_accounts", []):
+        file_record = bank_account_map.get(acc["number"])
+        if file_record:
+            candidate = os.path.join(workpaper_dir, file_record["classified_name"])
+            statement_path = candidate if os.path.exists(candidate) else None
+        else:
+            print(
+                f"[Phase 2] WARNING: no statement file found for account "
+                f"{acc['number']} ({acc['name']})",
+                file=sys.stderr,
+            )
+            statement_path = None
+            file_record = None
+        bank_accounts.append({
+            "name": acc["name"],
+            "number": acc["number"],
+            "bsb": acc.get("bsb"),
+            "statement_path": statement_path,
+            "file_record": file_record,
+        })
+
+    # Everything that isn't a bank statement goes into supporting_documents
+    bank_classified_names = {f["classified_name"] for f in bank_account_map.values()}
+    supporting_documents = []
+    for f in job_record.get("files", []):
+        if f.get("classified_name") not in bank_classified_names:
+            doc_path = os.path.join(workpaper_dir, f["classified_name"])
+            supporting_documents.append({
+                "category": f.get("category"),
+                "classified_name": f.get("classified_name"),
+                "path": doc_path if os.path.exists(doc_path) else None,
+                "file_record": f,
+            })
+
+    # Reconciliation notes: first PDF found in Additional Notes subfolder
+    notes_dir = os.path.join(fund_profile["folder_path"], "Additional Notes")
+    reconciliation_notes_path = None
+    if os.path.isdir(notes_dir):
+        pdf_files = sorted(f for f in os.listdir(notes_dir) if f.lower().endswith(".pdf"))
+        if pdf_files:
+            reconciliation_notes_path = os.path.join(notes_dir, pdf_files[0])
+            if len(pdf_files) > 1:
+                print(
+                    f"[Phase 2] WARNING: multiple PDFs in Additional Notes; using {pdf_files[0]}",
+                    file=sys.stderr,
+                )
+
+    return {
+        "fund_id": job_record.get("fund_id"),
+        "job_type": job_record.get("job_type"),
+        "bank_accounts": bank_accounts,
+        "supporting_documents": supporting_documents,
+        "reconciliation_notes_path": reconciliation_notes_path,
+        "processor_notes": job_record.get("processor_notes", ""),
+        "unprocessed_files": job_record.get("unprocessed_files", []),
+    }
+
+
+def _parse_via_llm(text, account, api_key):
+    """LLM-based transaction parser for Approach A (swappable with _parse_via_regex)."""
+    system_prompt = """You are an expert at parsing Australian bank statement text.
+Extract every transaction from the provided bank statement text and return them as structured JSON.
+
+Return ONLY a valid JSON object with this exact schema:
+{
+  "transactions": [
+    {
+      "date": "DD/MM/YYYY",
+      "description": "transaction description as written",
+      "debit": null,
+      "credit": null,
+      "balance": null,
+      "raw_line": "original text that was parsed"
+    }
+  ]
+}
+
+Rules:
+- Include ALL transactions in original chronological order — do not skip any
+- Dates must be in DD/MM/YYYY format
+- debit = money OUT of account (positive number); null if not a debit
+- credit = money IN to account (positive number); null if not a credit
+- balance = running balance after the transaction (positive number); null if not shown
+- Do NOT include opening balance rows, closing balance rows, or summary lines
+- Strip currency symbols and commas from numeric values (e.g. "$1,234.56" → 1234.56)
+"""
+    user_content = (
+        f"Account: {account.get('name', 'Unknown')} (Number: {account.get('number', 'Unknown')})\n\n"
+        f"Bank statement text:\n```\n{text}\n```\n\nExtract all transactions."
+    )
+    res = query_openrouter(
+        api_key, system_prompt, user_content,
+        response_format={"type": "json_object"},
+        timeout=180,
+    )
+    return json.loads(res)
+
+
+def extract_transactions_from_statement(pdf_path, account, api_key):
+    """Extract structured transaction rows from a bank statement PDF (Approach A — LLM-based).
+
+    Returns a list of transaction dicts: { date, description, debit, credit, balance, raw_line }.
+    _parse_via_llm is the active parser; _parse_via_regex can be slotted in without changing callers.
+    """
+    if not pdf_path or not os.path.exists(pdf_path):
+        raise FileNotFoundError(f"Statement PDF not found: {pdf_path}")
+
+    # Extract full text across all pages
+    try:
+        reader = PdfReader(pdf_path)
+        text_parts = []
+        for page in reader.pages:
+            page_text = page.extract_text()
+            if page_text:
+                text_parts.append(page_text)
+        text = "\n".join(text_parts)
+    except Exception as e:
+        raise RuntimeError(f"Failed to read {pdf_path}: {e}")
+
+    # OCR fallback for scanned statements (first-page only; sufficient for sparse-text detection)
+    if len(text.strip()) < 100:
+        scratch_dir = os.path.join(os.path.dirname(pdf_path), "..", "scratch")
+        try:
+            text = ocr_pdf_first_page(pdf_path, scratch_dir)
+        except Exception as e:
+            raise RuntimeError(f"OCR fallback failed for {pdf_path}: {e}")
+
+    result = _parse_via_llm(text, account, api_key)
+    transactions = result.get("transactions", [])
+
+    if not transactions and len(text.strip()) > 50:
+        print(
+            f"[Phase 2] WARNING: zero transactions parsed from non-empty statement "
+            f"for account {account.get('number')}",
+            file=sys.stderr,
+        )
+    else:
+        print(
+            f"[Phase 2] Extracted {len(transactions)} transactions from "
+            f"{os.path.basename(pdf_path)}",
+            file=sys.stderr,
+        )
+
+    return transactions
+
+
+def build_reconciliation_prompt(phase2_context, transactions_by_account):
+    """Build the (system_prompt, user_content) pair for the reconciliation LLM call.
+
+    Preamble: reconciliation notes (if present).
+    Subject: all transactions across all accounts.
+    Evidence: supporting document text excerpts.
+    """
+    # Reconciliation notes preamble
+    notes_preamble = ""
+    notes_path = phase2_context.get("reconciliation_notes_path")
+    if notes_path and os.path.exists(notes_path):
+        try:
+            reader = PdfReader(notes_path)
+            notes_text = "".join(
+                (page.extract_text() or "") + "\n" for page in reader.pages
+            ).strip()
+            if notes_text:
+                notes_preamble = (
+                    "## RECONCILIATION INSTRUCTIONS FROM ACCOUNTANT\n"
+                    "The following notes MUST be followed when reconciling:\n\n"
+                    f"{notes_text}\n\n---\n\n"
+                )
+        except Exception:
+            pass
+
+    # Supporting document excerpts (max 3000 chars each)
+    supporting_docs_lines = []
+    for doc in phase2_context.get("supporting_documents", []):
+        doc_path = doc.get("path")
+        if not doc_path or not os.path.exists(doc_path):
+            continue
+        try:
+            reader = PdfReader(doc_path)
+            doc_text = "".join(
+                (page.extract_text() or "") + "\n" for page in reader.pages
+            ).strip()[:3000]
+            if doc_text:
+                supporting_docs_lines.append(
+                    f"=== {doc.get('classified_name')} "
+                    f"(Category: {doc.get('category')}) ===\n{doc_text}"
+                )
+        except Exception:
+            continue
+
+    supporting_docs_block = (
+        "\n\n".join(supporting_docs_lines)
+        if supporting_docs_lines
+        else "No supporting documents available."
+    )
+
+    # Transaction listing per account
+    tx_blocks = []
+    for account_number, transactions in transactions_by_account.items():
+        account_name = account_number
+        for acc in phase2_context.get("bank_accounts", []):
+            if acc["number"] == account_number:
+                account_name = f"{acc['name']} ({account_number})"
+                break
+        rows = []
+        for i, tx in enumerate(transactions, 1):
+            debit = f"DR ${tx.get('debit')}" if tx.get("debit") else ""
+            credit = f"CR ${tx.get('credit')}" if tx.get("credit") else ""
+            amount = debit or credit or "Amount unknown"
+            rows.append(
+                f"  {i}. {tx.get('date', '?')} | {tx.get('description', 'No description')} | {amount}"
+            )
+        tx_blocks.append(f"Account: {account_name}\n" + "\n".join(rows))
+
+    transactions_block = "\n\n".join(tx_blocks) if tx_blocks else "No transactions."
+
+    system_prompt = (
+        "IMPORTANT: Your entire response must be a single valid JSON object. "
+        "Do not include any text, explanation, or markdown before or after the JSON.\n\n"
+        f"{notes_preamble}"
+        "You are an expert SMSF auditor performing a bank reconciliation.\n\n"
+        "Your task: match each bank transaction against the supporting documents below and "
+        "classify it as 'matched' (evidence found) or 'unmatched' (no supporting document).\n\n"
+        "## SUPPORTING DOCUMENTS\n\n"
+        f"{supporting_docs_block}\n\n"
+        "## REQUIRED JSON SCHEMA\n"
+        "{\n"
+        '  "reconciliation_results": [\n'
+        "    {\n"
+        '      "account_number": "string",\n'
+        '      "account_name": "string",\n'
+        '      "transactions": [\n'
+        "        {\n"
+        '          "date": "DD/MM/YYYY",\n'
+        '          "description": "string",\n'
+        '          "debit": null,\n'
+        '          "credit": null,\n'
+        '          "type": "debit or credit",\n'
+        '          "status": "matched or unmatched",\n'
+        '          "matched_document": "exact supporting document filename, or null if unmatched",\n'
+        '          "unmatched_reason": "if unmatched: specific reason no supporting document was found and what documentation would resolve it; null if matched"\n'
+        "        }\n"
+        "      ]\n"
+        "    }\n"
+        "  ]\n"
+        "}\n\n"
+        "Rules:\n"
+        "- Every transaction must have status 'matched' or 'unmatched' — no other values\n"
+        "- matched_document: exact filename from the supporting documents list above, or null\n"
+        "- unmatched_reason: null for matched transactions; for unmatched, explain specifically "
+        "what is missing (e.g. 'No invoice found for this payment — a supplier invoice for "
+        "$X dated DD/MM would resolve this')\n"
+        "- Internal transfers between fund accounts are self-matched (set matched_document to "
+        "the receiving/sending account name)\n"
+        "- Include ALL transactions in order — do not omit any\n"
+        "- Respond with ONLY the JSON object — no other text\n"
+    )
+
+    user_content = (
+        "Reconcile the following bank transactions against the supporting documents above:\n\n"
+        f"{transactions_block}"
+    )
+
+    return system_prompt, user_content
+
+
+def run_reconciliation_call(phase2_context, api_key, update_progress):
+    """Run LLM Call 1 for Story 2: extract transactions then reconcile against supporting docs.
+
+    Returns reconciliation_results dict keyed by account number.
+    """
+    transactions_by_account = {}
+
+    for account in phase2_context.get("bank_accounts", []):
+        statement_path = account.get("statement_path")
+        if not statement_path:
+            print(
+                f"[Phase 2] Skipping account {account['number']} ({account['name']}) "
+                "— no statement file",
+                file=sys.stderr,
+            )
+            continue
+        update_progress(None, f"Phase 2: Parsing transactions for {account['name']}...")
+        transactions = extract_transactions_from_statement(statement_path, account, api_key)
+        if transactions:
+            transactions_by_account[account["number"]] = transactions
+
+    if not transactions_by_account:
+        print("[Phase 2] WARNING: no transactions extracted from any account.", file=sys.stderr)
+        return {}
+
+    update_progress(None, "Phase 2: Reconciling transactions against supporting documents...")
+    system_prompt, user_content = build_reconciliation_prompt(phase2_context, transactions_by_account)
+
+    res = query_openrouter(
+        api_key, system_prompt, user_content,
+        response_format={"type": "json_object"},
+        timeout=240,
+    )
+    result = json.loads(res)
+
+    reconciliation_results = {}
+    for account_result in result.get("reconciliation_results", []):
+        acc_num = account_result.get("account_number")
+        if acc_num:
+            reconciliation_results[acc_num] = account_result
+
+    return reconciliation_results
+
+
+def build_query_generation_prompt(unmatched_transactions, fund_name):
+    """Build the (system_prompt, user_content) pair for the query generation LLM call.
+
+    Groups unmatched transactions by category and generates humanized client queries.
+    """
+    tx_lines = []
+    for i, tx in enumerate(unmatched_transactions, 1):
+        account = tx.get("account_name", tx.get("account_number", "Unknown"))
+        debit = f"DR ${tx.get('debit')}" if tx.get("debit") else ""
+        credit = f"CR ${tx.get('credit')}" if tx.get("credit") else ""
+        amount = debit or credit or "Amount unknown"
+        reason = tx.get("unmatched_reason") or tx.get("reason", "")
+        tx_lines.append(
+            f"  {i}. [{account}] {tx.get('date', '?')} | {tx.get('description', 'No description')} | {amount}"
+            + (f"\n     Reason unmatched: {reason}" if reason else "")
+        )
+
+    transactions_block = "\n".join(tx_lines) if tx_lines else "No unmatched transactions."
+
+    system_prompt = (
+        "IMPORTANT: Your entire response must be a single valid JSON object. "
+        "Do not include any text, explanation, or markdown before or after the JSON.\n\n"
+        f"You are an expert SMSF accountant preparing client queries for {fund_name}.\n\n"
+        "You have been given a list of bank transactions that could not be matched to supporting "
+        "documents during the reconciliation process. Your task is to group these transactions "
+        "by their likely category and write a clear, professional query for each group that "
+        "the accountant can send to the client to resolve the missing documentation.\n\n"
+        "## REQUIRED JSON SCHEMA\n"
+        "{\n"
+        '  "queries": [\n'
+        "    {\n"
+        '      "id": "Q1",\n'
+        '      "category": "Category name (e.g. Investment Income - Dividends, Bank Interest, Unknown Credit)",\n'
+        '      "query_text": "Professional query text addressed to the client, listing the specific transactions and asking for the required documentation",\n'
+        '      "transactions": [\n'
+        "        {\n"
+        '          "date": "DD/MM/YYYY",\n'
+        '          "description": "transaction description",\n'
+        '          "amount": "amount as string e.g. CR $1,234.56 or DR $1,234.56"\n'
+        "        }\n"
+        "      ]\n"
+        "    }\n"
+        "  ]\n"
+        "}\n\n"
+        "Rules:\n"
+        "- Group related transactions under a single category with one shared query "
+        "(e.g. all bank interest credits together; all dividends from one security together; "
+        "all broker buy/sell settlements together)\n"
+        "- Write query_text in professional tone as if the accountant is writing to the client\n"
+        "- query_text must list the dates and amounts of the transactions in the group\n"
+        "- Suggest the specific documentation that would resolve each query "
+        "(e.g. 'Please provide the dividend statement from NAB for the payment received on XX/XX/XXXX')\n"
+        "- Use id values Q1, Q2, Q3, etc.\n"
+        "- Respond with ONLY the JSON object — no other text\n"
+    )
+
+    user_content = (
+        f"The following {len(unmatched_transactions)} transactions from {fund_name} "
+        "could not be matched to supporting documents. "
+        "Please group them by category and generate professional client queries:\n\n"
+        f"{transactions_block}"
+    )
+
+    return system_prompt, user_content
+
+
+def run_query_generation_call(unmatched_transactions, fund_name, api_key, update_progress):
+    """Run LLM Call 2 for Story 3: group unmatched transactions and generate client queries.
+
+    Returns queries list: [{ id, category, query_text, transactions }]
+    """
+    if not unmatched_transactions:
+        update_progress(None, "Phase 2: No unmatched transactions — skipping query generation.")
+        return []
+
+    update_progress(
+        None,
+        f"Phase 2: Generating client queries for {len(unmatched_transactions)} unmatched transactions...",
+    )
+    system_prompt, user_content = build_query_generation_prompt(unmatched_transactions, fund_name)
+
+    res = query_openrouter(
+        api_key, system_prompt, user_content,
+        response_format={"type": "json_object"},
+        timeout=180,
+    )
+    result = json.loads(res)
+    queries = result.get("queries", [])
+
+    if not queries and unmatched_transactions:
+        print(
+            f"[Phase 2] WARNING: zero queries generated from "
+            f"{len(unmatched_transactions)} unmatched transactions",
+            file=sys.stderr,
+        )
+    else:
+        print(
+            f"[Phase 2] Generated {len(queries)} client queries from "
+            f"{len(unmatched_transactions)} unmatched transactions",
+            file=sys.stderr,
+        )
+
+    return queries
+
+
+def run_bank_reconciliation_phase(job_id, fund_profile, job_type, api_key, scratch_dir, update_progress):
+    """Phase 2 orchestrator: classify context → extract transactions → reconcile → generate queries.
+
+    Returns { phase2_context, reconciliation_results, queries, summary }.
+    """
+    jobs_db_path = os.path.join(os.getcwd(), "jobs_db.json")
+    job_record = None
+    if os.path.exists(jobs_db_path):
+        with open(jobs_db_path, "r", encoding="utf-8") as fh:
+            all_jobs = json.load(fh)
+        job_record = next((j for j in all_jobs if j["job_id"] == job_id), None)
+
+    if not job_record:
+        raise ValueError(f"Job {job_id} not found in jobs_db.json")
+
+    update_progress(None, "Phase 2: Building reconciliation context...")
+    phase2_context = build_phase2_context(job_id, fund_profile, job_record)
+
+    update_progress(None, "Phase 2: Running bank transaction reconciliation...")
+    reconciliation_results = run_reconciliation_call(phase2_context, api_key, update_progress)
+
+    # Story 3: collect unmatched transactions and generate client queries
+    total = matched = unmatched_count = 0
+    unmatched_transactions = []
+    fund_name = fund_profile.get("name", "the fund")
+
+    for acc_num, acc_result in reconciliation_results.items():
+        for tx in acc_result.get("transactions", []):
+            total += 1
+            if tx.get("status") == "matched":
+                matched += 1
+            else:
+                unmatched_count += 1
+                unmatched_transactions.append({
+                    **tx,
+                    "account_number": acc_num,
+                    "account_name": acc_result.get("account_name", acc_num),
+                })
+
+    queries = run_query_generation_call(unmatched_transactions, fund_name, api_key, update_progress)
+
+    return {
+        "phase2_context": phase2_context,
+        "reconciliation_results": reconciliation_results,
+        "queries": queries,
+        "summary": {
+            "total": total,
+            "matched": matched,
+            "unmatched": unmatched_count,
+        },
+    }
+
 
 def run_ai_processor_phase(folder_path, run_id, fund_profile, job_type, api_key, scratch_dir, update_progress):
     """Runs Phase 1: Scans directory, extracts texts/OCR, and suggests classifications."""

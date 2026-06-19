@@ -56,7 +56,7 @@ Task 2.1 produces the structured rows. There are two ways to do it; the data con
 
 **POC decision: implement Approach A (LLM-based) only as step 1.** Approach B is documented for a future optimisation pass and should not be built now.
 
-- [ ] **2.1** Write `extract_transactions_from_statement(pdf_path, account, api_key)` in `core_engine.py`
+- [x] **2.1** Write `extract_transactions_from_statement(pdf_path, account, api_key)` in `core_engine.py`
   - **Approach A (LLM-based) — build this for the POC:**
     - Extract full text from the merged statement PDF (reuse existing `extract_pdf_text` + OCR fallback)
     - Send the extracted text to `query_openrouter()` with a prompt that asks for structured rows in JSON
@@ -67,19 +67,19 @@ Task 2.1 produces the structured rows. There are two ways to do it; the data con
     - Same output schema, produced by regex/heuristics over the extracted text instead of an LLM call
     - To be considered only if Approach A proves too slow/costly at scale
   - Function signature should keep the parser swappable (e.g. an internal `_parse_via_llm` vs `_parse_via_regex`) so Approach B can be slotted in later without changing callers
-- [ ] **2.2** Write `build_reconciliation_prompt(phase2_context, transactions_by_account)` in `core_engine.py`
+- [x] **2.2** Write `build_reconciliation_prompt(phase2_context, transactions_by_account)` in `core_engine.py`
   - Injects reconciliation notes text (if present) as a preamble instruction block
   - Provides all transactions across all accounts as the subject
   - Provides supporting document text excerpts as evidence (invoices, valuations, broker listing, tax statements)
   - Response schema: `{ account, transactions: [{ date, description, amount, type, status: matched|unmatched, matched_document, reason }] }`
-- [ ] **2.3** Write `run_reconciliation_call(phase2_context, api_key, update_progress)` in `core_engine.py`
+- [x] **2.3** Write `run_reconciliation_call(phase2_context, api_key, update_progress)` in `core_engine.py`
   - Calls `query_openrouter()` with the reconciliation prompt
   - Parses and validates JSON response
   - Returns `reconciliation_results` dict keyed by account number
-- [ ] **2.4** Write `run_bank_reconciliation_phase(job_id, fund_profile, job_type, api_key, scratch_dir, update_progress)` in `core_engine.py` as the new Phase 2 orchestrator
+- [x] **2.4** Write `run_bank_reconciliation_phase(job_id, fund_profile, job_type, api_key, scratch_dir, update_progress)` in `core_engine.py` as the new Phase 2 orchestrator
   - Calls `build_phase2_context()` → `extract_transactions_from_statement()` per account (passing `api_key` for the LLM parse pass) → `run_reconciliation_call()`
   - Returns partial results at this stage (Story 3 will extend it)
-- [ ] **2.5** Test against ADMCM: verify known transactions (ATO refund $5,674.46, accountancy fee $270.41, audit fee $517.00) are tagged `matched`
+- [x] **2.5** Test against ADMCM: verify known transactions (ATO refund $5,674.46, accountancy fee $270.41, audit fee $517.00) are tagged `matched`
 
 ---
 
@@ -87,19 +87,19 @@ Task 2.1 produces the structured rows. There are two ways to do it; the data con
 
 **Done when:** Unmatched items are grouped by category, each with a humanized query text that lists the relevant transactions.
 
-- [ ] **3.1** Write `build_query_generation_prompt(unmatched_transactions, fund_name)` in `core_engine.py`
+- [x] **3.1** Write `build_query_generation_prompt(unmatched_transactions, fund_name)` in `core_engine.py`
   - Passes all unmatched transactions (across all accounts) to the LLM
   - Instructs LLM to group by likely category (e.g. "Unknown Expense", "Unidentified Credit", "Investment Purchase")
   - Response schema: `{ queries: [{ id, category, query_text, transactions: [{ date, description, amount }] }] }`
-- [ ] **3.2** Write `run_query_generation_call(unmatched_transactions, fund_name, api_key, update_progress)` in `core_engine.py`
+- [x] **3.2** Write `run_query_generation_call(unmatched_transactions, fund_name, api_key, update_progress)` in `core_engine.py`
   - Calls `query_openrouter()` with the query generation prompt
   - Parses and validates JSON response
   - Returns `queries` list
-- [ ] **3.3** Extend `run_bank_reconciliation_phase()` to chain Story 3 call after Story 2
+- [x] **3.3** Extend `run_bank_reconciliation_phase()` to chain Story 3 call after Story 2
   - Extracts unmatched transactions from reconciliation results
   - Calls `run_query_generation_call()`
   - Returns combined `{ reconciliation_results, queries, summary: { total, matched, unmatched } }`
-- [ ] **3.4** Test against ADMCM: verify unmatched items produce coherent, readable query text grouped by category
+- [x] **3.4** Test against ADMCM: verify unmatched items produce coherent, readable query text grouped by category
 
 ---
 

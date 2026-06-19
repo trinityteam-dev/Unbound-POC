@@ -21,14 +21,14 @@ The following items require extending Phase 1 code. **No changes will be made un
 
 **Done when:** `build_phase2_context()` returns a valid, structured context dict from any completed Phase 1 job. Smoke-tested against ADMCM.
 
-- [ ] **1.1** Confirm Phase 1 touch-points P1-A and P1-B are approved and applied (P1-C requires no code change)
-- [ ] **1.2** Write `build_phase2_context(job_id, fund_profile, job_record)` in `core_engine.py`
+- [x] **1.1** Confirm Phase 1 touch-points P1-A and P1-B are approved and applied (P1-C requires no code change)
+- [x] **1.2** Write `build_phase2_context(job_id, fund_profile, job_record)` in `core_engine.py`
   - Partitions `job["files"]` into `bank_accounts` (one entry per fund account, with `statement_path`) and `supporting_documents` (all non-bank-statement files)
   - Resolves `reconciliation_notes_path` by scanning `{fund_profile["folder_path"]}/Additional Notes/` for any PDF files — exposed as a dedicated field, separate from supporting documents; `None` if the folder is absent or empty
   - Includes `processor_notes`, `unprocessed_files`, `fund_id`, `job_type`
   - Logs a warning (not error) for any bank account in `fund_profile` with no matching statement file
-- [ ] **1.3** Call `build_phase2_context()` at the start of `run_phase2_worker` in `app.py`; store result as `job["phase2_context"]`
-- [ ] **1.4** Smoke test: run against a completed ADMCM job, print context, verify all three bank accounts and supporting docs are correctly partitioned
+- [x] **1.3** Call `build_phase2_context()` at the start of `run_phase2_worker` in `app.py`; store result as `job["phase2_context"]`
+- [x] **1.4** Smoke test: run against a completed ADMCM job, print context, verify all three bank accounts and supporting docs are correctly partitioned
 
 ---
 
@@ -36,10 +36,37 @@ The following items require extending Phase 1 code. **No changes will be made un
 
 **Done when:** A run returns every bank transaction tagged `matched` or `unmatched` with a reason and a pointer to the matching document where applicable.
 
-- [ ] **2.1** Write `extract_transactions_from_statement(pdf_path, account)` in `core_engine.py`
-  - Extracts full text from the statement PDF (reuse existing `extract_pdf_text` + OCR fallback)
-  - Returns list of `{ date, description, debit, credit, balance, raw_line }` per row
-  - Handles multi-page statements; preserves original row order
+### Design Note — How document content reaches the LLM
+
+The OpenRouter chat completions API used by `query_openrouter()` accepts **text only** — files cannot be attached the way they can in the ChatGPT/Claude UI. All document content must be sent as extracted text. Two roles, two treatments:
+
+- **Bank statements → structured transaction rows.** Raw `pypdf`/OCR text flattens transaction tables (columns run together, rows wrap, OCR adds noise). The statement must be turned into a clean, ordered list of rows first. This is what lets us (a) feed the reconciler an unambiguous numbered list and (b) verify no rows were dropped.
+- **Supporting documents → extracted text excerpts.** Invoices, valuations, broker listing, tax statements are read as *evidence*, not reconciled row-by-row. A labeled text excerpt per document (tagged with its Phase 1 category) is sufficient.
+
+### Transaction extraction — two approaches
+
+Task 2.1 produces the structured rows. There are two ways to do it; the data contract (output schema) is identical so downstream tasks are unaffected by the choice.
+
+| | Input | Parser | Pros | Cons |
+|---|---|---|---|---|
+| **Approach A — LLM-based** *(POC default)* | extracted statement text | a dedicated `query_openrouter()` call | Robust to messy/OCR'd text and varying statement layouts; no format-specific code | Extra LLM call (cost/latency); must validate row count |
+| **Approach B — Code-based** | extracted statement text | regex / heuristics in Python | Free, fast, deterministic | Brittle across statement formats; high-maintenance regex |
+
+**Both consume the same extracted text — neither sends the file.** The only difference is what does the parsing. A third option (multimodal vision models reading the rendered page image directly) is deferred to Story 4 as a fallback if text-based accuracy proves too low.
+
+**POC decision: implement Approach A (LLM-based) only as step 1.** Approach B is documented for a future optimisation pass and should not be built now.
+
+- [ ] **2.1** Write `extract_transactions_from_statement(pdf_path, account, api_key)` in `core_engine.py`
+  - **Approach A (LLM-based) — build this for the POC:**
+    - Extract full text from the merged statement PDF (reuse existing `extract_pdf_text` + OCR fallback)
+    - Send the extracted text to `query_openrouter()` with a prompt that asks for structured rows in JSON
+    - Response schema: `{ transactions: [{ date, description, debit, credit, balance, raw_line }] }`
+    - Preserve original row order; handle multi-page statements in one call (chunk only if context limit is hit)
+    - **Validation:** log the parsed row count; if zero rows returned from a non-empty statement, surface a warning
+  - **Approach B (code-based) — documented, NOT built in POC:**
+    - Same output schema, produced by regex/heuristics over the extracted text instead of an LLM call
+    - To be considered only if Approach A proves too slow/costly at scale
+  - Function signature should keep the parser swappable (e.g. an internal `_parse_via_llm` vs `_parse_via_regex`) so Approach B can be slotted in later without changing callers
 - [ ] **2.2** Write `build_reconciliation_prompt(phase2_context, transactions_by_account)` in `core_engine.py`
   - Injects reconciliation notes text (if present) as a preamble instruction block
   - Provides all transactions across all accounts as the subject
@@ -50,7 +77,7 @@ The following items require extending Phase 1 code. **No changes will be made un
   - Parses and validates JSON response
   - Returns `reconciliation_results` dict keyed by account number
 - [ ] **2.4** Write `run_bank_reconciliation_phase(job_id, fund_profile, job_type, api_key, scratch_dir, update_progress)` in `core_engine.py` as the new Phase 2 orchestrator
-  - Calls `build_phase2_context()` → `extract_transactions_from_statement()` per account → `run_reconciliation_call()`
+  - Calls `build_phase2_context()` → `extract_transactions_from_statement()` per account (passing `api_key` for the LLM parse pass) → `run_reconciliation_call()`
   - Returns partial results at this stage (Story 3 will extend it)
 - [ ] **2.5** Test against ADMCM: verify known transactions (ATO refund $5,674.46, accountancy fee $270.41, audit fee $517.00) are tagged `matched`
 
@@ -84,6 +111,7 @@ The following items require extending Phase 1 code. **No changes will be made un
 - [ ] **4.2** Evaluate each model on: JSON schema compliance, transaction tagging accuracy, query readability, latency, cost per run
 - [ ] **4.3** Document findings in `docs/model_selection_notes.md`
 - [ ] **4.4** Set chosen model as the default in `run_reconciliation_call()` and `run_query_generation_call()`; update fallback model accordingly
+- [ ] **4.5** If text-based transaction extraction (Story 2, Approach A) shows accuracy problems, evaluate the multimodal/vision fallback — send the rendered statement page as a base64 image to a vision-capable model instead of extracted text. Requires extending `query_openrouter()` to support image message parts. Documented here as a contingency, not a committed task.
 
 ---
 

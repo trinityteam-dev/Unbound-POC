@@ -3,7 +3,7 @@
     "id": "admcm",
     "name": "ADMCM Investments Super Fund",
     "abn": "89 292 949 026",
-    "folder_path": "docs/ADMCM",
+    "folder_path": "data/ADMCM",
     "bank_accounts": [
       {"name": "CBA Accelerator Cash Account", "number": "06716720642566", "bsb": "067-167"},
       {"name": "CBA Direct Investment Bank Account", "number": "06200016743999", "bsb": "062-000"},
@@ -36,7 +36,7 @@
     "id": "hart_super",
     "name": "Hart Family Superannuation Fund",
     "abn": "43 125 901 842",
-    "folder_path": "docs/HART",
+    "folder_path": "data/HART",
     "bank_accounts": [
       {"name": "ANZ V2 Plus Broker Account", "number": "0132567432", "bsb": "013-256"},
       {"name": "Macquarie Cash Management Account", "number": "123890456", "bsb": "182-222"}

@@ -15,8 +15,8 @@ jobs/*
 output/
 
 # Fund source documents (client PDFs — never commit)
-docs/*
-!docs/.gitkeep
+data/*
+!data/.gitkeep
 
 # macOS
 .DS_Store

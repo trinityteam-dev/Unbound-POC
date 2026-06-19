@@ -254,7 +254,7 @@ def api_create_job():
         os.makedirs(resolved_path, exist_ok=True)
         if "HART" in resolved_path:
             # Mock copy ADMCM files to HART just for testing purposes
-            admcm_path = os.path.abspath("docs/ADMCM")
+            admcm_path = os.path.abspath("data/ADMCM")
             if os.path.exists(admcm_path):
                 for f in os.listdir(admcm_path):
                     f_src = os.path.join(admcm_path, f)
@@ -544,7 +544,7 @@ def legacy_process():
             
     t = threading.Thread(
         target=run_legacy_compat,
-        args=(job_id, os.path.abspath("docs/ADMCM"), admcm),
+        args=(job_id, os.path.abspath("data/ADMCM"), admcm),
         daemon=True
     )
     t.start()

@@ -66,7 +66,7 @@ verify_and_generate_workpapers.py  # Standalone verification script (CLI)
 funds_config.json               # Fund profiles and playbook keyword config
 jobs_db.json                    # Job execution state (runtime, not committed)
 templates/index.html            # Single-page UI
-docs/                           # Sample fund documents for testing
+data/                           # Fund source documents (gitignored)
 jobs/                           # Per-job working directories (runtime, not committed)
 ```
 

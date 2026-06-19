@@ -27,7 +27,8 @@
         "ATO Trustee Declaration": "ATO, Trustee, Declaration, Compliance",
         "Income Tax Activity": "ICA, ITA, Activity Statement, Portal, Client Account",
         "Total Super annuation balance": "Total Superannuation Balance, TSB, Member, Account Balance, TSB composition",
-        "Income Tax": "Income Tax Account, ITA, Tax Assessment, Refund"
+        "Income Tax": "Income Tax Account, ITA, Tax Assessment, Refund",
+        "Ordr Mint Transation Listing": "Ord Minnett, broker, transaction, ledger, account 1160944, buy, sell, EFT"
       }
     }
   },

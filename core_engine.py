@@ -506,7 +506,7 @@ You must return a valid JSON object matching this structure:
         else:
             # Copy and Rename other files directly
             target_name = determine_target_filename(classification, filename)
-            dest_filepath = os.path.join(workpapers_dir, target_name)
+            dest_filepath = get_unique_filepath(workpapers_dir, target_name)
             
             try:
                 shutil.copy2(filepath, dest_filepath)

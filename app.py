@@ -125,7 +125,18 @@ def run_phase2_worker(job_id, fund_profile, job_type, api_key):
 
     try:
         update_job_progress(70, "Initiating AI Reviewer Agent reconciliations and calculations...")
-        from core_engine import run_ai_reviewer_phase
+        from core_engine import run_ai_reviewer_phase, build_phase2_context
+
+        # Build Phase 2 context and persist it before any AI calls
+        jobs = load_jobs()
+        job_record = next((j for j in jobs if j["job_id"] == job_id), None)
+        if job_record:
+            phase2_context = build_phase2_context(job_id, fund_profile, job_record)
+            for j in jobs:
+                if j["job_id"] == job_id:
+                    j["phase2_context"] = phase2_context
+                    break
+            save_jobs(jobs)
         
         results = run_ai_reviewer_phase(
             os.path.join("jobs", job_id), 
@@ -443,6 +454,20 @@ def api_reviewer_review(job_id):
     
     save_jobs(jobs)
     return jsonify({"status": "success", "message": "Job successfully signed off and completed."})
+
+# API - Reconciliation Results & Queries
+@app.route("/api/jobs/<job_id>/reconciliation", methods=["GET"])
+def api_job_reconciliation(job_id):
+    jobs = load_jobs()
+    job = next((j for j in jobs if j["job_id"] == job_id), None)
+    if not job:
+        return jsonify({"error": "Job not found."}), 404
+    ctx = job.get("phase2_context") or {}
+    return jsonify({
+        "reconciliation_results": ctx.get("reconciliation_results"),
+        "queries": ctx.get("queries"),
+        "summary": ctx.get("summary"),
+    })
 
 # Serving PDF files directly from job directories (staging or workpaper)
 @app.route("/api/jobs/<job_id>/file/<phase>/<filename>", methods=["GET"])

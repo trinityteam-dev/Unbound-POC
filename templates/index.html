@@ -1130,6 +1130,119 @@
             .recon-layout {
                 grid-template-columns: 1fr;
             }
+            .queries-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Bank Reconciliation & Query Panels */
+        .recon-account-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--surface-border);
+        }
+
+        .recon-account-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        .badge-matched {
+            background: var(--success-glow);
+            color: var(--success);
+            border-color: rgba(0, 175, 90, 0.2);
+        }
+
+        .badge-unmatched {
+            background: var(--danger-glow);
+            color: var(--danger);
+            border-color: rgba(239, 68, 68, 0.2);
+        }
+
+        .recon-summary-bar {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .recon-stat {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .recon-stat strong {
+            color: var(--text-main);
+            font-size: 1rem;
+        }
+
+        .queries-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.25rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .query-card {
+            background: var(--surface-color);
+            border: 1px solid var(--surface-border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .query-card-category {
+            font-family: var(--font-display);
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .query-card-text {
+            font-size: 0.88rem;
+            color: var(--text-main);
+            line-height: 1.65;
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 0.75rem;
+            border: 1px solid var(--surface-border);
+            flex: 1;
+        }
+
+        .query-tx-toggle {
+            background: transparent;
+            border: 1px solid var(--surface-border);
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.3rem 0.65rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: var(--font-sans);
+            align-self: flex-start;
+            transition: all 0.2s ease;
+        }
+
+        .query-tx-toggle:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .query-tx-list {
+            display: none;
+            margin-top: 0.25rem;
         }
     </style>
 </head>
@@ -1476,6 +1589,30 @@
                                 <div style="flex:1; overflow-y:auto; max-height:120px;" id="board-auditor-exceptions">
                                     <!-- Dynamic Exceptions -->
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- Bank Transaction Reconciliation Panel -->
+                        <div id="reconciliation-panel" style="display:none; margin-bottom:1.75rem;">
+                            <div class="card">
+                                <div class="card-header-flex">
+                                    <span class="card-title">Bank Transaction Reconciliation</span>
+                                    <div class="recon-summary-bar" id="recon-summary-bar"></div>
+                                </div>
+                                <div id="recon-accounts-container">
+                                    <!-- One section per account, rendered dynamically -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Client Query Cards Panel -->
+                        <div id="client-queries-panel" style="display:none; margin-bottom:1.75rem;">
+                            <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1rem;">
+                                <span style="font-family:var(--font-display); font-size:1.05rem; font-weight:700; color:var(--text-main);">Client Queries</span>
+                                <span id="queries-count-badge" class="badge badge-pending_reviewer_approval"></span>
+                            </div>
+                            <div class="queries-grid" id="queries-cards-container">
+                                <!-- One card per query, rendered dynamically -->
                             </div>
                         </div>
 
@@ -2072,6 +2209,9 @@
                 });
             }
 
+            // Bank reconciliation results & query cards (Phase 2 engine output)
+            renderReconciliation();
+
             const results = activeJob.results;
             if (!results) return;
 
@@ -2289,6 +2429,164 @@
             document.getElementById("member-tsb-2024-text").textContent = `$${(member.tsb_2024 || 0).toLocaleString(undefined, {minimumFractionDigits:2})}`;
             document.getElementById("member-tsb-2025-text").textContent = `$${(member.tsb_2025 || 0).toLocaleString(undefined, {minimumFractionDigits:2})}`;
             document.getElementById("member-finding-desc").textContent = member.audit_finding || "No findings.";
+        }
+
+        function renderReconciliation() {
+            const ctx = activeJob.phase2_context || {};
+            const reconResults = ctx.reconciliation_results;
+            const queries = ctx.queries;
+            const summary = ctx.summary;
+
+            const reconPanel = document.getElementById('reconciliation-panel');
+            const queriesPanel = document.getElementById('client-queries-panel');
+
+            // --- Reconciliation results ---
+            if (reconResults && Object.keys(reconResults).length > 0) {
+                reconPanel.style.display = 'block';
+
+                // Summary bar
+                const summaryBar = document.getElementById('recon-summary-bar');
+                if (summary) {
+                    summaryBar.innerHTML = `
+                        <span class="recon-stat">Total: <strong>${summary.total}</strong></span>
+                        <span class="badge-table badge-matched">&#10003; ${summary.matched} matched</span>
+                        ${summary.unmatched > 0
+                            ? `<span class="badge-table badge-unmatched">&#10007; ${summary.unmatched} unmatched</span>`
+                            : ''}
+                    `;
+                } else {
+                    summaryBar.innerHTML = '';
+                }
+
+                const accountsContainer = document.getElementById('recon-accounts-container');
+                accountsContainer.innerHTML = '';
+
+                Object.entries(reconResults).forEach(([accNum, accData]) => {
+                    const txns = accData.transactions || [];
+                    const matched = txns.filter(t => t.status === 'matched').length;
+                    const unmatched = txns.filter(t => t.status === 'unmatched').length;
+
+                    const rows = txns.map(t => {
+                        const isMatched = t.status === 'matched';
+                        const statusBadge = isMatched
+                            ? `<span class="badge-table badge-matched">&#10003; Matched</span>`
+                            : `<span class="badge-table badge-unmatched">&#10007; Unmatched</span>`;
+                        const docHtml = t.matched_document
+                            ? `<span style="font-size:0.75rem; color:var(--primary);">&#128196; ${t.matched_document}</span>`
+                            : `<span style="color:var(--text-muted);">-</span>`;
+                        const amt = parseFloat(t.amount || t.debit || t.credit || 0);
+                        const isDebit = (t.type || '').toLowerCase() === 'debit' || (t.debit && parseFloat(t.debit) > 0);
+                        const amtStyle = isDebit ? 'color:var(--danger)' : 'color:var(--success)';
+                        const amtPrefix = isDebit ? '-' : '+';
+                        const rowBg = !isMatched ? 'background:rgba(239,68,68,0.02)' : '';
+                        return `
+                            <tr style="${rowBg}">
+                                <td style="font-size:0.8rem;">${t.date || '-'}</td>
+                                <td style="font-size:0.82rem;">${t.description || '-'}</td>
+                                <td class="val-num" style="${amtStyle}; font-size:0.85rem;">${amtPrefix}$${Math.abs(amt).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+                                <td style="font-size:0.75rem; color:var(--text-muted); text-transform:capitalize;">${t.type || '-'}</td>
+                                <td>${statusBadge}</td>
+                                <td style="font-size:0.78rem; color:var(--text-muted);">${t.reason || t.unmatched_reason || '-'}</td>
+                                <td>${docHtml}</td>
+                            </tr>`;
+                    }).join('');
+
+                    const section = document.createElement('div');
+                    section.style.marginBottom = '1.5rem';
+                    section.innerHTML = `
+                        <div class="recon-account-header">
+                            <span class="recon-account-name">${accData.account_name || accNum}</span>
+                            <div style="display:flex; gap:0.5rem; align-items:center;">
+                                <span class="badge-table badge-matched">&#10003; ${matched} matched</span>
+                                ${unmatched > 0 ? `<span class="badge-table badge-unmatched">&#10007; ${unmatched} unmatched</span>` : ''}
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Description</th>
+                                        <th class="val-num">Amount</th>
+                                        <th>Type</th>
+                                        <th>Status</th>
+                                        <th>Reason</th>
+                                        <th>Supporting Document</th>
+                                    </tr>
+                                </thead>
+                                <tbody>${rows}</tbody>
+                            </table>
+                        </div>`;
+                    accountsContainer.appendChild(section);
+                });
+            } else {
+                reconPanel.style.display = 'none';
+            }
+
+            // --- Client query cards ---
+            if (queries && queries.length > 0) {
+                queriesPanel.style.display = 'block';
+                document.getElementById('queries-count-badge').textContent =
+                    `${queries.length} quer${queries.length === 1 ? 'y' : 'ies'} pending`;
+
+                const cardsContainer = document.getElementById('queries-cards-container');
+                cardsContainer.innerHTML = '';
+
+                queries.forEach((q, idx) => {
+                    const card = document.createElement('div');
+                    card.className = 'query-card';
+
+                    const txRows = (q.transactions || []).map(t => {
+                        const amtRaw = t.amount || '-';
+                        const amtDisplay = typeof amtRaw === 'number'
+                            ? '$' + Math.abs(amtRaw).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})
+                            : amtRaw;
+                        return `
+                            <tr>
+                                <td style="font-size:0.78rem; color:var(--text-muted);">${t.date || '-'}</td>
+                                <td style="font-size:0.8rem;">${t.description || '-'}</td>
+                                <td class="val-num" style="font-size:0.8rem;">${amtDisplay}</td>
+                            </tr>`;
+                    }).join('');
+
+                    const txTableId = `query-tx-${idx}`;
+                    const txCount = (q.transactions || []).length;
+                    card.innerHTML = `
+                        <div class="query-card-category">${q.category || 'Unclassified'}</div>
+                        <div class="query-card-text">${q.query_text || ''}</div>
+                        ${txCount > 0 ? `
+                            <button class="query-tx-toggle" onclick="toggleQueryTransactions('${txTableId}', this)">
+                                &#9658; Show ${txCount} transaction${txCount === 1 ? '' : 's'}
+                            </button>
+                            <div id="${txTableId}" class="query-tx-list">
+                                <div class="table-container">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Description</th>
+                                                <th class="val-num">Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>${txRows}</tbody>
+                                    </table>
+                                </div>
+                            </div>` : ''}
+                    `;
+                    cardsContainer.appendChild(card);
+                });
+            } else {
+                queriesPanel.style.display = 'none';
+            }
+        }
+
+        function toggleQueryTransactions(elementId, btn) {
+            const el = document.getElementById(elementId);
+            const isHidden = el.style.display === 'none' || el.style.display === '';
+            el.style.display = isHidden ? 'block' : 'none';
+            btn.innerHTML = isHidden
+                ? btn.innerHTML.replace('&#9658; Show', '&#9660; Hide')
+                : btn.innerHTML.replace('&#9660; Hide', '&#9658; Show');
         }
 
         function renderPlaybookManager() {

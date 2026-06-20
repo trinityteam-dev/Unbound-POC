@@ -119,16 +119,16 @@ Task 2.1 produces the structured rows. There are two ways to do it; the data con
 
 **Done when:** The UI shows a reconciliation summary and one card per query category after Phase 2 completes.
 
-- [ ] **5.1** Add `GET /api/jobs/<job_id>/reconciliation` endpoint in `app.py` — returns `job["phase2_context"]["reconciliation_results"]` and `job["phase2_context"]["queries"]`
-- [ ] **5.2** Design reconciliation summary panel in `templates/index.html`
+- [x] **5.1** Add `GET /api/jobs/<job_id>/reconciliation` endpoint in `app.py` — returns `job["phase2_context"]["reconciliation_results"]` and `job["phase2_context"]["queries"]`
+- [x] **5.2** Design reconciliation summary panel in `templates/index.html`
   - Shown in the `pending_reviewer_approval` job state
   - Displays: total transactions, matched count, unmatched count — per account and overall
   - Transaction table per account: date, description, amount, matched/unmatched badge, reason, linked document name
-- [ ] **5.3** Design query cards panel in `templates/index.html`
+- [x] **5.3** Design query cards panel in `templates/index.html`
   - One card per query from `queries` list
   - Each card shows: category heading, query text, collapsible transaction list
   - Read-only at this stage (editable in Story 6)
-- [ ] **5.4** Wire both panels to the job detail view; confirm they render correctly on a completed ADMCM Phase 2 run
+- [x] **5.4** Wire both panels to the job detail view; confirm they render correctly on a completed ADMCM Phase 2 run
 
 ---
 

@@ -28,7 +28,9 @@
         "Income Tax Activity": "ICA, ITA, Activity Statement, Portal, Client Account",
         "Total Super annuation balance": "Total Superannuation Balance, TSB, Member, Account Balance, TSB composition",
         "Income Tax": "Income Tax Account, ITA, Tax Assessment, Refund",
-        "Ordr Mint Transation Listing": "Ord Minnett, broker, transaction, ledger, account 1160944, buy, sell, EFT"
+        "Ordr Mint Transation Listing": "Ord Minnett, broker, transaction, ledger, account 1160944, buy, sell, EFT",
+        "Tax Statement Metrics": "Annual tax statement, trust distribution, Metrics",
+        "F25 Periodic Statement Metrics": "Annual periodic statement Metrics Master Income"
       }
     }
   },

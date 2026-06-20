@@ -508,6 +508,12 @@ def api_update_query_status(job_id, query_id):
 
     query = next((q for q in queries if str(q.get("id")) == str(query_id)), None)
     if not query:
+        for q in queries:
+            sub = q.get("sub_queries") or []
+            query = next((sq for sq in sub if str(sq.get("id")) == str(query_id)), None)
+            if query:
+                break
+    if not query:
         return jsonify({"error": "Query not found."}), 404
 
     query["status"] = status

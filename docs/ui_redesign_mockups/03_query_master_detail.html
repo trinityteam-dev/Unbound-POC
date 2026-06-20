@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup 3 — Query master-detail rail (recommended)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css">
+<style>
+:root {
+  --color-background-primary:#ffffff; --color-background-secondary:#f4f3ee; --color-background-tertiary:#ecebe4;
+  --color-background-info:#e6f1fb; --color-background-danger:#fcebeb; --color-background-success:#e1f5ee; --color-background-warning:#faeeda;
+  --color-text-primary:#1a1a18; --color-text-secondary:#6b6a64; --color-text-tertiary:#9b9a93;
+  --color-text-info:#185fa5; --color-text-danger:#a32d2d; --color-text-success:#0f6e56; --color-text-warning:#854f0b;
+  --color-border-tertiary:rgba(0,0,0,0.12); --color-border-secondary:rgba(0,0,0,0.22); --color-border-primary:rgba(0,0,0,0.32);
+  --color-border-info:#378add; --color-border-danger:#e24b4a; --color-border-success:#1d9e75; --color-border-warning:#ba7517;
+  --border-radius-md:8px; --border-radius-lg:12px; --border-radius-xl:16px;
+  --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; --font-mono:ui-monospace,monospace;
+}
+body{margin:0;background:var(--color-background-tertiary);color:var(--color-text-primary);font-family:var(--font-sans);}
+.page{max-width:780px;margin:0 auto;padding:24px 18px 64px;}
+.caption a{font-size:13px;color:var(--color-text-info);text-decoration:none;}
+.caption h1{font-size:20px;font-weight:500;margin:10px 0 4px;}
+.caption .rec{display:inline-block;font-size:12px;padding:2px 10px;border-radius:var(--border-radius-md);background:var(--color-background-success);color:var(--color-text-success);margin-left:8px;vertical-align:middle;}
+.caption p{font-size:14px;color:var(--color-text-secondary);margin:0 0 20px;line-height:1.6;}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);}
+input,select,textarea,button{font-family:inherit;}
+textarea{width:100%;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:8px 10px;color:var(--color-text-primary);background:var(--color-background-primary);box-sizing:border-box;}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="caption">
+    <a href="index.html">&larr; all mockups</a>
+    <h1>Mockup 3 — Query master-detail rail<span class="rec">recommended</span></h1>
+    <p>The chosen pattern for the Client Queries panel. A compact, independently-scrolling list of query groups on
+      the left; the selected group's full detail (editable text, transaction list, actions) on the right. Page height
+      is fixed at the detail pane's height — 4 groups or 43, only the rail's internal scroll changes. The coarse/granular
+      toggle simply repopulates the rail. Shown here in "Per security" mode (the many-groups case). Click any group on
+      the left.</p>
+  </div>
+  <div class="frame">
+
+<h2 class="sr-only">Client queries shown as a master-detail layout: a compact scrolling list of query groups on the left and the selected group's editable query text, transaction list, and actions on the right. The page height stays fixed regardless of how many groups exist.</h2>
+
+<div style="font-family: var(--font-sans);">
+
+  <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
+    <p style="margin:0; font-size:15px; font-weight:500;">Client queries</p>
+    <span style="font-size:12px; padding:3px 10px; border-radius:var(--border-radius-md); background:var(--color-background-secondary); color:var(--color-text-secondary);">43 groups</span>
+    <div style="margin-left:auto; display:flex; border:0.5px solid var(--color-border-secondary); border-radius:var(--border-radius-md); overflow:hidden;">
+      <span style="font-size:12px; padding:5px 12px; color:var(--color-text-secondary);">Summary</span>
+      <span style="font-size:12px; padding:5px 12px; background:var(--color-background-info); color:var(--color-text-info);">Per security</span>
+    </div>
+  </div>
+
+  <div style="display:flex; gap:12px; align-items:stretch; min-height:340px;">
+
+    <div style="flex:0 0 232px; border:0.5px solid var(--color-border-tertiary); border-radius:var(--border-radius-lg); overflow:hidden; display:flex; flex-direction:column;">
+      <div style="padding:8px 12px; border-bottom:0.5px solid var(--color-border-tertiary); font-size:12px; color:var(--color-text-tertiary);">Groups · scrolls independently</div>
+      <div id="rail" style="overflow-y:auto; max-height:380px;"></div>
+    </div>
+
+    <div id="detail" style="flex:1; min-width:0; border:0.5px solid var(--color-border-tertiary); border-radius:var(--border-radius-lg); padding:1rem 1.1rem; display:flex; flex-direction:column;"></div>
+
+  </div>
+
+  <p style="margin:0.9rem 0 0; font-size:13px; color:var(--color-text-tertiary);">Selecting a group on the left loads it on the right. The rail scrolls; the page does not grow whether there are 4 groups or 40.</p>
+
+</div>
+
+<script>
+(function(){
+  var groups = [
+    {id:"G1", cat:"Bank interest", n:33, amt:"$1,284.50", status:"pending", doc:"bank interest certificates"},
+    {id:"G2", cat:"GQG dividends", n:5, amt:"$3,421.18", status:"pending", doc:"dividend statements"},
+    {id:"G3", cat:"NAB dividends", n:8, amt:"$5,902.40", status:"sent", doc:"dividend statements"},
+    {id:"G4", cat:"BHP dividends", n:6, amt:"$4,118.92", status:"pending", doc:"dividend statements"},
+    {id:"G5", cat:"PERLS XV distributions", n:4, amt:"$6,347.00", status:"pending", doc:"distribution notices"},
+    {id:"G6", cat:"CHC distributions", n:3, amt:"$2,810.40", status:"dismissed", doc:"distribution notices"},
+    {id:"G7", cat:"ACDC dividends", n:2, amt:"$966.13", status:"pending", doc:"dividend statements"},
+    {id:"G8", cat:"MCP Master Income", n:4, amt:"$756.00", status:"pending", doc:"distribution notices"},
+    {id:"G9", cat:"Broker settlements", n:3, amt:"$60,360.79", status:"pending", doc:"contract notes"},
+    {id:"G10", cat:"Regulatory fees — ASIC", n:1, amt:"$65.00", status:"pending", doc:"ASIC invoice"},
+    {id:"G11", cat:"WBC dividends", n:7, amt:"$3,902.10", status:"pending", doc:"dividend statements"},
+    {id:"G12", cat:"CBA dividends", n:9, amt:"$7,140.55", status:"pending", doc:"dividend statements"}
+  ];
+  var txns = [
+    ["27/06/2024","Direct Credit 513270 GQG DIV 001319007442","+$648.60"],
+    ["26/09/2024","Direct Credit 513270 GQG DIV 001325587607","+$700.94"],
+    ["19/12/2024","Direct Credit 513270 GQG DIV 001331004821","+$812.55"],
+    ["27/03/2025","Direct Credit 513270 GQG DIV 001338229104","+$709.10"],
+    ["26/06/2025","Direct Credit 513270 GQG DIV 001344910237","+$549.99"]
+  ];
+  function dot(s){
+    var m = {pending:"var(--color-text-warning)", sent:"var(--color-text-success)", dismissed:"var(--color-text-tertiary)"};
+    return '<span style="width:7px; height:7px; border-radius:50%; background:'+m[s]+'; flex-shrink:0;" aria-hidden="true"></span>';
+  }
+  var selected = "G2";
+  function renderRail(){
+    document.getElementById('rail').innerHTML = groups.map(function(g){
+      var on = g.id===selected;
+      return '<div class="row" data-id="'+g.id+'" style="display:flex; align-items:center; gap:8px; padding:9px 12px; cursor:pointer; border-bottom:0.5px solid var(--color-border-tertiary); border-left:2px solid '+(on?'var(--color-border-info)':'transparent')+'; background:'+(on?'var(--color-background-secondary)':'transparent')+';">'+
+        dot(g.status)+
+        '<div style="flex:1; min-width:0;"><p style="margin:0; font-size:13px; font-weight:'+(on?'500':'400')+'; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">'+g.cat+'</p></div>'+
+        '<span style="font-size:11px; color:var(--color-text-secondary); flex-shrink:0;">'+g.n+'</span>'+
+      '</div>';
+    }).join('') + '<div style="padding:9px 12px; font-size:12px; color:var(--color-text-tertiary); text-align:center;">+31 more · scroll</div>';
+    document.querySelectorAll('.row').forEach(function(r){
+      r.addEventListener('click', function(){ selected = r.getAttribute('data-id'); renderRail(); renderDetail(); });
+    });
+  }
+  function statusBadge(s){
+    var m = {pending:["var(--color-background-warning)","var(--color-text-warning)","pending"], sent:["var(--color-background-success)","var(--color-text-success)","sent"], dismissed:["var(--color-background-secondary)","var(--color-text-tertiary)","dismissed"]};
+    var v=m[s]; return '<span style="font-size:11px; padding:2px 9px; border-radius:var(--border-radius-md); background:'+v[0]+'; color:'+v[1]+';">'+v[2]+'</span>';
+  }
+  function renderDetail(){
+    var g = groups.find(function(x){return x.id===selected;});
+    document.getElementById('detail').innerHTML =
+      '<div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;"><span style="font-size:11px; color:var(--color-text-tertiary);">'+g.id+'</span><span style="font-size:15px; font-weight:500;">'+g.cat+'</span><span style="margin-left:auto;">'+statusBadge(g.status)+'</span></div>'+
+      '<div style="display:flex; gap:14px; margin-bottom:12px; font-size:12px; color:var(--color-text-secondary);"><span>'+g.n+' transactions</span><span>·</span><span>'+g.amt+' total</span></div>'+
+      '<textarea style="min-height:70px; font-size:13px; resize:vertical;">We have identified '+g.n+' unmatched '+g.cat+' transactions totalling '+g.amt+'. Please provide the relevant '+g.doc+' for each of the following.</textarea>'+
+      '<p style="margin:12px 0 6px; font-size:12px; color:var(--color-text-secondary);">Transactions</p>'+
+      '<div style="border:0.5px solid var(--color-border-tertiary); border-radius:var(--border-radius-md); overflow:hidden;"><div style="max-height:132px; overflow-y:auto;">'+
+        txns.map(function(r){return '<div style="display:flex; gap:8px; padding:7px 12px; border-bottom:0.5px solid var(--color-border-tertiary); font-size:12px;"><span style="color:var(--color-text-secondary); width:74px; flex-shrink:0;">'+r[0]+'</span><span style="flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">'+r[1]+'</span><span style="width:78px; text-align:right; flex-shrink:0; color:var(--color-text-success);">'+r[2]+'</span></div>';}).join('')+
+      '</div></div>'+
+      '<div style="display:flex; gap:8px; margin-top:auto; padding-top:14px;"><span style="font-size:13px; padding:6px 18px; border-radius:var(--border-radius-md); background:var(--color-background-info); color:var(--color-text-info);">Send</span><span style="font-size:13px; padding:6px 18px; border-radius:var(--border-radius-md); border:0.5px solid var(--color-border-secondary); color:var(--color-text-secondary);">Dismiss</span></div>';
+  }
+  renderRail(); renderDetail();
+})();
+</script>
+
+  </div>
+</div>
+</body>
+</html>

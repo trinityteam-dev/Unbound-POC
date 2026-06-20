@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup 1 — Sub-tabs + KPI strip + collapsible reconciliation</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css">
+<style>
+:root {
+  --color-background-primary:#ffffff; --color-background-secondary:#f4f3ee; --color-background-tertiary:#ecebe4;
+  --color-background-info:#e6f1fb; --color-background-danger:#fcebeb; --color-background-success:#e1f5ee; --color-background-warning:#faeeda;
+  --color-text-primary:#1a1a18; --color-text-secondary:#6b6a64; --color-text-tertiary:#9b9a93;
+  --color-text-info:#185fa5; --color-text-danger:#a32d2d; --color-text-success:#0f6e56; --color-text-warning:#854f0b;
+  --color-border-tertiary:rgba(0,0,0,0.12); --color-border-secondary:rgba(0,0,0,0.22); --color-border-primary:rgba(0,0,0,0.32);
+  --color-border-info:#378add; --color-border-danger:#e24b4a; --color-border-success:#1d9e75; --color-border-warning:#ba7517;
+  --border-radius-md:8px; --border-radius-lg:12px; --border-radius-xl:16px;
+  --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; --font-mono:ui-monospace,monospace;
+}
+body{margin:0;background:var(--color-background-tertiary);color:var(--color-text-primary);font-family:var(--font-sans);}
+.page{max-width:780px;margin:0 auto;padding:24px 18px 64px;}
+.caption a{font-size:13px;color:var(--color-text-info);text-decoration:none;}
+.caption h1{font-size:20px;font-weight:500;margin:10px 0 4px;}
+.caption p{font-size:14px;color:var(--color-text-secondary);margin:0 0 20px;line-height:1.6;}
+.frame{background:var(--color-background-tertiary);}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);}
+input,select,textarea,button{font-family:inherit;}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="caption">
+    <a href="index.html">&larr; all mockups</a>
+    <h1>Mockup 1 — Sub-tabs + KPI strip + collapsible reconciliation</h1>
+    <p>The first-pass information architecture. Replaces the single endless column with a KPI summary strip
+      and four sub-tabs. Bank reconciliation accounts collapse to per-account summaries that expand into a
+      bounded, internally-scrolling row list. Click the sub-tabs and the account rows to interact.
+      (Light-theme reference render; the live app is dark-themed and would inherit its own styles.)</p>
+  </div>
+  <div class="frame">
+
+<h2 class="sr-only">Redesigned Step 2 view with a KPI summary strip, four sub-tabs, and a collapsible per-account bank reconciliation panel.</h2>
+
+<div style="font-family: var(--font-sans);">
+
+  <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:1rem;">
+    <div>
+      <p style="margin:0; font-size:18px; font-weight:500; color:var(--color-text-primary);">Step 2 — Orchestration &amp; Data Intel</p>
+      <p style="margin:2px 0 0; font-size:13px; color:var(--color-text-secondary);">ADMCM Investments Super Fund · job_20260620_150223</p>
+    </div>
+    <span style="font-size:12px; padding:4px 12px; border-radius:var(--border-radius-md); background:var(--color-background-warning); color:var(--color-text-warning);">Sign-off pending</span>
+  </div>
+
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(96px,1fr)); gap:10px; margin-bottom:1.25rem;">
+    <div style="background:var(--color-background-secondary); border-radius:var(--border-radius-md); padding:0.75rem 0.85rem;">
+      <p style="margin:0; font-size:12px; color:var(--color-text-secondary);">Transactions</p>
+      <p style="margin:3px 0 0; font-size:22px; font-weight:500;">197</p>
+    </div>
+    <div style="background:var(--color-background-secondary); border-radius:var(--border-radius-md); padding:0.75rem 0.85rem;">
+      <p style="margin:0; font-size:12px; color:var(--color-text-secondary);">Matched</p>
+      <p style="margin:3px 0 0; font-size:22px; font-weight:500; color:var(--color-text-success);">33</p>
+    </div>
+    <div style="background:var(--color-background-secondary); border-radius:var(--border-radius-md); padding:0.75rem 0.85rem;">
+      <p style="margin:0; font-size:12px; color:var(--color-text-secondary);">Unmatched</p>
+      <p style="margin:3px 0 0; font-size:22px; font-weight:500; color:var(--color-text-warning);">164</p>
+    </div>
+    <div style="background:var(--color-background-secondary); border-radius:var(--border-radius-md); padding:0.75rem 0.85rem;">
+      <p style="margin:0; font-size:12px; color:var(--color-text-secondary);">Queries</p>
+      <p style="margin:3px 0 0; font-size:22px; font-weight:500;">4</p>
+    </div>
+    <div style="background:var(--color-background-secondary); border-radius:var(--border-radius-md); padding:0.75rem 0.85rem;">
+      <p style="margin:0; font-size:12px; color:var(--color-text-secondary);">Exceptions</p>
+      <p style="margin:3px 0 0; font-size:22px; font-weight:500; color:var(--color-text-danger);">4</p>
+    </div>
+  </div>
+
+  <div role="tablist" style="display:flex; gap:4px; border-bottom:0.5px solid var(--color-border-secondary); margin-bottom:1.25rem; flex-wrap:wrap;">
+    <button class="s2tab" data-tab="recon" aria-selected="true" style="border:none; background:none; padding:8px 14px; font-size:14px; cursor:pointer; color:var(--color-text-primary); border-bottom:2px solid var(--color-border-info); margin-bottom:-1px;"><i class="ti ti-arrows-exchange" style="font-size:16px; vertical-align:-2px; margin-right:6px" aria-hidden="true"></i>Reconciliation &amp; Queries</button>
+    <button class="s2tab" data-tab="schedules" aria-selected="false" style="border:none; background:none; padding:8px 14px; font-size:14px; cursor:pointer; color:var(--color-text-secondary); border-bottom:2px solid transparent; margin-bottom:-1px;"><i class="ti ti-table" style="font-size:16px; vertical-align:-2px; margin-right:6px" aria-hidden="true"></i>Lead Schedules</button>
+    <button class="s2tab" data-tab="compliance" aria-selected="false" style="border:none; background:none; padding:8px 14px; font-size:14px; cursor:pointer; color:var(--color-text-secondary); border-bottom:2px solid transparent; margin-bottom:-1px;"><i class="ti ti-shield-check" style="font-size:16px; vertical-align:-2px; margin-right:6px" aria-hidden="true"></i>Compliance</button>
+    <button class="s2tab" data-tab="orch" aria-selected="false" style="border:none; background:none; padding:8px 14px; font-size:14px; cursor:pointer; color:var(--color-text-secondary); border-bottom:2px solid transparent; margin-bottom:-1px;"><i class="ti ti-robot" style="font-size:16px; vertical-align:-2px; margin-right:6px" aria-hidden="true"></i>Orchestration</button>
+  </div>
+
+  <div class="s2panel" data-panel="recon">
+    <p style="margin:0 0 10px; font-size:15px; font-weight:500;">Bank transaction reconciliation</p>
+    <div id="accts" style="display:flex; flex-direction:column; gap:8px; margin-bottom:1.5rem;"></div>
+
+    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+      <p style="margin:0; font-size:15px; font-weight:500;">Client queries</p>
+      <span style="font-size:12px; padding:3px 10px; border-radius:var(--border-radius-md); background:var(--color-background-secondary); color:var(--color-text-secondary);">4 cards</span>
+      <div style="margin-left:auto; display:flex; border:0.5px solid var(--color-border-secondary); border-radius:var(--border-radius-md); overflow:hidden;">
+        <span style="font-size:12px; padding:5px 12px; background:var(--color-background-info); color:var(--color-text-info);">Summary</span>
+        <span style="font-size:12px; padding:5px 12px; color:var(--color-text-secondary);">Per security</span>
+      </div>
+    </div>
+    <div id="queries" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:10px;"></div>
+  </div>
+
+  <div class="s2panel" data-panel="schedules" style="display:none;">
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:10px;">
+      <div style="background:var(--color-background-primary); border:0.5px solid var(--color-border-tertiary); border-radius:var(--border-radius-lg); padding:1rem 1.1rem;"><p style="margin:0; font-size:14px; font-weight:500;"><i class="ti ti-cash" style="font-size:16px; vertical-align:-2px; margin-right:6px" aria-hidden="true"></i>Cash lead schedule</p><p style="margin:6px 0 0; font-size:13px; color:var(--color-text-secondary);">3 accounts · verification checks</p></div>
+      <div style="background:var(--color-background-primary); border:0.5px solid var(--color-border-tertiary); border-radius:var(--border-radius-lg); padding:1rem 1.1rem;"><p style="margin:0; font-size:14px; font-weight:500;"><i class="ti ti-chart-pie" style="font-size:16px; vertical-align:-2px; margin-right:6px" aria-hidden="true"></i>Securities portfolio</p><p style="margin:6px 0 0; font-size:13px; color:var(--color-text-secondary);">Valuation + MXT registry check</p></div>
+      <div style="background:var(--color-background-primary); border:0.5px solid var(--color-border-tertiary); border-radius:var(--border-radius-lg); padding:1rem 1.1rem;"><p style="margin:0; font-size:14px; font-weight:500;"><i class="ti ti-receipt-tax" style="font-size:16px; vertical-align:-2px; margin-right:6px" aria-hidden="true"></i>ATO tax ledger</p><p style="margin:6px 0 0; font-size:13px; color:var(--color-text-secondary);">Reconciliation + outstanding returns</p></div>
+      <div style="background:var(--color-background-primary); border:0.5px solid var(--color-border-tertiary); border-radius:var(--border-radius-lg); padding:1rem 1.1rem;"><p style="margin:0; font-size:14px; font-weight:500;"><i class="ti ti-user-dollar" style="font-size:16px; vertical-align:-2px; margin-right:6px" aria-hidden="true"></i>Member TSB</p><p style="margin:6px 0 0; font-size:13px; color:var(--color-text-secondary);">Total super balance variance</p></div>
+    </div>
+    <p style="margin:1rem 0 0; font-size:13px; color:var(--color-text-tertiary);">The four legacy financial schedules, grouped — each on its own short panel instead of stacked down the page.</p>
+  </div>
+
+  <div class="s2panel" data-panel="compliance" style="display:none;">
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:10px;">
+      <div style="background:var(--color-background-primary); border:0.5px solid var(--color-border-tertiary); border-radius:var(--border-radius-lg); padding:1rem 1.1rem;"><p style="margin:0; font-size:14px; font-weight:500;"><i class="ti ti-list-check" style="font-size:16px; vertical-align:-2px; margin-right:6px" aria-hidden="true"></i>Document checklist</p><p style="margin:6px 0 0; font-size:13px; color:var(--color-text-secondary);">9 categories verified</p></div>
+      <div style="background:var(--color-background-primary); border:0.5px solid var(--color-border-tertiary); border-radius:var(--border-radius-lg); padding:1rem 1.1rem;"><p style="margin:0; font-size:14px; font-weight:500;"><i class="ti ti-clipboard-text" style="font-size:16px; vertical-align:-2px; margin-right:6px" aria-hidden="true"></i>3-way notes board</p><p style="margin:6px 0 0; font-size:13px; color:var(--color-text-secondary);">Processor · reviewer · auditor</p></div>
+      <div style="background:var(--color-background-primary); border:0.5px solid var(--color-border-danger); border-radius:var(--border-radius-lg); padding:1rem 1.1rem;"><p style="margin:0; font-size:14px; font-weight:500;"><i class="ti ti-alert-triangle" style="font-size:16px; vertical-align:-2px; margin-right:6px" aria-hidden="true"></i>Exceptions log</p><p style="margin:6px 0 0; font-size:13px; color:var(--color-text-secondary);">3 errors · 1 warning</p></div>
+    </div>
+  </div>
+
+  <div class="s2panel" data-panel="orch" style="display:none;">
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:10px;">
+      <div style="background:var(--color-background-primary); border:0.5px solid var(--color-border-tertiary); border-radius:var(--border-radius-lg); padding:1rem 1.1rem;"><p style="margin:0; font-size:14px; font-weight:500;"><i class="ti ti-timeline" style="font-size:16px; vertical-align:-2px; margin-right:6px" aria-hidden="true"></i>Active orchestration flow</p><p style="margin:6px 0 0; font-size:13px; color:var(--color-text-secondary);">4-agent HITL timeline · 100%</p></div>
+      <div style="background:var(--color-background-primary); border:0.5px solid var(--color-border-tertiary); border-radius:var(--border-radius-lg); padding:1rem 1.1rem;"><p style="margin:0; font-size:14px; font-weight:500;"><i class="ti ti-terminal-2" style="font-size:16px; vertical-align:-2px; margin-right:6px" aria-hidden="true"></i>Agent execution logs</p><p style="margin:6px 0 0; font-size:13px; color:var(--color-text-secondary);">Bounded, internally scrolled</p></div>
+    </div>
+    <p style="margin:1rem 0 0; font-size:13px; color:var(--color-text-tertiary);">Process/meta panels moved off the prime data scroll — available when needed, out of the way otherwise. (Superseded by Mockup 2: the orchestration flow is promoted to a persistent header instead.)</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var accts = [
+    {num:"06716720642566", name:"CBA Accelerator Cash Account", total:150, matched:5, unmatched:145, open:true},
+    {num:"06200016743999", name:"CBA Direct Investment Account", total:38, matched:19, unmatched:19, open:false},
+    {num:"1160944", name:"Term Deposit", total:9, matched:9, unmatched:0, open:false}
+  ];
+  var rows = [
+    ["28/05/2025","Direct Credit 012721 ATO ATO0030000214","+$5,674.46","matched"],
+    ["02/07/2024","Direct Debit 625407 FinClear Service 3264373","-$24,107.58","matched"],
+    ["27/06/2024","Direct Credit 513270 GQG DIV 001319007442","+$648.60","unmatched"],
+    ["17/06/2024","Direct Credit PERLS XV DST","+$1,586.75","unmatched"]
+  ];
+  function badge(s){
+    var ok = s==="matched";
+    return '<span style="font-size:11px; padding:2px 8px; border-radius:var(--border-radius-md); background:'+(ok?'var(--color-background-success)':'var(--color-background-warning)')+'; color:'+(ok?'var(--color-text-success)':'var(--color-text-warning)')+';">'+s+'</span>';
+  }
+  function acctHtml(a){
+    var body = a.unmatched>0 ?
+      '<div style="max-height:148px; overflow-y:auto; margin-top:8px; border-top:0.5px solid var(--color-border-tertiary);">'+
+        rows.map(function(r){return '<div style="display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:0.5px solid var(--color-border-tertiary); font-size:12px;"><span style="color:var(--color-text-secondary); width:74px; flex-shrink:0;">'+r[0]+'</span><span style="flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">'+r[1]+'</span><span style="width:84px; text-align:right; flex-shrink:0;">'+r[2]+'</span><span style="width:74px; text-align:right; flex-shrink:0;">'+badge(r[3])+'</span></div>';}).join('')+
+        '<p style="margin:8px 0 2px; font-size:12px; color:var(--color-text-tertiary); text-align:center;">scrolls within the panel — never grows the page</p>'+
+      '</div>' : '';
+    return '<div class="acct" data-num="'+a.num+'" style="background:var(--color-background-primary); border:0.5px solid var(--color-border-tertiary); border-radius:var(--border-radius-lg); padding:0.85rem 1rem;">'+
+      '<div class="acct-h" style="display:flex; align-items:center; gap:10px; cursor:pointer;">'+
+        '<i class="ti ti-chevron-'+(a.open?'down':'right')+'" style="font-size:18px; color:var(--color-text-secondary);" aria-hidden="true"></i>'+
+        '<div style="flex:1; min-width:0;"><p style="margin:0; font-size:13px; font-weight:500;">'+a.name+'</p><p style="margin:1px 0 0; font-size:12px; color:var(--color-text-secondary);">'+a.num+'</p></div>'+
+        '<span style="font-size:12px; color:var(--color-text-secondary);">'+a.total+' txns</span>'+
+        '<span style="font-size:11px; padding:2px 8px; border-radius:var(--border-radius-md); background:var(--color-background-success); color:var(--color-text-success);">'+a.matched+' matched</span>'+
+        (a.unmatched>0?'<span style="font-size:11px; padding:2px 8px; border-radius:var(--border-radius-md); background:var(--color-background-warning); color:var(--color-text-warning);">'+a.unmatched+' unmatched</span>':'')+
+      '</div>'+
+      '<div class="acct-body" style="display:'+(a.open?'block':'none')+';">'+body+'</div>'+
+    '</div>';
+  }
+  document.getElementById('accts').innerHTML = accts.map(acctHtml).join('');
+  document.querySelectorAll('.acct').forEach(function(el){
+    el.querySelector('.acct-h').addEventListener('click', function(){
+      var b = el.querySelector('.acct-body'), c = el.querySelector('.ti');
+      var hidden = b.style.display==='none';
+      b.style.display = hidden?'block':'none';
+      c.className = 'ti ti-chevron-'+(hidden?'down':'right');
+    });
+  });
+
+  var queries = [
+    ["Q1","Bank interest","33 txns"],
+    ["Q2","Broker settlements","3 txns"],
+    ["Q3","Investment income — dividends & distributions","127 txns · 40 sub"],
+    ["Q4","Regulatory fees — ASIC","1 txn"]
+  ];
+  document.getElementById('queries').innerHTML = queries.map(function(q){
+    return '<div style="background:var(--color-background-primary); border:0.5px solid var(--color-border-tertiary); border-radius:var(--border-radius-lg); padding:0.85rem 1rem;">'+
+      '<div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;"><span style="font-size:11px; color:var(--color-text-tertiary);">'+q[0]+'</span><span style="font-size:13px; font-weight:500;">'+q[1]+'</span></div>'+
+      '<p style="margin:0 0 8px; font-size:12px; color:var(--color-text-secondary);">'+q[2]+'</p>'+
+      '<div style="display:flex; gap:6px;"><span style="font-size:12px; padding:4px 12px; border-radius:var(--border-radius-md); background:var(--color-background-info); color:var(--color-text-info);">Send</span><span style="font-size:12px; padding:4px 12px; border-radius:var(--border-radius-md); border:0.5px solid var(--color-border-secondary); color:var(--color-text-secondary);">Dismiss</span></div>'+
+    '</div>';
+  }).join('');
+
+  document.querySelectorAll('.s2tab').forEach(function(t){
+    t.addEventListener('click', function(){
+      document.querySelectorAll('.s2tab').forEach(function(x){
+        x.style.color='var(--color-text-secondary)'; x.style.borderBottomColor='transparent'; x.setAttribute('aria-selected','false');
+      });
+      t.style.color='var(--color-text-primary)'; t.style.borderBottomColor='var(--color-border-info)'; t.setAttribute('aria-selected','true');
+      document.querySelectorAll('.s2panel').forEach(function(p){
+        p.style.display = p.getAttribute('data-panel')===t.getAttribute('data-tab') ? 'block':'none';
+      });
+    });
+  });
+})();
+</script>
+
+  </div>
+</div>
+</body>
+</html>

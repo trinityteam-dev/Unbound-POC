@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup 2 — Persistent stepper + in-card query expansion</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css">
+<style>
+:root {
+  --color-background-primary:#ffffff; --color-background-secondary:#f4f3ee; --color-background-tertiary:#ecebe4;
+  --color-background-info:#e6f1fb; --color-background-danger:#fcebeb; --color-background-success:#e1f5ee; --color-background-warning:#faeeda;
+  --color-text-primary:#1a1a18; --color-text-secondary:#6b6a64; --color-text-tertiary:#9b9a93;
+  --color-text-info:#185fa5; --color-text-danger:#a32d2d; --color-text-success:#0f6e56; --color-text-warning:#854f0b;
+  --color-border-tertiary:rgba(0,0,0,0.12); --color-border-secondary:rgba(0,0,0,0.22); --color-border-primary:rgba(0,0,0,0.32);
+  --color-border-info:#378add; --color-border-danger:#e24b4a; --color-border-success:#1d9e75; --color-border-warning:#ba7517;
+  --border-radius-md:8px; --border-radius-lg:12px; --border-radius-xl:16px;
+  --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; --font-mono:ui-monospace,monospace;
+}
+body{margin:0;background:var(--color-background-tertiary);color:var(--color-text-primary);font-family:var(--font-sans);}
+.page{max-width:780px;margin:0 auto;padding:24px 18px 64px;}
+.caption a{font-size:13px;color:var(--color-text-info);text-decoration:none;}
+.caption h1{font-size:20px;font-weight:500;margin:10px 0 4px;}
+.caption p{font-size:14px;color:var(--color-text-secondary);margin:0 0 20px;line-height:1.6;}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);}
+input,select,textarea,button{font-family:inherit;}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="caption">
+    <a href="index.html">&larr; all mockups</a>
+    <h1>Mockup 2 — Persistent stepper + in-card query expansion</h1>
+    <p>Refinement of Mockup 1 addressing two review points. (1) The orchestration flow is promoted out of the
+      tabs into a persistent stepper pinned at the top — it is wayfinding, not data, so it stays visible across
+      all sub-tabs. (2) Query cards become full-width and expand in place: a "Show N transactions" toggle drops a
+      bounded scroll list inside the card. <strong>Note:</strong> this card layout was set aside because it does
+      not scale — at 10+ groups the stacked cards reintroduce the long scroll. See Mockup 3 for the chosen query
+      pattern. Click "Show … transactions" on any card.</p>
+  </div>
+  <div class="frame">
+
+<h2 class="sr-only">Revised Step 2 layout with a persistent four-step workflow stepper pinned at the top, a KPI strip, sub-tabs, and full-width client query cards that expand in place to reveal a bounded scrolling transaction list.</h2>
+
+<div style="font-family: var(--font-sans);">
+
+  <div style="background:var(--color-background-secondary); border-radius:var(--border-radius-lg); padding:0.9rem 1rem; margin-bottom:1rem;">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+      <p style="margin:0; font-size:13px; font-weight:500; color:var(--color-text-secondary);">Active orchestration flow</p>
+      <span style="font-size:12px; color:var(--color-text-success);">100% · awaiting human reviewer</span>
+    </div>
+    <div style="display:flex; align-items:center;">
+      <div style="display:flex; flex-direction:column; align-items:center; flex:0 0 auto; width:110px;">
+        <div style="width:34px; height:34px; border-radius:50%; background:var(--color-background-success); color:var(--color-text-success); display:flex; align-items:center; justify-content:center;"><i class="ti ti-check" style="font-size:18px;" aria-hidden="true"></i></div>
+        <p style="margin:6px 0 0; font-size:12px; text-align:center;">AI Processor</p>
+        <span style="font-size:11px; color:var(--color-text-tertiary);">AI Agent</span>
+      </div>
+      <div style="flex:1; height:2px; background:var(--color-text-success); margin-bottom:30px;"></div>
+      <div style="display:flex; flex-direction:column; align-items:center; flex:0 0 auto; width:110px;">
+        <div style="width:34px; height:34px; border-radius:50%; background:var(--color-background-success); color:var(--color-text-success); display:flex; align-items:center; justify-content:center;"><i class="ti ti-check" style="font-size:18px;" aria-hidden="true"></i></div>
+        <p style="margin:6px 0 0; font-size:12px; text-align:center;">Human Processor</p>
+        <span style="font-size:11px; color:var(--color-text-tertiary);">HITL</span>
+      </div>
+      <div style="flex:1; height:2px; background:var(--color-text-success); margin-bottom:30px;"></div>
+      <div style="display:flex; flex-direction:column; align-items:center; flex:0 0 auto; width:110px;">
+        <div style="width:34px; height:34px; border-radius:50%; background:var(--color-background-success); color:var(--color-text-success); display:flex; align-items:center; justify-content:center;"><i class="ti ti-check" style="font-size:18px;" aria-hidden="true"></i></div>
+        <p style="margin:6px 0 0; font-size:12px; text-align:center;">AI Reviewer</p>
+        <span style="font-size:11px; color:var(--color-text-tertiary);">AI Agent</span>
+      </div>
+      <div style="flex:1; height:2px; background:var(--color-border-secondary); margin-bottom:30px;"></div>
+      <div style="display:flex; flex-direction:column; align-items:center; flex:0 0 auto; width:110px;">
+        <div style="width:34px; height:34px; border-radius:50%; background:var(--color-background-warning); color:var(--color-text-warning); display:flex; align-items:center; justify-content:center; box-shadow:0 0 0 4px var(--color-background-warning);"><i class="ti ti-key" style="font-size:17px;" aria-hidden="true"></i></div>
+        <p style="margin:6px 0 0; font-size:12px; text-align:center; font-weight:500;">Human Reviewer</p>
+        <span style="font-size:11px; color:var(--color-text-warning);">You are here</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(92px,1fr)); gap:10px; margin-bottom:1.1rem;">
+    <div style="background:var(--color-background-secondary); border-radius:var(--border-radius-md); padding:0.6rem 0.8rem;"><p style="margin:0; font-size:12px; color:var(--color-text-secondary);">Transactions</p><p style="margin:2px 0 0; font-size:20px; font-weight:500;">197</p></div>
+    <div style="background:var(--color-background-secondary); border-radius:var(--border-radius-md); padding:0.6rem 0.8rem;"><p style="margin:0; font-size:12px; color:var(--color-text-secondary);">Matched</p><p style="margin:2px 0 0; font-size:20px; font-weight:500; color:var(--color-text-success);">33</p></div>
+    <div style="background:var(--color-background-secondary); border-radius:var(--border-radius-md); padding:0.6rem 0.8rem;"><p style="margin:0; font-size:12px; color:var(--color-text-secondary);">Unmatched</p><p style="margin:2px 0 0; font-size:20px; font-weight:500; color:var(--color-text-warning);">164</p></div>
+    <div style="background:var(--color-background-secondary); border-radius:var(--border-radius-md); padding:0.6rem 0.8rem;"><p style="margin:0; font-size:12px; color:var(--color-text-secondary);">Queries</p><p style="margin:2px 0 0; font-size:20px; font-weight:500;">4</p></div>
+    <div style="background:var(--color-background-secondary); border-radius:var(--border-radius-md); padding:0.6rem 0.8rem;"><p style="margin:0; font-size:12px; color:var(--color-text-secondary);">Exceptions</p><p style="margin:2px 0 0; font-size:20px; font-weight:500; color:var(--color-text-danger);">4</p></div>
+  </div>
+
+  <div style="display:flex; gap:4px; border-bottom:0.5px solid var(--color-border-secondary); margin-bottom:1.1rem; flex-wrap:wrap;">
+    <span style="padding:8px 14px; font-size:14px; color:var(--color-text-primary); border-bottom:2px solid var(--color-border-info); margin-bottom:-1px;">Reconciliation &amp; Queries</span>
+    <span style="padding:8px 14px; font-size:14px; color:var(--color-text-secondary);">Lead Schedules</span>
+    <span style="padding:8px 14px; font-size:14px; color:var(--color-text-secondary);">Compliance</span>
+    <span style="padding:8px 14px; font-size:14px; color:var(--color-text-secondary);">Agent Logs</span>
+  </div>
+
+  <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
+    <p style="margin:0; font-size:15px; font-weight:500;">Client queries</p>
+    <span style="font-size:12px; padding:3px 10px; border-radius:var(--border-radius-md); background:var(--color-background-secondary); color:var(--color-text-secondary);">4 cards</span>
+    <div style="margin-left:auto; display:flex; border:0.5px solid var(--color-border-secondary); border-radius:var(--border-radius-md); overflow:hidden;">
+      <span style="font-size:12px; padding:5px 12px; background:var(--color-background-info); color:var(--color-text-info);">Summary</span>
+      <span style="font-size:12px; padding:5px 12px; color:var(--color-text-secondary);">Per security</span>
+    </div>
+  </div>
+
+  <div id="qlist" style="display:flex; flex-direction:column; gap:10px;"></div>
+
+</div>
+
+<script>
+(function(){
+  var txns = [
+    ["27/06/2024","Direct Credit 513270 GQG DIV 001319007442","+$648.60"],
+    ["26/09/2024","Direct Credit 513270 GQG DIV 001325587607","+$700.94"],
+    ["17/06/2024","Direct Credit PERLS XV DST 001311","+$1,586.75"],
+    ["11/06/2024","Direct Credit MCP MASTER INCOM","+$189.00"],
+    ["28/02/2025","Direct Credit 323551 CHC DST 001329915174","+$936.80"],
+    ["16/07/2024","Direct Credit ACDC DIV 0014872","+$483.07"]
+  ];
+  var cards = [
+    {id:"Q1", cat:"Bank interest", n:33, sub:null, open:false},
+    {id:"Q2", cat:"Broker settlements", n:3, sub:null, open:false},
+    {id:"Q3", cat:"Investment income — dividends & distributions", n:127, sub:40, open:true},
+    {id:"Q4", cat:"Regulatory fees — ASIC", n:1, sub:null, open:false}
+  ];
+  function txList(n){
+    return '<div style="margin-top:10px; border:0.5px solid var(--color-border-tertiary); border-radius:var(--border-radius-md); overflow:hidden;">'+
+      '<div style="max-height:150px; overflow-y:auto;">'+
+        txns.map(function(r){return '<div style="display:flex; gap:8px; padding:7px 12px; border-bottom:0.5px solid var(--color-border-tertiary); font-size:12px;"><span style="color:var(--color-text-secondary); width:74px; flex-shrink:0;">'+r[0]+'</span><span style="flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">'+r[1]+'</span><span style="width:78px; text-align:right; flex-shrink:0; color:var(--color-text-success);">'+r[2]+'</span></div>';}).join('')+
+      '</div>'+
+      '<p style="margin:0; padding:7px 12px; font-size:11px; color:var(--color-text-tertiary); text-align:center; background:var(--color-background-secondary);">showing 6 of '+n+' · scrolls inside the card</p>'+
+    '</div>';
+  }
+  function card(c){
+    var subRow = c.sub ? '<div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap;"><span style="font-size:11px; color:var(--color-text-tertiary); align-self:center;">Per-security split:</span><span style="font-size:11px; padding:2px 8px; border-radius:var(--border-radius-md); background:var(--color-background-secondary);">NAB ×8</span><span style="font-size:11px; padding:2px 8px; border-radius:var(--border-radius-md); background:var(--color-background-secondary);">GQG ×5</span><span style="font-size:11px; padding:2px 8px; border-radius:var(--border-radius-md); background:var(--color-background-secondary);">+38 more</span></div>' : '';
+    return '<div class="qcard" data-id="'+c.id+'" style="background:var(--color-background-primary); border:0.5px solid var(--color-border-tertiary); border-radius:var(--border-radius-lg); padding:0.9rem 1.1rem;">'+
+      '<div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;"><span style="font-size:11px; color:var(--color-text-tertiary);">'+c.id+'</span><span style="font-size:14px; font-weight:500;">'+c.cat+'</span><span style="margin-left:auto; font-size:11px; padding:2px 9px; border-radius:var(--border-radius-md); background:var(--color-background-warning); color:var(--color-text-warning);">pending</span></div>'+
+      '<div style="border:0.5px solid var(--color-border-tertiary); border-radius:var(--border-radius-md); padding:8px 10px; font-size:13px; color:var(--color-text-secondary); line-height:1.5; background:var(--color-background-secondary);">Dear Client, to correctly classify the investment income for ADMCM Investments Super Fund, please provide the dividend statements or distribution notices for the following '+c.n+' transactions…</div>'+
+      subRow+
+      '<button class="qtoggle" style="margin-top:10px; border:none; background:none; padding:0; font-size:13px; color:var(--color-text-info); cursor:pointer; display:inline-flex; align-items:center; gap:5px;"><i class="ti ti-chevron-'+(c.open?'down':'right')+'" style="font-size:16px;" aria-hidden="true"></i><span>'+(c.open?'Hide':'Show')+' '+c.n+' transaction'+(c.n>1?'s':'')+'</span></button>'+
+      '<div class="qbody" style="display:'+(c.open?'block':'none')+';">'+txList(c.n)+'</div>'+
+      '<div style="display:flex; gap:8px; margin-top:12px; padding-top:10px; border-top:0.5px solid var(--color-border-tertiary);"><span style="font-size:13px; padding:5px 16px; border-radius:var(--border-radius-md); background:var(--color-background-info); color:var(--color-text-info);">Send</span><span style="font-size:13px; padding:5px 16px; border-radius:var(--border-radius-md); border:0.5px solid var(--color-border-secondary); color:var(--color-text-secondary);">Dismiss</span><span style="margin-left:auto; font-size:13px; padding:5px 12px; color:var(--color-text-secondary);"><i class="ti ti-edit" style="font-size:15px; vertical-align:-2px; margin-right:4px" aria-hidden="true"></i>Edit</span></div>'+
+    '</div>';
+  }
+  document.getElementById('qlist').innerHTML = cards.map(card).join('');
+  document.querySelectorAll('.qcard').forEach(function(el){
+    var btn = el.querySelector('.qtoggle');
+    btn.addEventListener('click', function(){
+      var b = el.querySelector('.qbody'), c = btn.querySelector('.ti'), label = btn.querySelector('span');
+      var hidden = b.style.display==='none';
+      b.style.display = hidden?'block':'none';
+      c.className = 'ti ti-chevron-'+(hidden?'down':'right');
+      label.textContent = label.textContent.replace(hidden?'Show':'Hide', hidden?'Hide':'Show');
+    });
+  });
+})();
+</script>
+
+  </div>
+</div>
+</body>
+</html>

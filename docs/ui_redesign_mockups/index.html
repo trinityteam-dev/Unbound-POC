@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Step 2 UI Redesign — Mockups</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css">
+<style>
+:root {
+  --bg:#ecebe4; --surface:#ffffff; --muted:#6b6a64; --hint:#9b9a93; --ink:#1a1a18;
+  --info:#185fa5; --info-bg:#e6f1fb; --ok:#0f6e56; --ok-bg:#e1f5ee; --border:rgba(0,0,0,0.12); --border2:rgba(0,0,0,0.22);
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);}
+.page{max-width:760px;margin:0 auto;padding:32px 18px 64px;}
+h1{font-size:22px;font-weight:500;margin:0 0 6px;}
+.sub{font-size:14px;color:var(--muted);margin:0 0 28px;line-height:1.6;}
+.card{display:block;text-decoration:none;color:inherit;background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:14px;transition:border-color .12s;}
+.card:hover{border-color:var(--border2);}
+.card .row{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.card h2{font-size:16px;font-weight:500;margin:0;}
+.tag{font-size:11px;padding:2px 9px;border-radius:8px;}
+.tag.rec{background:var(--ok-bg);color:var(--ok);}
+.tag.super{background:#f4f3ee;color:var(--hint);}
+.card p{font-size:13.5px;color:var(--muted);margin:0;line-height:1.6;}
+.card .open{font-size:13px;color:var(--info);margin-top:10px;display:inline-flex;align-items:center;gap:5px;}
+.note{font-size:12.5px;color:var(--hint);margin-top:24px;line-height:1.6;border-top:0.5px solid var(--border);padding-top:16px;}
+.note code{font-family:ui-monospace,monospace;background:#f4f3ee;padding:1px 5px;border-radius:4px;font-size:12px;}
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Step 2 "Orchestration &amp; Data Intel" — UI redesign mockups</h1>
+  <p class="sub">Interactive reference mockups for the Step 2 layout redesign. These accompany
+    <code style="font-family:ui-monospace,monospace;">docs/STORY9_STEP2_UI_REDESIGN.md</code>. Open each in a browser and click around —
+    sub-tabs, collapsible rows, and the master-detail rail are all live. Light-theme reference renders; the live app is dark-themed.</p>
+
+  <a class="card" href="01_subtabs_kpi_collapsible.html">
+    <div class="row"><i class="ti ti-layout-dashboard" style="font-size:20px;color:var(--muted);" aria-hidden="true"></i><h2>Mockup 1 — Sub-tabs + KPI strip + collapsible reconciliation</h2></div>
+    <p>First-pass information architecture. KPI summary strip and four sub-tabs replace the single endless column.
+      Bank reconciliation accounts collapse to per-account summaries with bounded internal scroll.</p>
+    <span class="open">Open mockup <i class="ti ti-arrow-right" style="font-size:15px;" aria-hidden="true"></i></span>
+  </a>
+
+  <a class="card" href="02_stepper_and_query_expansion.html">
+    <div class="row"><i class="ti ti-timeline" style="font-size:20px;color:var(--muted);" aria-hidden="true"></i><h2>Mockup 2 — Persistent stepper + in-card query expansion</h2><span class="tag super">card layout set aside</span></div>
+    <p>Promotes the orchestration flow into a persistent top stepper (wayfinding, always visible). Query cards
+      expand in place. The full-width card layout was set aside — it does not scale past ~10 groups.</p>
+    <span class="open">Open mockup <i class="ti ti-arrow-right" style="font-size:15px;" aria-hidden="true"></i></span>
+  </a>
+
+  <a class="card" href="03_query_master_detail.html">
+    <div class="row"><i class="ti ti-columns" style="font-size:20px;color:var(--muted);" aria-hidden="true"></i><h2>Mockup 3 — Query master-detail rail</h2><span class="tag rec">recommended</span></div>
+    <p>The chosen query pattern. A scrolling group rail + fixed detail pane. Page height is constant whether there
+      are 4 coarse groups or 43 granular ones; the coarse/granular toggle just repopulates the rail.</p>
+    <span class="open">Open mockup <i class="ti ti-arrow-right" style="font-size:15px;" aria-hidden="true"></i></span>
+  </a>
+
+  <p class="note">These mockups are static design references using placeholder ADMCM data. They render with a
+    light theme and the Tabler icon webfont from a CDN — an internet connection is needed for the icons to appear.
+    The production implementation would inherit the app's existing dark theme and live data.</p>
+</div>
+</body>
+</html>

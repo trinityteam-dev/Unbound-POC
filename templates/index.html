@@ -1354,6 +1354,122 @@
             border-left: 3px solid rgba(99, 102, 241, 0.3);
             margin-left: 0.5rem;
         }
+
+        /* KPI Summary Strip */
+        .kpi-strip {
+            display: flex;
+            gap: 0.5rem 1.25rem;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 1.1rem;
+            padding: 0.8rem 1rem;
+            background: var(--surface-color);
+            border: 1px solid var(--surface-border);
+            border-radius: 10px;
+        }
+        .kpi-stat { display: flex; flex-direction: column; gap: 0.1rem; min-width: 64px; }
+        .kpi-stat-value { font-size: 1.35rem; font-weight: 800; font-family: var(--font-display); color: var(--text-main); line-height: 1; }
+        .kpi-stat-label { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 0.2rem; }
+        .kpi-divider { width: 1px; background: var(--surface-border); align-self: stretch; margin: 0 0.25rem; }
+
+        /* Sub-tab Navigation */
+        .di-sub-nav {
+            display: flex;
+            gap: 0;
+            margin-bottom: 1.25rem;
+            border-bottom: 1px solid var(--surface-border);
+        }
+        .di-sub-btn {
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            padding: 0.55rem 1rem;
+            font-family: var(--font-display);
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            margin-bottom: -1px;
+            transition: color 0.15s, border-color 0.15s;
+            white-space: nowrap;
+        }
+        .di-sub-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+        .di-sub-btn:hover:not(.active) { color: var(--text-main); }
+
+        /* Query Master-Detail Rail */
+        .query-rail-layout {
+            display: flex;
+            gap: 0.75rem;
+            min-height: 380px;
+        }
+        .query-rail-list {
+            flex: 0 0 230px;
+            border: 1px solid var(--surface-border);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .query-rail-list-header {
+            padding: 0.5rem 0.75rem;
+            border-bottom: 1px solid var(--surface-border);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-family: var(--font-display);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .query-rail-rows { overflow-y: auto; flex: 1; }
+        .query-rail-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 0.75rem;
+            cursor: pointer;
+            border-bottom: 1px solid var(--surface-border);
+            border-left: 2px solid transparent;
+            transition: background 0.1s;
+        }
+        .query-rail-row:hover { background: rgba(99,102,241,0.04); }
+        .query-rail-row.selected { border-left-color: var(--primary); background: rgba(99,102,241,0.06); }
+        .query-rail-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+        .query-rail-cat { flex: 1; font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .query-rail-count { font-size: 0.72rem; color: var(--text-muted); flex-shrink: 0; }
+        .query-rail-detail {
+            flex: 1;
+            min-width: 0;
+            border: 1px solid var(--surface-border);
+            border-radius: 12px;
+            padding: 1rem 1.1rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Collapsible Reconciliation Account Rows */
+        .recon-account-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            cursor: pointer;
+            width: 100%;
+            padding: 0.7rem 0;
+            border: none;
+            border-bottom: 1px solid var(--surface-border);
+            background: none;
+            text-align: left;
+            color: inherit;
+        }
+        .recon-account-toggle:hover { background: rgba(255,255,255,0.02); }
+        .recon-account-expand-icon { font-size: 0.65rem; color: var(--text-muted); flex-shrink: 0; transition: transform 0.2s; }
+        .recon-account-rows-inner { max-height: 320px; overflow-y: auto; }
+
+        @media (max-width: 768px) {
+            .query-rail-layout { flex-direction: column; }
+            .query-rail-list { flex: none; max-height: 220px; }
+            .di-sub-btn { padding: 0.5rem 0.65rem; font-size: 0.75rem; }
+            .kpi-strip { gap: 0.5rem 0.75rem; }
+        }
     </style>
 </head>
 <body>
@@ -1609,46 +1725,6 @@
 
                 <!-- TAB 2: Agent Orchestration & Data Intelligence -->
                 <div id="orch-tab" class="tab-content">
-                    <div class="card">
-                        <div class="card-header-flex">
-                            <span class="card-title">Active Orchestration Flow</span>
-                            <span id="orchestration-progress-text" style="font-size:0.85rem; font-weight:700; color:var(--primary);">0%</span>
-                        </div>
-                        
-                        <!-- Agent timeline graph -->
-                        <div class="timeline">
-                            <div class="timeline-step" id="timeline-step-1">
-                                <div class="timeline-node">🤖</div>
-                                <span class="timeline-label">AI Processor</span>
-                                <span class="timeline-owner"><span class="owner-badge">AI Agent</span></span>
-                            </div>
-                            <div class="timeline-step" id="timeline-step-2">
-                                <div class="timeline-node">✍️</div>
-                                <span class="timeline-label">Human Processor</span>
-                                <span class="timeline-owner"><span class="owner-badge" style="background:var(--warning-glow); color:var(--warning)">Human HITL</span></span>
-                            </div>
-                            <div class="timeline-step" id="timeline-step-3">
-                                <div class="timeline-node">🔍</div>
-                                <span class="timeline-label">AI Reviewer</span>
-                                <span class="timeline-owner"><span class="owner-badge">AI Agent</span></span>
-                            </div>
-                            <div class="timeline-step" id="timeline-step-4">
-                                <div class="timeline-node">🔑</div>
-                                <span class="timeline-label">Human Reviewer</span>
-                                <span class="timeline-owner"><span class="owner-badge" style="background:var(--success-glow); color:var(--success)">Human Sign-off</span></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="card-header-flex">
-                            <span class="card-title">Agent Execution Logs</span>
-                            <span style="font-size:0.8rem; color:var(--success); font-family:monospace;">antigravity_core_shell</span>
-                        </div>
-                        <div class="terminal-log" id="terminal-log-container">
-                            <!-- Populated dynamically -->
-                        </div>
-                    </div>
 
                     <!-- Locked View (if Phase 2 hasn't run) -->
                     <div id="data-intelligence-locked" class="welcome-screen" style="padding: 3rem 1rem;">
@@ -1659,217 +1735,269 @@
 
                     <!-- Unlocked View (populates on Phase 2 completion) -->
                     <div id="data-intelligence-unlocked" style="display:none;">
-                        
-                        <!-- Checklist Table -->
-                        <div class="card">
-                            <div class="card-header-flex">
-                                <span class="card-title">Document Audit Checklist Verification</span>
-                                <span id="checklist-summary-badge" class="status-badge verified">0 of 0 verified</span>
-                            </div>
-                            <div class="table-container">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Checklist Category</th>
-                                            <th>Required Document Item</th>
-                                            <th>Verification Status</th>
-                                            <th>Attached Files (in workpapers/)</th>
-                                            <th>AI Auditor Comments / Notes</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="checklist-table-tbody">
-                                        <!-- Loaded dynamically -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
 
-                        <!-- 3-Way Notes Board -->
-                        <div class="notes-board">
-                            <div class="note-card" style="border-top: 3px solid var(--warning);">
-                                <span class="note-card-title">✍️ Processor Escalation Notes</span>
-                                <textarea id="board-processor-notes" class="note-textarea" readonly></textarea>
+                        <!-- Persistent Workflow Stepper -->
+                        <div class="card" style="margin-bottom:1rem;">
+                            <div class="card-header-flex">
+                                <span class="card-title">Active Orchestration Flow</span>
+                                <span id="orchestration-progress-text" style="font-size:0.85rem; font-weight:700; color:var(--primary);">0%</span>
                             </div>
-                            <div class="note-card" style="border-top: 3px solid var(--info);">
-                                <span class="note-card-title">🔍 AI Reviewer Notes</span>
-                                <textarea id="board-reviewer-notes" class="note-textarea" placeholder="AI reviewer recommendations will appear here..."></textarea>
-                            </div>
-                            <div class="note-card" style="border-top: 3px solid var(--success);">
-                                <span class="note-card-title">🛡️ Auditor Exceptions Log</span>
-                                <div style="flex:1; overflow-y:auto; max-height:120px;" id="board-auditor-exceptions">
-                                    <!-- Dynamic Exceptions -->
+                            <div class="timeline">
+                                <div class="timeline-step" id="timeline-step-1">
+                                    <div class="timeline-node">🤖</div>
+                                    <span class="timeline-label">AI Processor</span>
+                                    <span class="timeline-owner"><span class="owner-badge">AI Agent</span></span>
+                                </div>
+                                <div class="timeline-step" id="timeline-step-2">
+                                    <div class="timeline-node">✍️</div>
+                                    <span class="timeline-label">Human Processor</span>
+                                    <span class="timeline-owner"><span class="owner-badge" style="background:var(--warning-glow); color:var(--warning)">Human HITL</span></span>
+                                </div>
+                                <div class="timeline-step" id="timeline-step-3">
+                                    <div class="timeline-node">🔍</div>
+                                    <span class="timeline-label">AI Reviewer</span>
+                                    <span class="timeline-owner"><span class="owner-badge">AI Agent</span></span>
+                                </div>
+                                <div class="timeline-step" id="timeline-step-4">
+                                    <div class="timeline-node">🔑</div>
+                                    <span class="timeline-label">Human Reviewer</span>
+                                    <span class="timeline-owner"><span class="owner-badge" style="background:var(--success-glow); color:var(--success)">Human Sign-off</span></span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Bank Transaction Reconciliation Panel -->
-                        <div id="reconciliation-panel" style="display:none; margin-bottom:1.75rem;">
+                        <!-- KPI Summary Strip -->
+                        <div class="kpi-strip" id="kpi-strip"></div>
+
+                        <!-- Sub-tab Navigation -->
+                        <div class="di-sub-nav">
+                            <button class="di-sub-btn active" onclick="switchDiTab('recon-queries')">Reconciliation &amp; Queries</button>
+                            <button class="di-sub-btn" onclick="switchDiTab('lead-schedules')">Lead Schedules</button>
+                            <button class="di-sub-btn" onclick="switchDiTab('compliance')">Compliance</button>
+                            <button class="di-sub-btn" onclick="switchDiTab('agent-logs')">Agent Logs</button>
+                        </div>
+
+                        <!-- TAB PANE: Reconciliation & Queries -->
+                        <div class="di-sub-pane" id="di-tab-recon-queries">
+
+                            <!-- Bank Transaction Reconciliation Panel -->
+                            <div id="reconciliation-panel" style="display:none; margin-bottom:1.75rem;">
+                                <div class="card">
+                                    <div class="card-header-flex">
+                                        <span class="card-title">Bank Transaction Reconciliation</span>
+                                        <div class="recon-summary-bar" id="recon-summary-bar"></div>
+                                    </div>
+                                    <div id="recon-accounts-container">
+                                        <!-- Collapsible account sections rendered dynamically -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Client Query Rail Panel -->
+                            <div id="client-queries-panel" style="display:none; margin-bottom:1.75rem;">
+                                <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1rem; flex-wrap:wrap;">
+                                    <span style="font-family:var(--font-display); font-size:1.05rem; font-weight:700; color:var(--text-main);">Client Queries</span>
+                                    <span id="queries-count-badge" class="badge badge-pending_reviewer_approval"></span>
+                                    <div class="queries-view-toggle" id="queries-view-toggle" style="display:none; margin-left:auto;">
+                                        <button id="btn-coarse-view" class="active" onclick="setQueryView('coarse')">Summary</button>
+                                        <button id="btn-granular-view" onclick="setQueryView('granular')">Per Security</button>
+                                    </div>
+                                </div>
+                                <div class="query-rail-layout">
+                                    <div class="query-rail-list">
+                                        <div class="query-rail-list-header">Groups</div>
+                                        <div class="query-rail-rows" id="query-rail-rows"></div>
+                                    </div>
+                                    <div class="query-rail-detail" id="query-rail-detail">
+                                        <p style="color:var(--text-muted); font-size:0.85rem; margin:0;">Select a group to view details.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Final Audit Completion Sign-off Card -->
+                            <div class="card" style="margin-top: 1.5rem;" id="reviewer-signoff-card">
+                                <span class="card-title">Human Auditor &amp; Reviewer Final sign-off</span>
+                                <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1rem;">Submit final review to sign off the financial ledger. This action marks the job as <strong>Completed</strong>.</p>
+                                <div style="display:flex; justify-content:flex-end;">
+                                    <button class="btn-primary" onclick="submitFinalReview()">
+                                        🛡️ Complete Job &amp; Sign-Off Report
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div><!-- end di-tab-recon-queries -->
+
+                        <!-- TAB PANE: Lead Schedules -->
+                        <div class="di-sub-pane" id="di-tab-lead-schedules" style="display:none;">
+
+                            <div class="recon-layout">
+                                <div class="card" style="margin-bottom: 0;">
+                                    <div class="card-header-flex">
+                                        <span class="card-title">Cash Lead Schedule</span>
+                                        <span style="font-size:0.8rem; color:var(--text-muted);" id="cash-reconciled-time">As of 30 June 2025</span>
+                                    </div>
+                                    <div class="table-container">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th>Account Name &amp; Number</th>
+                                                    <th>BSB</th>
+                                                    <th class="val-num">Opening Bal (1 Jul 24)</th>
+                                                    <th class="val-num">Closing Bal (30 Jun 25)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="cash-tbody"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="card" style="margin-bottom: 0;">
+                                    <span class="card-title">Cash Verification Checks</span>
+                                    <div class="check-box-list" id="cash-checks-list"></div>
+                                </div>
+                            </div>
+
+                            <div class="recon-layout">
+                                <div class="card" style="margin-bottom: 0;">
+                                    <div class="card-header-flex">
+                                        <span class="card-title">Securities Portfolio Valuation</span>
+                                        <span style="font-size:0.8rem; color:var(--text-muted);">SIS Reg 8.02B Market Valuation Check</span>
+                                    </div>
+                                    <div class="table-container">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th>Asset Period</th>
+                                                    <th class="val-num">Total Cost ($)</th>
+                                                    <th class="val-num">Market Value ($)</th>
+                                                    <th class="val-num">Est. Annual Income ($)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="portfolio-tbody"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="card" style="margin-bottom: 0;">
+                                    <span class="card-title" id="mxt-recon-header-title">MXT Registry Check</span>
+                                    <div class="check-box-list">
+                                        <div class="check-box-item">
+                                            <div class="check-box-item-header">
+                                                <span style="font-weight:600;">Pricing Variance Check</span>
+                                                <span class="chk-fail" id="mxt-variance-badge">Variance</span>
+                                            </div>
+                                            <div class="check-box-item-desc" id="mxt-variance-text">Reconciling MXT Registry NAV vs Ledger...</div>
+                                        </div>
+                                        <div class="check-box-item">
+                                            <div class="check-box-item-header">
+                                                <span style="font-weight:600;">Managed Fund Distributions</span>
+                                                <span class="chk-pass">Pass</span>
+                                            </div>
+                                            <div class="check-box-item-desc" id="mxt-distribution-text">Income distributions matched across tax statement...</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="recon-layout" style="margin-top: 1.5rem;">
+                                <div class="card" style="margin-bottom: 0;">
+                                    <span class="card-title">ATO Tax Reconciliation Ledger</span>
+                                    <div class="table-container">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th>ATO Account Ledger</th>
+                                                    <th class="val-num">Balance 30-Jun-25 ($)</th>
+                                                    <th>Reconciliation Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tax-tbody"></tbody>
+                                        </table>
+                                    </div>
+                                    <div style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted);" id="tax-return-outstanding-text">
+                                        Outstanding Returns: FY25 - Outstanding.
+                                    </div>
+                                </div>
+                                <div class="card" style="margin-bottom: 0;">
+                                    <span class="card-title">Member Total Superannuation Balance (TSB)</span>
+                                    <div style="display:flex; flex-direction:column; gap:0.5rem; font-size:0.82rem;">
+                                        <div style="display:flex; justify-content:space-between;">
+                                            <span style="color:var(--text-muted);">Member Name:</span>
+                                            <strong id="member-name-text" style="color:#fff;">Andrea Martignoni</strong>
+                                        </div>
+                                        <div style="display:flex; justify-content:space-between;">
+                                            <span style="color:var(--text-muted);">Tax File Number (TFN):</span>
+                                            <strong id="member-tfn-text">139 809 744</strong>
+                                        </div>
+                                        <div style="display:flex; justify-content:space-between; margin-top:0.3rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top:0.3rem;">
+                                            <span style="color:var(--text-muted);">FY24 Audited TSB:</span>
+                                            <strong id="member-tsb-2024-text">$2,159,140.32</strong>
+                                        </div>
+                                        <div style="display:flex; justify-content:space-between;">
+                                            <span style="color:var(--text-muted);">FY25 ATO Ledger TSB:</span>
+                                            <strong id="member-tsb-2025-text" style="color:var(--warning);">$8,680.99</strong>
+                                        </div>
+                                        <div style="background:rgba(245,158,11,0.05); border: 1px solid rgba(245,158,11,0.15); padding:0.5rem; border-radius:6px; font-size:0.75rem; margin-top:0.25rem;" id="member-finding-desc">
+                                            discrepancy notes here
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div><!-- end di-tab-lead-schedules -->
+
+                        <!-- TAB PANE: Compliance -->
+                        <div class="di-sub-pane" id="di-tab-compliance" style="display:none;">
+
                             <div class="card">
                                 <div class="card-header-flex">
-                                    <span class="card-title">Bank Transaction Reconciliation</span>
-                                    <div class="recon-summary-bar" id="recon-summary-bar"></div>
+                                    <span class="card-title">Document Audit Checklist Verification</span>
+                                    <span id="checklist-summary-badge" class="status-badge verified">0 of 0 verified</span>
                                 </div>
-                                <div id="recon-accounts-container">
-                                    <!-- One section per account, rendered dynamically -->
+                                <div class="table-container">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Checklist Category</th>
+                                                <th>Required Document Item</th>
+                                                <th>Verification Status</th>
+                                                <th>Attached Files (in workpapers/)</th>
+                                                <th>AI Auditor Comments / Notes</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="checklist-table-tbody"></tbody>
+                                    </table>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Client Query Cards Panel -->
-                        <div id="client-queries-panel" style="display:none; margin-bottom:1.75rem;">
-                            <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1rem; flex-wrap:wrap;">
-                                <span style="font-family:var(--font-display); font-size:1.05rem; font-weight:700; color:var(--text-main);">Client Queries</span>
-                                <span id="queries-count-badge" class="badge badge-pending_reviewer_approval"></span>
-                                <!-- Coarse / Granular toggle — hidden until sub_queries are available -->
-                                <div class="queries-view-toggle" id="queries-view-toggle" style="display:none; margin-left:auto;">
-                                    <button id="btn-coarse-view" class="active" onclick="setQueryView('coarse')">Summary</button>
-                                    <button id="btn-granular-view" onclick="setQueryView('granular')">Per Security</button>
+                            <div class="notes-board">
+                                <div class="note-card" style="border-top: 3px solid var(--warning);">
+                                    <span class="note-card-title">✍️ Processor Escalation Notes</span>
+                                    <textarea id="board-processor-notes" class="note-textarea" readonly></textarea>
+                                </div>
+                                <div class="note-card" style="border-top: 3px solid var(--info);">
+                                    <span class="note-card-title">🔍 AI Reviewer Notes</span>
+                                    <textarea id="board-reviewer-notes" class="note-textarea" placeholder="AI reviewer recommendations will appear here..."></textarea>
+                                </div>
+                                <div class="note-card" style="border-top: 3px solid var(--success);">
+                                    <span class="note-card-title">🛡️ Auditor Exceptions Log</span>
+                                    <div style="flex:1; overflow-y:auto; max-height:120px;" id="board-auditor-exceptions"></div>
                                 </div>
                             </div>
-                            <div class="queries-grid" id="queries-cards-container">
-                                <!-- One card per query, rendered dynamically -->
-                            </div>
-                        </div>
 
-                        <!-- Lead Schedules (Cash & Portfolio) -->
-                        <div class="recon-layout">
-                            <div class="card" style="margin-bottom: 0;">
+                        </div><!-- end di-tab-compliance -->
+
+                        <!-- TAB PANE: Agent Logs -->
+                        <div class="di-sub-pane" id="di-tab-agent-logs" style="display:none;">
+                            <div class="card">
                                 <div class="card-header-flex">
-                                    <span class="card-title">Cash Lead Schedule</span>
-                                    <span style="font-size:0.8rem; color:var(--text-muted);" id="cash-reconciled-time">As of 30 June 2025</span>
+                                    <span class="card-title">Agent Execution Logs</span>
+                                    <span style="font-size:0.8rem; color:var(--success); font-family:monospace;">antigravity_core_shell</span>
                                 </div>
-                                <div class="table-container">
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th>Account Name &amp; Number</th>
-                                                <th>BSB</th>
-                                                <th class="val-num">Opening Bal (1 Jul 24)</th>
-                                                <th class="val-num">Closing Bal (30 Jun 25)</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="cash-tbody">
-                                            <!-- Dynamic -->
-                                        </tbody>
-                                    </table>
-                                </div>
+                                <div class="terminal-log" id="terminal-log-container"></div>
                             </div>
-                            
-                            <div class="card" style="margin-bottom: 0;">
-                                <span class="card-title">Cash Verification Checks</span>
-                                <div class="check-box-list" id="cash-checks-list">
-                                    <!-- Dynamic -->
-                                </div>
-                            </div>
-                        </div>
+                        </div><!-- end di-tab-agent-logs -->
 
-                        <!-- Portfolio Schedule -->
-                        <div class="recon-layout">
-                            <div class="card" style="margin-bottom: 0;">
-                                <div class="card-header-flex">
-                                    <span class="card-title">Securities Portfolio Valuation</span>
-                                    <span style="font-size:0.8rem; color:var(--text-muted);">SIS Reg 8.02B Market Valuation Check</span>
-                                </div>
-                                <div class="table-container">
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th>Asset Period</th>
-                                                <th class="val-num">Total Cost ($)</th>
-                                                <th class="val-num">Market Value ($)</th>
-                                                <th class="val-num">Est. Annual Income ($)</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="portfolio-tbody">
-                                            <!-- Dynamic -->
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-                            <div class="card" style="margin-bottom: 0;">
-                                <span class="card-title" id="mxt-recon-header-title">MXT Registry Check</span>
-                                <div class="check-box-list">
-                                    <div class="check-box-item">
-                                        <div class="check-box-item-header">
-                                            <span style="font-weight:600;">Pricing Variance Check</span>
-                                            <span class="chk-fail" id="mxt-variance-badge">Variance</span>
-                                        </div>
-                                        <div class="check-box-item-desc" id="mxt-variance-text">Reconciling MXT Registry NAV vs Ledger...</div>
-                                    </div>
-                                    <div class="check-box-item">
-                                        <div class="check-box-item-header">
-                                            <span style="font-weight:600;">Managed Fund Distributions</span>
-                                            <span class="chk-pass">Pass</span>
-                                        </div>
-                                        <div class="check-box-item-desc" id="mxt-distribution-text">Income distributions matched across tax statement...</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Tax & Members Schedule -->
-                        <div class="recon-layout" style="margin-top: 1.5rem;">
-                            <div class="card" style="margin-bottom: 0;">
-                                <span class="card-title">ATO Tax Reconciliation Ledger</span>
-                                <div class="table-container">
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th>ATO Account Ledger</th>
-                                                <th class="val-num">Balance 30-Jun-25 ($)</th>
-                                                <th>Reconciliation Status</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="tax-tbody">
-                                            <!-- Dynamic -->
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted);" id="tax-return-outstanding-text">
-                                    Outstanding Returns: FY25 - Outstanding.
-                                </div>
-                            </div>
-
-                            <div class="card" style="margin-bottom: 0;">
-                                <span class="card-title">Member Total Superannuation Balance (TSB)</span>
-                                <div style="display:flex; flex-direction:column; gap:0.5rem; font-size:0.82rem;">
-                                    <div style="display:flex; justify-content:space-between;">
-                                        <span style="color:var(--text-muted);">Member Name:</span>
-                                        <strong id="member-name-text" style="color:#fff;">Andrea Martignoni</strong>
-                                    </div>
-                                    <div style="display:flex; justify-content:space-between;">
-                                        <span style="color:var(--text-muted);">Tax File Number (TFN):</span>
-                                        <strong id="member-tfn-text">139 809 744</strong>
-                                    </div>
-                                    <div style="display:flex; justify-content:space-between; margin-top:0.3rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top:0.3rem;">
-                                        <span style="color:var(--text-muted);">FY24 Audited TSB:</span>
-                                        <strong id="member-tsb-2024-text">$2,159,140.32</strong>
-                                    </div>
-                                    <div style="display:flex; justify-content:space-between;">
-                                        <span style="color:var(--text-muted);">FY25 ATO Ledger TSB:</span>
-                                        <strong id="member-tsb-2025-text" style="color:var(--warning);">$8,680.99</strong>
-                                    </div>
-                                    <div style="background:rgba(245,158,11,0.05); border: 1px solid rgba(245,158,11,0.15); padding:0.5rem; border-radius:6px; font-size:0.75rem; margin-top:0.25rem;" id="member-finding-desc">
-                                        discrepancy notes here
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Final Audit Completion Sign-off Card -->
-                        <div class="card" style="margin-top: 1.5rem;" id="reviewer-signoff-card">
-                            <span class="card-title">Human Auditor &amp; Reviewer Final sign-off</span>
-                            <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1rem;">Submit final review to sign off the financial ledger. This action marks the job as <strong>Completed</strong>.</p>
-                            <div style="display:flex; justify-content:flex-end;">
-                                <button class="btn-primary" onclick="submitFinalReview()">
-                                    🛡️ Complete Job &amp; Sign-Off Report
-                                </button>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
+                    </div><!-- end data-intelligence-unlocked -->
+                </div><!-- end orch-tab -->
 
             </div>
 
@@ -2576,6 +2704,8 @@
             const queries = ctx.queries;
             const summary = ctx.summary;
 
+            renderKpiStrip();
+
             const reconPanel = document.getElementById('reconciliation-panel');
             const queriesPanel = document.getElementById('client-queries-panel');
 
@@ -2599,6 +2729,8 @@
 
                 const accountsContainer = document.getElementById('recon-accounts-container');
                 accountsContainer.innerHTML = '';
+
+                let firstUnmatched = true;
 
                 Object.entries(reconResults).forEach(([accNum, accData]) => {
                     const txns = accData.transactions || [];
@@ -2630,31 +2762,39 @@
                             </tr>`;
                     }).join('');
 
+                    const isOpen = unmatched > 0 && firstUnmatched;
+                    if (unmatched > 0 && firstUnmatched) firstUnmatched = false;
+                    const bodyId = 'recon-acc-body-' + accNum.replace(/\W/g, '_');
+
                     const section = document.createElement('div');
-                    section.style.marginBottom = '1.5rem';
                     section.innerHTML = `
-                        <div class="recon-account-header">
-                            <span class="recon-account-name">${accData.account_name || accNum}</span>
+                        <button class="recon-account-toggle" onclick="toggleReconAccount('${bodyId}', this)" aria-expanded="${isOpen}">
+                            <span class="recon-account-expand-icon">${isOpen ? '▼' : '▶'}</span>
+                            <span class="recon-account-name" style="flex:1;">${accData.account_name || accNum}</span>
                             <div style="display:flex; gap:0.5rem; align-items:center;">
                                 <span class="badge-table badge-matched">&#10003; ${matched} matched</span>
                                 ${unmatched > 0 ? `<span class="badge-table badge-unmatched">&#10007; ${unmatched} unmatched</span>` : ''}
                             </div>
-                        </div>
-                        <div class="table-container">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Description</th>
-                                        <th class="val-num">Amount</th>
-                                        <th>Type</th>
-                                        <th>Status</th>
-                                        <th>Reason</th>
-                                        <th>Supporting Document</th>
-                                    </tr>
-                                </thead>
-                                <tbody>${rows}</tbody>
-                            </table>
+                        </button>
+                        <div id="${bodyId}" style="${isOpen ? '' : 'display:none;'}">
+                            <div class="recon-account-rows-inner">
+                                <div class="table-container">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Description</th>
+                                                <th class="val-num">Amount</th>
+                                                <th>Type</th>
+                                                <th>Status</th>
+                                                <th>Reason</th>
+                                                <th>Supporting Document</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>${rows}</tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>`;
                     accountsContainer.appendChild(section);
                 });
@@ -2662,13 +2802,11 @@
                 reconPanel.style.display = 'none';
             }
 
-            // --- Client query cards ---
+            // --- Client query rail ---
             if (queries && queries.length > 0) {
                 queriesPanel.style.display = 'block';
-                // Store queries for toggle use
                 window._currentQueries = queries;
 
-                // Show toggle only when at least one coarse query has sub_queries
                 const hasSubQueries = queries.some(q => Array.isArray(q.sub_queries) && q.sub_queries.length > 0);
                 const toggleEl = document.getElementById('queries-view-toggle');
                 if (toggleEl) toggleEl.style.display = hasSubQueries ? 'inline-flex' : 'none';
@@ -2683,6 +2821,157 @@
         // Current view mode: 'coarse' (default) or 'granular'
         window._queryViewMode = 'coarse';
         window._currentQueries = [];
+        window._railQueries = [];
+        window._selectedRailId = null;
+
+        function switchDiTab(tab) {
+            document.querySelectorAll('.di-sub-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.di-sub-pane').forEach(pane => pane.style.display = 'none');
+            document.getElementById('di-tab-' + tab).style.display = 'block';
+            const idx = ['recon-queries','lead-schedules','compliance','agent-logs'].indexOf(tab);
+            document.querySelectorAll('.di-sub-btn')[idx].classList.add('active');
+        }
+
+        function renderKpiStrip() {
+            const ctx = activeJob.phase2_context || {};
+            const summary = ctx.summary || {};
+            const queries = ctx.queries || [];
+            const exceptions = activeJob.auditor_notes || [];
+
+            const pendingQueries = queries.reduce((n, q) => {
+                if (Array.isArray(q.sub_queries) && q.sub_queries.length > 0) {
+                    return n + q.sub_queries.filter(sq => (sq.status || 'pending') === 'pending').length;
+                }
+                return n + ((q.status || 'pending') === 'pending' ? 1 : 0);
+            }, 0);
+
+            const strip = document.getElementById('kpi-strip');
+            if (!strip) return;
+            strip.innerHTML = `
+                <div class="kpi-stat">
+                    <span class="kpi-stat-value">${summary.total || 0}</span>
+                    <span class="kpi-stat-label">Transactions</span>
+                </div>
+                <div class="kpi-divider"></div>
+                <div class="kpi-stat">
+                    <span class="kpi-stat-value" style="color:var(--success);">${summary.matched || 0}</span>
+                    <span class="kpi-stat-label">Matched</span>
+                </div>
+                <div class="kpi-stat">
+                    <span class="kpi-stat-value" style="color:var(--danger);">${summary.unmatched || 0}</span>
+                    <span class="kpi-stat-label">Unmatched</span>
+                </div>
+                <div class="kpi-divider"></div>
+                <div class="kpi-stat">
+                    <span class="kpi-stat-value" style="color:var(--warning);">${pendingQueries}</span>
+                    <span class="kpi-stat-label">Pending Queries</span>
+                </div>
+                <div class="kpi-stat">
+                    <span class="kpi-stat-value" style="color:${exceptions.length > 0 ? 'var(--danger)' : 'var(--text-muted)'};">${exceptions.length}</span>
+                    <span class="kpi-stat-label">Exceptions</span>
+                </div>
+            `;
+        }
+
+        function toggleReconAccount(bodyId, btn) {
+            const body = document.getElementById(bodyId);
+            if (!body) return;
+            const isOpen = body.style.display !== 'none';
+            body.style.display = isOpen ? 'none' : 'block';
+            const icon = btn.querySelector('.recon-account-expand-icon');
+            if (icon) icon.textContent = isOpen ? '▶' : '▼';
+            btn.setAttribute('aria-expanded', String(!isOpen));
+        }
+
+        function renderRailRows() {
+            const rowsEl = document.getElementById('query-rail-rows');
+            if (!rowsEl) return;
+            rowsEl.innerHTML = '';
+            window._railQueries.forEach(q => {
+                const qId = q.id;
+                const status = q.status || 'pending';
+                const isSelected = String(qId) === String(window._selectedRailId);
+                const dotColor = {pending: 'var(--warning)', sent: 'var(--success)', dismissed: 'var(--text-muted)'}[status] || 'var(--text-muted)';
+                const txCount = (q.transactions || []).length;
+                const row = document.createElement('div');
+                row.className = 'query-rail-row' + (isSelected ? ' selected' : '');
+                row.dataset.queryId = qId;
+                row.innerHTML = `
+                    <span class="query-rail-dot" style="background:${dotColor};"></span>
+                    <span class="query-rail-cat">${q.category || 'Unclassified'}</span>
+                    <span class="query-rail-count">${txCount}</span>
+                `;
+                row.addEventListener('click', () => selectRailRow(qId));
+                rowsEl.appendChild(row);
+            });
+        }
+
+        function selectRailRow(qId) {
+            window._selectedRailId = qId;
+            renderRailRows();
+            const q = window._railQueries.find(x => String(x.id) === String(qId));
+            if (q) renderRailDetail(q);
+        }
+
+        function renderRailDetail(q) {
+            const pane = document.getElementById('query-rail-detail');
+            if (!pane) return;
+            const qId = q.id;
+            const status = q.status || 'pending';
+
+            const txRows = (q.transactions || []).map(t => {
+                const amtRaw = t.amount;
+                const amtDisplay = typeof amtRaw === 'number'
+                    ? '$' + Math.abs(amtRaw).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})
+                    : (amtRaw || '-');
+                return `<tr>
+                    <td style="font-size:0.78rem; color:var(--text-muted); white-space:nowrap;">${t.date || '-'}</td>
+                    <td style="font-size:0.8rem;">${t.description || '-'}</td>
+                    <td class="val-num" style="font-size:0.8rem;">${amtDisplay}</td>
+                </tr>`;
+            }).join('');
+
+            const statusBadgeHtml = status !== 'pending'
+                ? `<span class="badge-table ${status === 'sent' ? 'badge-sent' : 'badge-dismissed'} query-status-badge">&#9679; ${status === 'sent' ? 'Sent' : 'Dismissed'}</span>`
+                : '';
+
+            const actionsHtml = status === 'pending' ? `
+                <div class="query-card-actions" style="margin-top:auto; padding-top:0.75rem;">
+                    <button class="btn-query-dismiss" onclick="dismissQuery('${qId}')">Dismiss</button>
+                    <button class="btn-query-send" onclick="openSendQueryModal('${qId}')">Send</button>
+                </div>` : '';
+
+            const txCount = (q.transactions || []).length;
+
+            pane.innerHTML = `
+                <div id="query-card-${qId}" style="display:flex; flex-direction:column; gap:0.75rem; height:100%;">
+                    <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                        <div class="query-card-category">${q.category || 'Unclassified'}</div>
+                        ${statusBadgeHtml}
+                    </div>
+                    <textarea class="query-card-textarea"${status !== 'pending' ? ' disabled' : ''}>${(q.query_text || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                    ${txCount > 0 ? `
+                    <div>
+                        <p style="font-size:0.75rem; color:var(--text-muted); margin:0 0 0.4rem;">${txCount} transaction${txCount === 1 ? '' : 's'}</p>
+                        <div style="border:1px solid var(--surface-border); border-radius:8px; overflow:hidden;">
+                            <div class="recon-account-rows-inner">
+                                <table style="width:100%; border-collapse:collapse;">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Description</th>
+                                            <th class="val-num">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>${txRows}</tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>` : ''}
+                    ${actionsHtml}
+                </div>
+            `;
+        }
 
         function setQueryView(mode) {
             window._queryViewMode = mode;
@@ -2691,97 +2980,40 @@
             renderQueryCards(window._currentQueries, mode);
         }
 
-        function _buildQueryCard(q, isSubCard) {
-            const cardStatus = q.status || 'pending';
-            const cardId = q.id != null ? q.id : Math.random().toString(36).slice(2);
-            const card = document.createElement('div');
-            card.className = 'query-card'
-                + (isSubCard ? ' query-granular-sub' : '')
-                + (cardStatus !== 'pending' ? ` query-${cardStatus}` : '');
-            card.id = `query-card-${cardId}`;
-
-            const txRows = (q.transactions || []).map(t => {
-                const amtRaw = t.amount || '-';
-                const amtDisplay = typeof amtRaw === 'number'
-                    ? '$' + Math.abs(amtRaw).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})
-                    : amtRaw;
-                return `
-                    <tr>
-                        <td style="font-size:0.78rem; color:var(--text-muted);">${t.date || '-'}</td>
-                        <td style="font-size:0.8rem;">${t.description || '-'}</td>
-                        <td class="val-num" style="font-size:0.8rem;">${amtDisplay}</td>
-                    </tr>`;
-            }).join('');
-
-            const txTableId = `query-tx-${cardId}`;
-            const txCount = (q.transactions || []).length;
-
-            const statusBadgeHtml = cardStatus !== 'pending'
-                ? `<span class="badge-table ${cardStatus === 'sent' ? 'badge-sent' : 'badge-dismissed'} query-status-badge">&#9679; ${cardStatus === 'sent' ? 'Sent' : 'Dismissed'}</span>`
-                : '';
-
-            const actionsHtml = cardStatus === 'pending' ? `
-                <div class="query-card-actions">
-                    <button class="btn-query-dismiss" onclick="dismissQuery('${cardId}')">Dismiss</button>
-                    <button class="btn-query-send" onclick="openSendQueryModal('${cardId}')">Send</button>
-                </div>` : '';
-
-            card.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem; flex-wrap:wrap;">
-                    <div class="query-card-category">${q.category || 'Unclassified'}</div>
-                    ${statusBadgeHtml}
-                </div>
-                <textarea class="query-card-textarea"${cardStatus !== 'pending' ? ' disabled' : ''}>${(q.query_text || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
-                ${txCount > 0 ? `
-                    <button class="query-tx-toggle" onclick="toggleQueryTransactions('${txTableId}', this)">
-                        &#9658; Show ${txCount} transaction${txCount === 1 ? '' : 's'}
-                    </button>
-                    <div id="${txTableId}" class="query-tx-list">
-                        <div class="table-container">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Description</th>
-                                        <th class="val-num">Amount</th>
-                                    </tr>
-                                </thead>
-                                <tbody>${txRows}</tbody>
-                            </table>
-                        </div>
-                    </div>` : ''}
-                ${actionsHtml}
-            `;
-            return card;
-        }
-
         function renderQueryCards(queries, mode) {
-            const cardsContainer = document.getElementById('queries-cards-container');
-            cardsContainer.innerHTML = '';
-
-            // Collect the cards to show based on mode
-            const cardsToRender = [];
+            // Build flat list for the rail
+            const railItems = [];
             queries.forEach(q => {
                 if (mode === 'granular' && Array.isArray(q.sub_queries) && q.sub_queries.length > 0) {
-                    // In granular mode: replace coarse card with its sub-query cards
-                    q.sub_queries.forEach(sq => cardsToRender.push({ q: sq, isSub: true }));
+                    q.sub_queries.forEach(sq => railItems.push(sq));
                 } else {
-                    // Coarse mode (or granular with no sub_queries): show coarse card as-is
-                    cardsToRender.push({ q, isSub: false });
+                    railItems.push(q);
                 }
             });
-
-            cardsToRender.forEach(({ q, isSub }) => {
-                cardsContainer.appendChild(_buildQueryCard(q, isSub));
-            });
+            window._railQueries = railItems;
 
             // Update pending count badge
-            const allCards = cardsContainer.querySelectorAll('.query-card');
-            const pendingCount = Array.from(allCards).filter(c => !c.classList.contains('query-sent') && !c.classList.contains('query-dismissed')).length;
-            document.getElementById('queries-count-badge').textContent =
-                pendingCount > 0
+            const pendingCount = railItems.filter(q => (q.status || 'pending') === 'pending').length;
+            const countBadge = document.getElementById('queries-count-badge');
+            if (countBadge) {
+                countBadge.textContent = pendingCount > 0
                     ? `${pendingCount} pending`
-                    : `${allCards.length} total — all actioned`;
+                    : `${railItems.length} total — all actioned`;
+            }
+
+            // Select first pending item (or first item)
+            const firstPending = railItems.find(q => (q.status || 'pending') === 'pending');
+            window._selectedRailId = (firstPending || railItems[0]) ? String((firstPending || railItems[0]).id) : null;
+
+            renderRailRows();
+
+            if (window._selectedRailId) {
+                const selected = railItems.find(x => String(x.id) === window._selectedRailId);
+                if (selected) renderRailDetail(selected);
+            } else {
+                const pane = document.getElementById('query-rail-detail');
+                if (pane) pane.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem; margin:0;">No queries to display.</p>';
+            }
         }
 
         function toggleQueryTransactions(elementId, btn) {
@@ -2850,14 +3082,24 @@
         }
 
         function _applyQueryCardStatus(cardEl, status) {
-            cardEl.classList.remove('query-sent', 'query-dismissed');
-            cardEl.classList.add('query-' + status);
+            // Update in-memory status for the matching query
+            const match = cardEl.id.match(/^query-card-(.+)$/);
+            const qId = match ? match[1] : null;
+            if (qId !== null) {
+                const inRail = window._railQueries.find(x => String(x.id) === String(qId));
+                if (inRail) inRail.status = status;
+                (window._currentQueries || []).forEach(q => {
+                    if (String(q.id) === String(qId)) q.status = status;
+                    (q.sub_queries || []).forEach(sq => { if (String(sq.id) === String(qId)) sq.status = status; });
+                });
+            }
 
+            // Update the detail pane controls
             let badge = cardEl.querySelector('.query-status-badge');
             if (!badge) {
                 badge = document.createElement('span');
                 badge.className = 'badge-table query-status-badge';
-                const headerRow = cardEl.querySelector('[style*="justify-content:space-between"]');
+                const headerRow = cardEl.querySelector('[style*="align-items:center"]');
                 if (headerRow) headerRow.appendChild(badge);
             }
             badge.textContent = status === 'sent' ? '● Sent' : '● Dismissed';
@@ -2868,14 +3110,17 @@
             const actions = cardEl.querySelector('.query-card-actions');
             if (actions) actions.style.display = 'none';
 
-            // Update the pending count badge in the panel header
-            const allCards = document.querySelectorAll('#queries-cards-container .query-card');
-            const pendingLeft = Array.from(allCards).filter(c => !c.classList.contains('query-sent') && !c.classList.contains('query-dismissed')).length;
+            // Re-render rail rows so the status dot updates
+            renderRailRows();
+
+            // Update the pending count badge
+            const pendingLeft = (window._railQueries || []).filter(q => (q.status || 'pending') === 'pending').length;
+            const total = (window._railQueries || []).length;
             const countBadge = document.getElementById('queries-count-badge');
             if (countBadge) {
                 countBadge.textContent = pendingLeft > 0
                     ? `${pendingLeft} pending`
-                    : `${allCards.length} total — all actioned`;
+                    : `${total} total — all actioned`;
             }
         }
 

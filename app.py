@@ -498,6 +498,48 @@ def api_update_query_status(job_id, query_id):
     save_jobs(jobs)
     return jsonify({"status": "success", "query_id": query_id, "new_status": status})
 
+# API - Regroup stored queries (Story 3R)
+@app.route("/api/jobs/<job_id>/regroup-queries", methods=["POST"])
+def api_regroup_queries(job_id):
+    jobs = load_jobs()
+    job = next((j for j in jobs if j["job_id"] == job_id), None)
+    if not job:
+        return jsonify({"error": "Job not found."}), 404
+
+    ctx = job.get("phase2_context") or {}
+    existing_queries = ctx.get("queries") or []
+    if not existing_queries:
+        return jsonify({"error": "No queries to regroup."}), 400
+
+    api_key = os.environ.get("OPENROUTER_API_KEY", "")
+    if not api_key:
+        return jsonify({"error": "OPENROUTER_API_KEY not configured."}), 500
+
+    fund_id = job.get("fund_id", "")
+    funds = load_funds()
+    fund_profile = next((f for f in funds if f["id"] == fund_id), {})
+    fund_name = fund_profile.get("name", "the fund")
+
+    def noop_progress(pct, msg):
+        pass
+
+    from core_engine import regroup_stored_queries
+    new_queries, regrouped, match_rate = regroup_stored_queries(
+        existing_queries, fund_name, api_key, noop_progress
+    )
+
+    if not ("phase2_context" in job):
+        job["phase2_context"] = {}
+    job["phase2_context"]["queries"] = new_queries
+    save_jobs(jobs)
+
+    return jsonify({
+        "queries": new_queries,
+        "regrouped": regrouped,
+        "match_rate": round(match_rate, 4),
+    })
+
+
 # Serving PDF files directly from job directories (staging or workpaper)
 @app.route("/api/jobs/<job_id>/file/<phase>/<filename>", methods=["GET"])
 def api_serve_job_file(job_id, phase, filename):

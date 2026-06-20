@@ -20,6 +20,7 @@ Weekends (20–21 & 27–28 Jun) excluded.
 | 4 | **Select the right AI model for reliable output** | Wed 24 Jun | Chosen model produces stable, well-formed output across sample runs |
 | 5 | **Review reconciliation results & queries in the UI** | Thu 25 – Fri 26 Jun | Results screen shows the reconciliation summary and one card per query category |
 | 6 | **Edit query + Send CTA with confirmation window** *(UI only — no actual send)* | Mon 29 Jun | Each query is editable; Send opens a confirmation dialog; status tracked. No sending behind it |
+| 3R | **Deterministic query grouping with coarse / granular toggle** | Mon 22 Jun | Python groups unmatched transactions; LLM writes coarse query text only (1 fixed call); granular text is Python-templated at zero extra cost; UI toggle switches views; existing jobs re-grouped on demand |
 | 7 | **Integrate the reconciliation flow into the main app** | Tue 30 Jun | New flow replaces existing Phase 2 within the standard job lifecycle |
 | 8 | **Validate the end-to-end flow on the ADMCM sample** | Wed 1 Jul | Full run reviewed and demo/sign-off-ready |
 | — | **Buffer** | Thu 2 Jul | Contingency only — upper limit |

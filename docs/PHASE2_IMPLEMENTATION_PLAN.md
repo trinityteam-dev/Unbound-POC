@@ -145,6 +145,208 @@ Task 2.1 produces the structured rows. There are two ways to do it; the data con
 
 ---
 
+## Story 3R — Deterministic Query Grouping with Coarse / Granular Toggle
+
+**Revises:** Story 3's grouping step. The LLM query-text generation is retained but scoped to coarse groups only. The grouping decision itself moves to Python.
+
+**Done when:** Unmatched transactions are grouped deterministically by Python into coarse (default, 5 buckets) and granular (per-security) views; coarse `query_text` is LLM-generated in one fixed call; granular `query_text` is Python-templated at zero additional LLM cost; the UI shows a toggle; existing stored jobs are re-grouped where possible.
+
+---
+
+### Background & Premise
+
+Story 3 delegated both grouping and query-text writing to a single LLM call. This produced non-deterministic output. Running the same 164 ADMCM unmatched transactions against grok-4.20 on three separate occasions yielded:
+
+| Run | Groups produced |
+|---|---|
+| Story 4 benchmark | 14 |
+| Stored ADMCM job (`job_20260619_112732`) | 40 |
+| Story 3 test | 5 |
+
+The variance is a problem in production: a reviewer would see a different number of cards each time the job is re-run, with no stable mapping between cards and security names.
+
+Examining what grouping actually requires reveals it is **pure string pattern-matching** on the transaction description. Australian bank transaction descriptions follow a predictable format:
+
+```
+"Direct Credit 531532 NAB INTERIM DIV DV251/01064980"
+                ↑ BSB  ↑ PAYEE NAME      ↑ reference
+```
+
+Identifying the payee ("NAB") does not require language understanding. Delegating it to an LLM adds cost, latency, and non-determinism with no benefit over a regex rule.
+
+Additionally, the product needs a **coarse / granular toggle** for the reviewer:
+- **Coarse (default):** ~5 cards — one per broad category (Bank Interest, Investment Income, Broker Settlements, etc.). Easier to scan; suitable for quick decisions.
+- **Granular:** one card per security (NAB Dividends, BHP Dividends, GQG Dividends, etc.). More actionable when directing queries to specific counterparties.
+
+LLM-based grouping cannot serve both modes from a single call. Python grouping produces both from the same parsing pass.
+
+---
+
+### Approach
+
+#### Step 1 — Python extracts both grouping levels in one pass
+
+`group_unmatched_transactions(unmatched_transactions)` returns two lists from a single pass over the transactions:
+
+**Granular rules (applied first, in priority order):**
+
+| Pattern in `description` | Granular group |
+|---|---|
+| `"Credit Interest"` | `"Bank Interest"` |
+| `"FinClear Service"` (debit) | `"Broker Settlements"` |
+| `"ASIC"` | `"Regulatory Fees – ASIC"` |
+| `"ATO"` + credit | `"ATO Tax Refund"` |
+| `"Direct Credit XXXXXX PAYEE ref"` | `"Investment Income – {PAYEE_NAME}"` |
+| `"Transfer To/From"` | `"Internal Transfer"` |
+| No match | `"Other – {description[:40]}"` |
+
+For `Direct Credit` transactions, the payee is extracted as the token(s) following the BSB number and before any trailing reference codes (e.g. `DV251/…`, `cm-…`, numeric IDs ≥9 digits). Payee tokens are joined and title-cased.
+
+**Coarse roll-up (applied after):**
+
+All `"Investment Income – *"` granular groups collapse to `"Investment Income – Dividends & Distributions"`. All other groups carry through 1:1. This roll-up is a plain Python dict.
+
+#### Step 2 — LLM generates `query_text` for coarse groups only (1 call, fixed output)
+
+The 5 coarse groups (with their full transaction lists) are sent to the LLM in a single call. The prompt asks **only for query_text per group** — no grouping decision is left to the LLM. Response schema: `{ groups: [{ category, query_text }] }` matched back to coarse groups by category name.
+
+#### Step 3 — Python templates `query_text` for granular groups (0 LLM calls)
+
+```
+"We have identified {N} unmatched {PAYEE_NAME} transactions totalling
+${TOTAL:.2f}. Please provide the relevant {document_type} for each
+of the following:
+
+{date} | {description} | {amount}
+..."
+```
+
+`document_type` is inferred from the payee (e.g. "DIV" in description → "dividend statement", "DST"/"DIST" → "distribution notice", otherwise "supporting documentation").
+
+#### Step 4 — Queries stored as coarse cards with embedded `sub_queries`
+
+```json
+{
+  "id": "Q2",
+  "category": "Investment Income – Dividends & Distributions",
+  "query_text": "<LLM-generated text covering all 126 transactions>",
+  "transactions": [ ...126 transactions... ],
+  "sub_queries": [
+    {
+      "id": "Q2.1",
+      "category": "Investment Income – NAB",
+      "query_text": "<Python-templated text>",
+      "transactions": [ ...8 NAB transactions... ]
+    },
+    {
+      "id": "Q2.2",
+      "category": "Investment Income – GQG",
+      "query_text": "<Python-templated text>",
+      "transactions": [ ...5 GQG transactions... ]
+    }
+  ]
+}
+```
+
+- **Coarse view:** render top-level queries only (5 cards, existing behaviour)
+- **Granular view:** for each coarse query, render its `sub_queries` if present; otherwise render the coarse query as-is (e.g. Bank Interest and Broker Settlements have no meaningful sub-grouping)
+- **Toggle is front-end only** — no additional API call; both levels are pre-computed and stored
+
+#### Handling existing stored jobs
+
+When a job's `phase2_context.queries` was produced by the old LLM-based Story 3 implementation:
+
+1. Flatten all `q.transactions` across all stored queries into one list
+2. Run `group_unmatched_transactions()` on the descriptions
+3. If ≥80% of transactions match a Python pattern → produce fresh coarse + granular groups; replace stored queries
+4. If <80% match (descriptions missing or unrecognisable) → retain existing queries as-is; set `sub_queries: null` on each
+5. The UI hides the toggle button when all coarse queries have `sub_queries: null`
+
+A `POST /api/jobs/<job_id>/regroup-queries` endpoint exposes this on demand for older jobs.
+
+---
+
+### Token Cost Analysis (grok-4.20)
+
+*Pricing: grok-4.20 via OpenRouter — $3.00 / M input tokens, $15.00 / M output tokens. Verify current rates on OpenRouter dashboard; these were correct as of Story 4 benchmarking (2026-06-19).*
+
+*ADMCM baseline: 164 unmatched transactions @ ~25 tokens each = 4,100 transaction tokens. System prompt ~400 tokens. Each query_text ~130 tokens (avg 531 chars ÷ 4 chars/token from Story 4 benchmark).*
+
+| Approach | Groups | Input tokens | Output tokens | Est. cost |
+|---|---|---|---|---|
+| Story 3 original — grok produced 5 groups (best case) | 5 | ~4,500 | ~650 | **$0.024** |
+| Story 3 original — grok produced 14 groups (Story 4 benchmark) | 14 | ~4,500 | ~1,820 | **$0.041** |
+| Story 3 original — grok produced 40 groups (stored job) | 40 | ~4,500 | ~5,200 | **$0.092** |
+| Story 3 original — Gemini produced 46 groups (Story 4 benchmark) | 46 | ~4,500 | ~5,980 | **$0.103** |
+| **Story 3R — Python groups coarse, LLM writes 5 texts (1 call)** | **5** | **~4,300** | **~650** | **$0.023** |
+| **Story 3R — toggle to granular** | **~40** | **0** | **0** | **$0.000** |
+
+**Key observations:**
+
+1. Output tokens dominate cost. Input is ~$0.013 regardless of approach. The variance is entirely in output.
+2. The original approach's output cost ranges **4× ($0.011 to $0.090)** depending on how the LLM happens to group on a given run — unpredictable and unbudgetable.
+3. Story 3R fixes output at exactly 5 query texts every run (~$0.010 output) regardless of fund complexity. **Total cost is predictable at ~$0.023 per job.**
+4. The granular toggle costs **$0.000 additional** — Python templates require no API call.
+5. At scale: 100 jobs/month on the old approach costs $2.40–$10.30. On Story 3R it costs $2.30, flat.
+
+---
+
+### Tasks
+
+- [x] **3R.1** Write `group_unmatched_transactions(unmatched_transactions)` in `core_engine.py`
+  - Returns `{ "coarse": [{category, transactions}], "granular": [{category, transactions}] }`
+  - Granular: regex extraction of payee/security from `"Direct Credit XXXXXX PAYEE ref"` pattern; named rules for Interest, FinClear, ASIC, ATO
+  - Coarse: dict mapping granular category prefixes to coarse buckets
+  - Falls back to `"Other – {truncated description}"` for unmatched patterns — never silently drops a transaction
+  - Logs the distribution: how many transactions matched each rule
+
+- [x] **3R.2** Write `build_coarse_query_text_prompt(coarse_groups, fund_name)` in `core_engine.py`
+  - Sends the N coarse groups (category + transaction list) to the LLM
+  - Asks **only** for `query_text` per group — no grouping decision left to LLM
+  - Response schema: `{ groups: [{ category, query_text }] }` — matched back by category name
+  - Returns a dict `{ category → query_text }`
+
+- [x] **3R.3** Write `generate_granular_query_text(category, transactions)` in `core_engine.py`
+  - Pure Python template — no LLM call
+  - Infers `document_type` from payee name / transaction description keywords (DIV → "dividend statement", DST/DIST → "distribution notice", otherwise "supporting documentation")
+  - Returns a professional, readable query string
+
+- [x] **3R.4** Replace `run_query_generation_call()` with revised orchestration in `run_bank_reconciliation_phase()`
+  - Calls `group_unmatched_transactions()` → `coarse_groups`, `granular_groups`
+  - Calls `build_coarse_query_text_prompt()` for coarse `query_text` (1 LLM call)
+  - Calls `generate_granular_query_text()` per granular group (Python, no LLM)
+  - Assembles coarse queries with embedded `sub_queries` list; `sub_queries` is `null` if a coarse group has no meaningful sub-division (e.g. Bank Interest, Broker Settlements)
+  - Returns `queries` list in same schema as before (backward compatible)
+
+- [x] **3R.5** Write `regroup_stored_queries(existing_queries, fund_name, api_key, update_progress)` in `core_engine.py`
+  - Flattens all transactions from existing queries into one list
+  - Runs `group_unmatched_transactions()` on them
+  - If ≥80% of transactions matched to a named pattern: runs LLM call for fresh coarse texts, returns new queries with `sub_queries`
+  - If <80%: returns original queries with `sub_queries: null` added to each (no change to `query_text`)
+  - Logs which path was taken and match rate
+
+- [x] **3R.6** Add `POST /api/jobs/<job_id>/regroup-queries` endpoint in `app.py`
+  - Calls `regroup_stored_queries()` on `job["phase2_context"]["queries"]`
+  - Persists updated queries to `jobs_db.json`
+  - Returns `{ queries, regrouped: true|false, match_rate }` so UI can show feedback
+
+- [x] **3R.7** Add coarse / granular toggle to query cards panel in `templates/index.html`
+  - Toggle control visible only when at least one coarse query has a non-null `sub_queries` list
+  - Default (coarse): render top-level query cards as before
+  - Granular: for each coarse card, if `sub_queries` is present render the sub-query cards in its place; if `sub_queries` is null render the coarse card unchanged
+  - Toggle state is front-end only (local JS variable, no API call)
+  - Preserve Send / Dismiss / edit behaviour on both coarse and granular cards
+
+- [x] **3R.8** Test against ADMCM:
+  - Coarse produces 4 groups covering 100% of 164 unmatched transactions (Bank Interest 33, Investment Income 127, Broker Settlements 3, Regulatory Fees – ASIC 1)
+  - Granular produces 43 per-security groups (40 Investment Income + 3 named) covering 100%
+  - Python template produces readable query text for granular groups (verified GQG, ACDC)
+  - LLM coarse texts are professional and reference specific amounts (verified all 4 groups)
+  - UI toggle button appears only when sub_queries are present; switches between views
+  - Edge case: job with no transactions → no toggle shown (`sub_queries: null`)
+
+---
+
 ## Story 7 — Integrate the Reconciliation Flow into the Main App
 
 **Done when:** The new engine runs as part of the standard job lifecycle, alongside (not replacing) the existing checklist and lead schedules.

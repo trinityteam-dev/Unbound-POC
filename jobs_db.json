@@ -2546,7 +2546,7 @@
         {
           "id": "Q1",
           "category": "Bank Interest",
-          "query_text": "Could you please clarify the source of the bank interest received during the year?",
+          "query_text": "Dear Client, we have a number of unmatched bank interest credits on the ADMCM Investments Super Fund bank account that require supporting documentation. Please provide the relevant bank statements or interest advice for the following transactions: 01/06/2024 CR $61.29, 01/07/2024 CR $72.68, 01/08/2024 CR $18.70, 01/09/2024 CR $20.50, 01/10/2024 CR $33.36, 01/11/2024 CR $68.54, 01/12/2024 CR $25.65, 01/01/2025 CR $12.43, 01/02/2025 CR $24.41, 01/03/2025 CR $23.52, 01/04/2025 CR $35.14, 01/05/2025 CR $58.17, 01/06/2025 CR $71.39, 01/07/2025 CR $145.92, 01/08/2025 CR $109.76, 01/06/2024 CR $2.34, 01/07/2024 CR $2.17, 01/08/2024 CR $2.16, 01/09/2024 CR $2.08, 01/10/2024 CR $1.94, 01/11/2024 CR $1.92, 01/12/2024 CR $1.77, 01/01/2025 CR $1.74, 01/02/2025 CR $1.66, 01/03/2025 CR $1.41, 01/04/2025 CR $0.86, 01/05/2025 CR $0.78, 01/06/2025 CR $0.71, 01/07/2025 CR $0.31, 01/08/2025 CR $0.29, 01/09/2025 CR $0.23, 01/10/2025 CR $0.12 and 01/11/2025 CR $0.14. These will be used to correctly classify the interest income for the fund.",
           "transactions": [
             {
               "date": "01/06/2024",
@@ -2713,12 +2713,38 @@
               "description": "Credit Interest",
               "amount": "CR $0.14"
             }
-          ]
+          ],
+          "sub_queries": null,
+          "status": "pending"
         },
         {
           "id": "Q2",
-          "category": "Investment Income - MCP Master Income",
-          "query_text": "Dear Client, we have been unable to locate supporting documentation (such as income or distribution statements) for the following MCP MASTER INCOM direct credits into the CBA Accelerator Cash Account. Please provide the relevant statements for each of these receipts: 1. 11/06/2024 - CR $189.00; 2. 08/07/2024 - CR $194.60; 3. 08/08/2024 - CR $184.80; 4. 09/09/2024 - CR $189.00; 5. 09/10/2024 - CR $189.00; 6. 08/11/2024 - CR $184.80; 7. 09/12/2024 - CR $176.40; 8. 09/01/2025 - CR $179.20; 9. 10/02/2025 - CR $191.80; 10. 10/03/2025 - CR $168.00; 11. 08/04/2025 - CR $186.20; 12. 08/05/2025 - CR $177.80; 13. 10/06/2025 - CR $201.60; 14. 08/07/2025 - CR $179.20; 15. 08/08/2025 - CR $180.60. Thank you for your assistance.",
+          "category": "Broker Settlements",
+          "query_text": "Dear Client, the following broker settlement direct debits on the ADMCM Investments Super Fund bank account remain unmatched and require supporting documentation. Please provide the relevant contract notes, settlement advices or transaction confirmations for: 10/07/2025 DR $60,360.79 (FinClear Service 3815994), 26/08/2025 DR $45,134.37 (FinClear Service 3890807) and 28/08/2025 DR $20,208.42 (FinClear Service 3895874). This information is required to correctly record the investment purchases.",
+          "transactions": [
+            {
+              "date": "10/07/2025",
+              "description": "Direct Debit 625407 FinClear Service 3815994",
+              "amount": "DR $60360.79"
+            },
+            {
+              "date": "26/08/2025",
+              "description": "Direct Debit 625407 FinClear Service 3890807",
+              "amount": "DR $45134.37"
+            },
+            {
+              "date": "28/08/2025",
+              "description": "Direct Debit 625407 FinClear Service 3895874",
+              "amount": "DR $20208.42"
+            }
+          ],
+          "sub_queries": null,
+          "status": "pending"
+        },
+        {
+          "id": "Q3",
+          "category": "Investment Income \u2013 Dividends & Distributions",
+          "query_text": "Dear Client, we have a large number of unmatched direct credit transactions relating to investment income on the ADMCM Investments Super Fund bank account. To correctly classify and report these amounts, please provide the relevant dividend statements, distribution notices, tax certificates or payment advices for the following: 11/06/2024 CR $189.00 (MCP MASTER INCOM), 08/07/2024 CR $194.60 (MCP MASTER INCOM), 08/08/2024 CR $184.80 (MCP MASTER INCOM), 09/09/2024 CR $189.00 (MCP MASTER INCOM), 09/10/2024 CR $189.00 (MCP MASTER INCOM), 08/11/2024 CR $184.80 (MCP MASTER INCOM), 09/12/2024 CR $176.40 (MCP MASTER INCOM), 09/01/2025 CR $179.20 (MCP MASTER INCOM), 10/02/2025 CR $191.80 (MCP MASTER INCOM), 10/03/2025 CR $168.00 (MCP MASTER INCOM), 08/04/2025 CR $186.20 (MCP MASTER INCOM), 08/05/2025 CR $177.80 (MCP MASTER INCOM), 10/06/2025 CR $201.60 (MCP MASTER INCOM), 08/07/2025 CR $179.20 (MCP MASTER INCOM), 08/08/2025 CR $180.60 (MCP MASTER INCOM), 17/06/2024 CR $1,586.75 (PERLS XV DST), 16/09/2024 CR $1,592.50 (PERLS XV DST), 16/12/2024 CR $1,585.13 (PERLS XV DST), 17/03/2025 CR $1,577.13 (PERLS XV DST), 16/06/2025 CR $1,535.88 (PERLS XV DST), 17/06/2024 CR $1,101.23 (BENPH QRT DST), 16/09/2024 CR $1,069.50 (BENPH QRT DST), 16/12/2024 CR $1,075.43 (BENPH DST), 17/03/2025 CR $1,081.13 (BENPH DST), 16/06/2025 CR $1,035.83 (BENPH DST), 17/06/2024 CR $1,384.41 (NABPH JUN DIS), 03/07/2024 CR $2,520.00 (NAB INTERIM DIV), 17/09/2024 CR $1,402.59 (NABPH SEP DIS), 16/12/2024 CR $2,550.00 (NAB FINAL DIV), 17/12/2024 CR $1,395.62 (NABPH DEC DIS), 17/03/2025 CR $1,388.65 (NABPH MAR DIS), 17/06/2025 CR $1,356.73 (NABPH JUN DIS), 02/07/2025 CR $2,550.00 (NAB INTERIM DIV), 17/06/2024 CR $385.02 (SUNPH QRT DST), 17/09/2024 CR $390.15 (SUNPH QRT DST), 17/12/2024 CR $388.35 (SUNPH QRT DST), 17/03/2025 CR $386.58 (SUNPH QRT DST), 17/06/2025 CR $376.53 (SUNPH QRT DST), 20/06/2024 CR $859.67 (CAP NOTES 7 DIST), 20/09/2024 CR $863.89 (CAP NOTES 7 DIST), 20/12/2024 CR $868.47 (CAP NOTES 7 DIST), 20/03/2025 CR $862.37 (CAP NOTES 7 DIST), 20/06/2025 CR $841.65 (CAP NOTES 7 DIST), 24/06/2024 CR $1,368.10 (WBCPL DST), 23/09/2024 CR $1,374.90 (WBCPL DST), 23/12/2024 CR $1,366.20 (WBCPL DST), 24/03/2025 CR $1,355.20 (WBCPL DST), 23/06/2025 CR $1,326.30 (WBCPL DST), 25/06/2024 CR $1,350.00 (WBC ITM DIV), 19/12/2024 CR $1,140.00 (WBC FNL DIV), 27/06/2025 CR $1,140.00 (WBC ITM DIV), 27/06/2024 CR $648.60 (GQG DIV), 26/09/2024 CR $700.94 (GQG DIV), 20/12/2024 CR $741.55 (GQG DIV), 27/03/2025 CR $843.88 (GQG DIV), 27/06/2025 CR $822.12 (GQG DIV), 02/07/2024 CR $1,925.00 (MQG FNL DIV), 17/12/2024 CR $1,300.00 (MQG ITM DIV), 02/07/2025 CR $1,950.00 (MQG FNL DIV), 16/07/2024 CR $1,514.77 (RBTZ DST), 16/07/2025 CR $633.19 (RBTZ DST), 16/07/2024 CR $2,230.87 (TECH PAYMENT), 16/07/2024 CR $213.34 (NDIA ETFS DIS), 16/07/2024 CR $798.49 (ACDC PAYMENT), 16/07/2025 CR $3,610.84 (TECH PAYMENT), 16/07/2025 CR $354.73 (NDIA ETFS DIS), 16/07/2025 CR $167.64 (ACDC PAYMENT), 13/08/2024 CR $565.88 (TCL DISTRIBUTION), 25/02/2025 CR $565.88 (TCL DISTRIBUTION), 22/08/2025 CR $583.22 (TCL DISTRIBUTION), 27/08/2024 CR $565.25 (METCASH LIMITED), 29/01/2025 CR $565.25 (METCASH LIMITED), 27/08/2025 CR $631.75 (METCASH LIMITED), 29/08/2024 CR $840.00 (MGR DST), 27/02/2025 CR $630.00 (MGR DST), 28/08/2025 CR $630.00 (MGR DST), 30/08/2024 CR $1,200.00 (GPT DST), 28/02/2025 CR $1,200.00 (GPT DST), 29/08/2025 CR $1,200.00 (GPT DST), 30/08/2024 CR $920.00 (CHC DST), 28/02/2025 CR $936.80 (CHC DST), 29/08/2025 CR $975.20 (CHC DST), 17/12/2024 CR $98.75 (SUBD DST), 23/01/2025 CR $98.75 (SUBD DST), 18/02/2025 CR $98.75 (SUBD DST), 17/03/2025 CR $98.75 (SUBD DST), 16/04/2025 CR $94.80 (SUBD DST), 16/05/2025 CR $94.80 (SUBD DST), 18/06/2025 CR $90.85 (SUBD DST), 25/07/2025 CR $90.85 (SUBD DST), 18/08/2025 CR $365.70 (SUBD DST), 20/09/2024 CR $950.00 (BLX DIVIDEND), 21/03/2025 CR $1,025.00 (BLX DIVIDEND), 25/09/2024 CR $664.00 (REG DIV), 10/04/2025 CR $809.00 (REG DIV), 25/09/2024 CR $810.41 (SANTOS DIVIDEND), 26/03/2025 CR $692.70 (SANTOS DIVIDEND), 26/09/2024 CR $1,080.00 (TLS FNL DIV), 28/03/2025 CR $1,140.00 (TLS ITM DIV), 26/09/2024 CR $400.00 (EVT PAYMENT), 20/03/2025 CR $320.00 (EVT PAYMENT), 26/09/2024 CR $1,250.00 (SRG DIVIDEND), 11/04/2025 CR $1,250.00 (SRG DIVIDEND), 26/09/2024 CR $1,570.19 (RIO TINTO LTD), 17/04/2025 CR $2,227.91 (RIO TINTO LTD), 27/09/2024 CR $1,560.00 (MMS PAYMENT), 28/03/2025 CR $1,420.00 (MMS PAYMENT), 30/09/2024 CR $1,658.70 (WOW FNL DIV), 23/04/2025 CR $666.90 (WOW ITM DIV), 02/10/2024 CR $295.69 (CSL LTD DIVIDEND), 09/04/2025 CR $281.19 (CSL LTD DIVIDEND), 03/10/2024 CR $1,331.98 (BHP GROUP DIV), 27/03/2025 CR $949.12 (BHP GROUP DIV), 03/10/2024 CR $220.34 (WOODSIDE INT), 02/04/2025 CR $183.31 (WOODSIDE FIN), 04/10/2024 CR $3,200.00 (LYCOPODIUM LTD), 03/04/2025 CR $800.00 (LYCOPODIUM LTD), 07/10/2024 CR $2,118.50 (VNT DIVIDEND), 07/04/2025 CR $2,408.50 (VNT DIVIDEND), 10/10/2024 CR $187.50 (EDV DIV), 10/04/2025 CR $312.50 (EDV DIV), 15/10/2024 CR $875.50 (QUBE DIVIDEND), 10/04/2025 CR $697.00 (QUBE DIVIDEND), 17/10/2024 CR $275.72 (SOUTH32 DIVIDEND), 03/04/2025 CR $323.84 (SOUTH32 DIVIDEND), 26/03/2025 CR $429.00 (MEDIBANK DIV) and 30/05/2025 CR $59,000.00 (ITF Dropsuite). Thank you.",
           "transactions": [
             {
               "date": "11/06/2024",
@@ -2794,14 +2820,7 @@
               "date": "08/08/2025",
               "description": "Direct Credit 607019 MCP MASTER INCOM cm-3669931",
               "amount": "CR $180.60"
-            }
-          ]
-        },
-        {
-          "id": "Q3",
-          "category": "Investment Income - PERLS XV Distributions",
-          "query_text": "Dear Client, please provide the distribution statements for the following PERLS XV DST direct credits received into the CBA Accelerator Cash Account so we can correctly allocate and support these amounts in the fund's records: 1. 17/06/2024 - CR $1,586.75; 2. 16/09/2024 - CR $1,592.50; 3. 16/12/2024 - CR $1,585.13; 4. 17/03/2025 - CR $1,577.13; 5. 16/06/2025 - CR $1,535.88. Thank you.",
-          "transactions": [
+            },
             {
               "date": "17/06/2024",
               "description": "Direct Credit 640006 PERLS XV DST 001318976928",
@@ -2826,14 +2845,7 @@
               "date": "16/06/2025",
               "description": "Direct Credit 640006 PERLS XV DST 001337622521",
               "amount": "CR $1535.88"
-            }
-          ]
-        },
-        {
-          "id": "Q4",
-          "category": "Investment Income - BENPH Distributions",
-          "query_text": "Dear Client, we require the quarterly distribution statements for the BENPH receipts listed below in order to match and verify these transactions: 1. 17/06/2024 - CR $1,101.23 (BENPH QRT DST); 2. 16/09/2024 - CR $1,069.50 (BENPH QRT DST); 3. 16/12/2024 - CR $1,075.43 (BENPH DST); 4. 17/03/2025 - CR $1,081.13 (BENPH DST); 5. 16/06/2025 - CR $1,035.83 (BENPH DST). Please provide the relevant documentation. Thank you.",
-          "transactions": [
+            },
             {
               "date": "17/06/2024",
               "description": "Direct Credit 660166 BENPH QRT DST 001318840932",
@@ -2858,14 +2870,7 @@
               "date": "16/06/2025",
               "description": "Direct Credit 669534 BENPH DST 001337429590",
               "amount": "CR $1035.83"
-            }
-          ]
-        },
-        {
-          "id": "Q5",
-          "category": "Investment Income - NAB Distributions and Dividends",
-          "query_text": "Dear Client, the following NAB-related direct credits could not be matched due to missing dividend or distribution statements. Please supply the relevant advices or statements: 1. 17/06/2024 - CR $1,384.41 (NABPH JUN DIS); 2. 03/07/2024 - CR $2,520.00 (NAB INTERIM DIV); 3. 17/09/2024 - CR $1,402.59 (NABPH SEP DIS); 4. 16/12/2024 - CR $2,550.00 (NAB FINAL DIV); 5. 17/12/2024 - CR $1,395.62 (NABPH DEC DIS); 6. 17/03/2025 - CR $1,388.65 (NABPH MAR DIS); 7. 17/06/2025 - CR $1,356.73 (NABPH JUN DIS); 8. 02/07/2025 - CR $2,550.00 (NAB INTERIM DIV). Thank you for providing these documents.",
-          "transactions": [
+            },
             {
               "date": "17/06/2024",
               "description": "Direct Credit 531547 NABPH JUN DIS PH244/00811434",
@@ -2905,14 +2910,7 @@
               "date": "02/07/2025",
               "description": "Direct Credit 531532 NAB INTERIM DIV DV261/01047329",
               "amount": "CR $2550.00"
-            }
-          ]
-        },
-        {
-          "id": "Q6",
-          "category": "Investment Income - SUNPH Quarterly Distributions",
-          "query_text": "Dear Client, please provide the quarterly distribution statements for the SUNPH receipts below: 1. 17/06/2024 - CR $385.02; 2. 17/09/2024 - CR $390.15; 3. 17/12/2024 - CR $388.35; 4. 17/03/2025 - CR $386.58; 5. 17/06/2025 - CR $376.53. These will allow us to correctly record the income. Thank you.",
-          "transactions": [
+            },
             {
               "date": "17/06/2024",
               "description": "Direct Credit 234619 SUNPH QRT DST 001318687840",
@@ -2937,14 +2935,7 @@
               "date": "17/06/2025",
               "description": "Direct Credit 234619 SUNPH QRT DST 001337385353",
               "amount": "CR $376.53"
-            }
-          ]
-        },
-        {
-          "id": "Q7",
-          "category": "Investment Income - Capital Notes 7 Distributions",
-          "query_text": "Dear Client, we are missing the distribution statements for the following CAP NOTES 7 DIST credits. Please provide the relevant advices: 1. 20/06/2024 - CR $859.67; 2. 20/09/2024 - CR $863.89; 3. 20/12/2024 - CR $868.47; 4. 20/03/2025 - CR $862.37; 5. 20/06/2025 - CR $841.65. Thank you.",
-          "transactions": [
+            },
             {
               "date": "20/06/2024",
               "description": "Direct Credit 397204 CAP NOTES 7 DIST C7J24/00905298",
@@ -2969,14 +2960,7 @@
               "date": "20/06/2025",
               "description": "Direct Credit 397204 CAP NOTES 7 DIST C7J25/00904871",
               "amount": "CR $841.65"
-            }
-          ]
-        },
-        {
-          "id": "Q8",
-          "category": "Investment Income - WBCPL Distributions",
-          "query_text": "Dear Client, please supply the distribution statements for these WBCPL DST credits: 1. 24/06/2024 - CR $1,368.10; 2. 23/09/2024 - CR $1,374.90; 3. 23/12/2024 - CR $1,366.20; 4. 24/03/2025 - CR $1,355.20; 5. 23/06/2025 - CR $1,326.30. Thank you for your assistance.",
-          "transactions": [
+            },
             {
               "date": "24/06/2024",
               "description": "Direct Credit 634934 WBCPL DST 001319073695",
@@ -3001,14 +2985,7 @@
               "date": "23/06/2025",
               "description": "Direct Credit 634934 WBCPL DST 001337698299",
               "amount": "CR $1326.30"
-            }
-          ]
-        },
-        {
-          "id": "Q9",
-          "category": "Investment Income - WBC Dividends",
-          "query_text": "Dear Client, the following WBC dividend credits require supporting dividend statements: 1. 25/06/2024 - CR $1,350.00 (WBC ITM DIV); 2. 19/12/2024 - CR $1,140.00 (WBC FNL DIV); 3. 27/06/2025 - CR $1,140.00 (WBC ITM DIV). Please provide the relevant statements. Thank you.",
-          "transactions": [
+            },
             {
               "date": "25/06/2024",
               "description": "Direct Credit 250556 WBC ITM DIV 001318357153",
@@ -3023,14 +3000,7 @@
               "date": "27/06/2025",
               "description": "Direct Credit 250556 WBC ITM DIV 001336726894",
               "amount": "CR $1140.00"
-            }
-          ]
-        },
-        {
-          "id": "Q10",
-          "category": "Investment Income - GQG Dividends",
-          "query_text": "Dear Client, please provide the dividend statements for the GQG DIV credits listed: 1. 27/06/2024 - CR $648.60; 2. 26/09/2024 - CR $700.94; 3. 20/12/2024 - CR $741.55; 4. 27/03/2025 - CR $843.88; 5. 27/06/2025 - CR $822.12. Thank you.",
-          "transactions": [
+            },
             {
               "date": "27/06/2024",
               "description": "Direct Credit 513270 GQG DIV 001319007442",
@@ -3055,14 +3025,7 @@
               "date": "27/06/2025",
               "description": "Direct Credit 513270 GQG DIV 001337543539",
               "amount": "CR $822.12"
-            }
-          ]
-        },
-        {
-          "id": "Q11",
-          "category": "Investment Income - MQG Dividends",
-          "query_text": "Dear Client, we require the dividend statements for these MQG credits: 1. 02/07/2024 - CR $1,925.00 (MQG FNL DIV); 2. 17/12/2024 - CR $1,300.00 (MQG ITM DIV); 3. 02/07/2025 - CR $1,950.00 (MQG FNL DIV). Please provide the supporting documentation. Thank you.",
-          "transactions": [
+            },
             {
               "date": "02/07/2024",
               "description": "Direct Credit 077669 MQG FNL DIV 001318575431",
@@ -3077,14 +3040,7 @@
               "date": "02/07/2025",
               "description": "Direct Credit 077669 MQG FNL DIV 001337085263",
               "amount": "CR $1950.00"
-            }
-          ]
-        },
-        {
-          "id": "Q12",
-          "category": "Investment Income - RBTZ Distributions",
-          "query_text": "Dear Client, please provide the distribution statements for the RBTZ DST credits: 1. 16/07/2024 - CR $1,514.77; 2. 16/07/2025 - CR $633.19. Thank you.",
-          "transactions": [
+            },
             {
               "date": "16/07/2024",
               "description": "Direct Credit 513275 RBTZ DST 001319960466",
@@ -3094,14 +3050,7 @@
               "date": "16/07/2025",
               "description": "Direct Credit 513275 RBTZ DST 001339100368",
               "amount": "CR $633.19"
-            }
-          ]
-        },
-        {
-          "id": "Q13",
-          "category": "Investment Income - ETF and Managed Fund Distributions/Payments",
-          "query_text": "Dear Client, the following ETF and managed fund distribution or payment credits require supporting statements or advices: 1. 16/07/2024 - CR $2,230.87 (TECH PAYMENT); 2. 16/07/2024 - CR $213.34 (NDIA ETFS DIS); 3. 16/07/2024 - CR $798.49 (ACDC PAYMENT); 4. 16/07/2025 - CR $3,610.84 (TECH PAYMENT); 5. 16/07/2025 - CR $354.73 (NDIA ETFS DIS); 6. 16/07/2025 - CR $167.64 (ACDC PAYMENT). Please provide the relevant documentation for each. Thank you.",
-          "transactions": [
+            },
             {
               "date": "16/07/2024",
               "description": "Direct Credit 458106 TECH PAYMENT JUL24/00802338",
@@ -3131,14 +3080,7 @@
               "date": "16/07/2025",
               "description": "Direct Credit 458106 ACDC PAYMENT JUL25/00804398",
               "amount": "CR $167.64"
-            }
-          ]
-        },
-        {
-          "id": "Q14",
-          "category": "Investment Income - TCL Distributions",
-          "query_text": "Dear Client, please provide the distribution statements for the TCL credits: 1. 13/08/2024 - CR $565.88; 2. 25/02/2025 - CR $565.88; 3. 22/08/2025 - CR $583.22. Thank you.",
-          "transactions": [
+            },
             {
               "date": "13/08/2024",
               "description": "Direct Credit 396297 TCL DISTRIBUTION AUF24/00852366",
@@ -3153,14 +3095,7 @@
               "date": "22/08/2025",
               "description": "Direct Credit 396297 TCL DISTRIBUTION AUF25/00845941",
               "amount": "CR $583.22"
-            }
-          ]
-        },
-        {
-          "id": "Q15",
-          "category": "Investment Income - Metcash Dividends",
-          "query_text": "Dear Client, please supply the dividend statements for the METCASH LIMITED credits: 1. 27/08/2024 - CR $565.25; 2. 29/01/2025 - CR $565.25; 3. 27/08/2025 - CR $631.75. Thank you.",
-          "transactions": [
+            },
             {
               "date": "27/08/2024",
               "description": "Direct Credit 255730 METCASH LIMITED S00092695018",
@@ -3175,14 +3110,7 @@
               "date": "27/08/2025",
               "description": "Direct Credit 255730 METCASH LIMITED S00092695018",
               "amount": "CR $631.75"
-            }
-          ]
-        },
-        {
-          "id": "Q16",
-          "category": "Investment Income - MGR Distributions",
-          "query_text": "Dear Client, we are missing the distribution statements for MGR DST: 1. 29/08/2024 - CR $840.00; 2. 27/02/2025 - CR $630.00; 3. 28/08/2025 - CR $630.00. Please provide these documents. Thank you.",
-          "transactions": [
+            },
             {
               "date": "29/08/2024",
               "description": "Direct Credit 480318 MGR DST 001320797620",
@@ -3197,14 +3125,7 @@
               "date": "28/08/2025",
               "description": "Direct Credit 480318 MGR DST 001339796632",
               "amount": "CR $630.00"
-            }
-          ]
-        },
-        {
-          "id": "Q17",
-          "category": "Investment Income - GPT Distributions",
-          "query_text": "Dear Client, please provide the distribution statements for GPT DST: 1. 30/08/2024 - CR $1,200.00; 2. 28/02/2025 - CR $1,200.00; 3. 29/08/2025 - CR $1,200.00. Thank you.",
-          "transactions": [
+            },
             {
               "date": "30/08/2024",
               "description": "Direct Credit 089531 GPT DST 001320673734",
@@ -3219,14 +3140,7 @@
               "date": "29/08/2025",
               "description": "Direct Credit 089531 GPT DST 001339588049",
               "amount": "CR $1200.00"
-            }
-          ]
-        },
-        {
-          "id": "Q18",
-          "category": "Investment Income - CHC Distributions",
-          "query_text": "Dear Client, the CHC DST distribution statements are required for the following: 1. 30/08/2024 - CR $920.00; 2. 28/02/2025 - CR $936.80; 3. 29/08/2025 - CR $975.20. Please provide them. Thank you.",
-          "transactions": [
+            },
             {
               "date": "30/08/2024",
               "description": "Direct Credit 323551 CHC DST 001320849053",
@@ -3241,14 +3155,7 @@
               "date": "29/08/2025",
               "description": "Direct Credit 323551 CHC DST 001339859818",
               "amount": "CR $975.20"
-            }
-          ]
-        },
-        {
-          "id": "Q19",
-          "category": "Investment Income - SUBD Distributions",
-          "query_text": "Dear Client, please provide the SUBD distribution statements for these credits: 1. 17/12/2024 - CR $98.75; 2. 23/01/2025 - CR $98.75; 3. 18/02/2025 - CR $98.75; 4. 17/03/2025 - CR $98.75; 5. 16/04/2025 - CR $94.80; 6. 16/05/2025 - CR $94.80; 7. 18/06/2025 - CR $90.85; 8. 25/07/2025 - CR $90.85; 9. 18/08/2025 - CR $365.70. Thank you.",
-          "transactions": [
+            },
             {
               "date": "17/12/2024",
               "description": "Direct Credit 535912 SUBD DST 001328016085",
@@ -3293,14 +3200,7 @@
               "date": "18/08/2025",
               "description": "Direct Credit 535912 SUBD DST 001339672342",
               "amount": "CR $365.70"
-            }
-          ]
-        },
-        {
-          "id": "Q20",
-          "category": "Investment Income - BLX Dividends",
-          "query_text": "Dear Client, please provide the dividend statements for BLX: 1. 20/09/2024 - CR $950.00; 2. 21/03/2025 - CR $1,025.00. Thank you.",
-          "transactions": [
+            },
             {
               "date": "20/09/2024",
               "description": "Direct Credit 458106 BLX DIVIDEND SEP24/00800941",
@@ -3310,14 +3210,7 @@
               "date": "21/03/2025",
               "description": "Direct Credit 458106 BLX DIVIDEND MAR25/00800917",
               "amount": "CR $1025.00"
-            }
-          ]
-        },
-        {
-          "id": "Q21",
-          "category": "Investment Income - REG Dividends",
-          "query_text": "Dear Client, the REG dividend statements are required for: 1. 25/09/2024 - CR $664.00; 2. 10/04/2025 - CR $809.00. Please provide these. Thank you.",
-          "transactions": [
+            },
             {
               "date": "25/09/2024",
               "description": "Direct Credit 407459 REG DIV 001325443872",
@@ -3327,14 +3220,7 @@
               "date": "10/04/2025",
               "description": "Direct Credit 407459 REG DIV 001334682632",
               "amount": "CR $809.00"
-            }
-          ]
-        },
-        {
-          "id": "Q22",
-          "category": "Investment Income - Santos Dividends",
-          "query_text": "Dear Client, please supply the Santos dividend statements for: 1. 25/09/2024 - CR $810.41; 2. 26/03/2025 - CR $692.70. Thank you.",
-          "transactions": [
+            },
             {
               "date": "25/09/2024",
               "description": "Direct Credit 458106 SANTOS DIVIDEND AUI24/00893771",
@@ -3344,14 +3230,7 @@
               "date": "26/03/2025",
               "description": "Direct Credit 458106 SANTOS DIVIDEND AUF24/00892947",
               "amount": "CR $692.70"
-            }
-          ]
-        },
-        {
-          "id": "Q23",
-          "category": "Investment Income - TLS Dividends",
-          "query_text": "Dear Client, we require the dividend statements for TLS: 1. 26/09/2024 - CR $1,080.00 (FNL DIV); 2. 28/03/2025 - CR $1,140.00 (ITM DIV). Thank you.",
-          "transactions": [
+            },
             {
               "date": "26/09/2024",
               "description": "Direct Credit 629786 TLS FNL DIV 001322881434",
@@ -3361,14 +3240,7 @@
               "date": "28/03/2025",
               "description": "Direct Credit 629786 TLS ITM DIV 001331737382",
               "amount": "CR $1140.00"
-            }
-          ]
-        },
-        {
-          "id": "Q24",
-          "category": "Investment Income - EVT Payments",
-          "query_text": "Dear Client, please provide supporting statements for the EVT payments: 1. 26/09/2024 - CR $400.00; 2. 20/03/2025 - CR $320.00. Thank you.",
-          "transactions": [
+            },
             {
               "date": "26/09/2024",
               "description": "Direct Credit 123397 EVT PAYMENT SEP24/00803831",
@@ -3378,14 +3250,7 @@
               "date": "20/03/2025",
               "description": "Direct Credit 123397 EVT PAYMENT MAR25/00803691",
               "amount": "CR $320.00"
-            }
-          ]
-        },
-        {
-          "id": "Q25",
-          "category": "Investment Income - SRG Dividends",
-          "query_text": "Dear Client, the SRG dividend statements are needed for: 1. 26/09/2024 - CR $1,250.00; 2. 11/04/2025 - CR $1,250.00. Please provide them. Thank you.",
-          "transactions": [
+            },
             {
               "date": "26/09/2024",
               "description": "Direct Credit 326860 SRG DIVIDEND SEP24/00803127",
@@ -3395,14 +3260,7 @@
               "date": "11/04/2025",
               "description": "Direct Credit 326860 SRG DIVIDEND APR25/00803154",
               "amount": "CR $1250.00"
-            }
-          ]
-        },
-        {
-          "id": "Q26",
-          "category": "Investment Income - Rio Tinto Dividends",
-          "query_text": "Dear Client, please provide the Rio Tinto dividend statements for: 1. 26/09/2024 - CR $1,570.19; 2. 17/04/2025 - CR $2,227.91. Thank you.",
-          "transactions": [
+            },
             {
               "date": "26/09/2024",
               "description": "Direct Credit 458106 RIO TINTO LTD AUI24/00163780",
@@ -3412,14 +3270,7 @@
               "date": "17/04/2025",
               "description": "Direct Credit 458106 RIO TINTO LTD AUF24/00162937",
               "amount": "CR $2227.91"
-            }
-          ]
-        },
-        {
-          "id": "Q27",
-          "category": "Investment Income - MMS Payments",
-          "query_text": "Dear Client, supporting documentation is required for the MMS payments: 1. 27/09/2024 - CR $1,560.00; 2. 28/03/2025 - CR $1,420.00. Please provide the relevant statements. Thank you.",
-          "transactions": [
+            },
             {
               "date": "27/09/2024",
               "description": "Direct Credit 270211 MMS PAYMENT SEP24/00804971",
@@ -3429,14 +3280,7 @@
               "date": "28/03/2025",
               "description": "Direct Credit 270211 MMS PAYMENT MAR25/00805674",
               "amount": "CR $1420.00"
-            }
-          ]
-        },
-        {
-          "id": "Q28",
-          "category": "Investment Income - WOW Dividends",
-          "query_text": "Dear Client, please provide the WOW dividend statements: 1. 30/09/2024 - CR $1,658.70 (FNL DIV); 2. 23/04/2025 - CR $666.90 (ITM DIV). Thank you.",
-          "transactions": [
+            },
             {
               "date": "30/09/2024",
               "description": "Direct Credit 516612 WOW FNL DIV 001325859745",
@@ -3446,14 +3290,7 @@
               "date": "23/04/2025",
               "description": "Direct Credit 516612 WOW ITM DIV 001333330132",
               "amount": "CR $666.90"
-            }
-          ]
-        },
-        {
-          "id": "Q29",
-          "category": "Investment Income - CSL Dividends",
-          "query_text": "Dear Client, the CSL dividend statements are required for: 1. 02/10/2024 - CR $295.69; 2. 09/04/2025 - CR $281.19. Please provide these documents. Thank you.",
-          "transactions": [
+            },
             {
               "date": "02/10/2024",
               "description": "Direct Credit 458106 CSL LTD DIVIDEND AUF24/01012098",
@@ -3463,14 +3300,7 @@
               "date": "09/04/2025",
               "description": "Direct Credit 458106 CSL LTD DIVIDEND AUI25/01010981",
               "amount": "CR $281.19"
-            }
-          ]
-        },
-        {
-          "id": "Q30",
-          "category": "Investment Income - BHP Dividends",
-          "query_text": "Dear Client, please supply the BHP dividend statements for: 1. 03/10/2024 - CR $1,331.98; 2. 27/03/2025 - CR $949.12. Thank you.",
-          "transactions": [
+            },
             {
               "date": "03/10/2024",
               "description": "Direct Credit 458106 BHP GROUP DIV AF390/00408163",
@@ -3480,14 +3310,7 @@
               "date": "27/03/2025",
               "description": "Direct Credit 458106 BHP GROUP DIV AI391/00401481",
               "amount": "CR $949.12"
-            }
-          ]
-        },
-        {
-          "id": "Q31",
-          "category": "Investment Income - Woodside Dividends",
-          "query_text": "Dear Client, we require the Woodside dividend statements for: 1. 03/10/2024 - CR $220.34 (INT); 2. 02/04/2025 - CR $183.31 (FIN). Please provide them. Thank you.",
-          "transactions": [
+            },
             {
               "date": "03/10/2024",
               "description": "Direct Credit 458106 WOODSIDE INT24/00883944",
@@ -3497,14 +3320,7 @@
               "date": "02/04/2025",
               "description": "Direct Credit 458106 WOODSIDE FIN24/00874130",
               "amount": "CR $183.31"
-            }
-          ]
-        },
-        {
-          "id": "Q32",
-          "category": "Investment Income - Lycopodium Dividends",
-          "query_text": "Dear Client, please provide the Lycopodium dividend statements: 1. 04/10/2024 - CR $3,200.00; 2. 03/04/2025 - CR $800.00. Thank you.",
-          "transactions": [
+            },
             {
               "date": "04/10/2024",
               "description": "Direct Credit 458106 LYCOPODIUM LTD OCT24/00802029",
@@ -3514,14 +3330,7 @@
               "date": "03/04/2025",
               "description": "Direct Credit 458106 LYCOPODIUM LTD MAR25/00802066",
               "amount": "CR $800.00"
-            }
-          ]
-        },
-        {
-          "id": "Q33",
-          "category": "Investment Income - VNT Dividends",
-          "query_text": "Dear Client, the VNT dividend statements are needed for: 1. 07/10/2024 - CR $2,118.50; 2. 07/04/2025 - CR $2,408.50. Please provide these. Thank you.",
-          "transactions": [
+            },
             {
               "date": "07/10/2024",
               "description": "Direct Credit 629649 VNT DIVIDEND OCT24/00805141",
@@ -3531,14 +3340,7 @@
               "date": "07/04/2025",
               "description": "Direct Credit 629649 VNT DIVIDEND APR25/00804937",
               "amount": "CR $2408.50"
-            }
-          ]
-        },
-        {
-          "id": "Q34",
-          "category": "Investment Income - EDV Dividends",
-          "query_text": "Dear Client, please supply the EDV dividend statements for: 1. 10/10/2024 - CR $187.50; 2. 10/04/2025 - CR $312.50. Thank you.",
-          "transactions": [
+            },
             {
               "date": "10/10/2024",
               "description": "Direct Credit 624300 EDV DIV 001324154687",
@@ -3548,14 +3350,7 @@
               "date": "10/04/2025",
               "description": "Direct Credit 624300 EDV DIV 001333765349",
               "amount": "CR $312.50"
-            }
-          ]
-        },
-        {
-          "id": "Q35",
-          "category": "Investment Income - QUBE Dividends",
-          "query_text": "Dear Client, we require the QUBE dividend statements: 1. 15/10/2024 - CR $875.50; 2. 10/04/2025 - CR $697.00. Thank you.",
-          "transactions": [
+            },
             {
               "date": "15/10/2024",
               "description": "Direct Credit 219036 QUBE DIVIDEND OCT24/00811505",
@@ -3565,14 +3360,7 @@
               "date": "10/04/2025",
               "description": "Direct Credit 219036 QUBE DIVIDEND APR25/00811048",
               "amount": "CR $697.00"
-            }
-          ]
-        },
-        {
-          "id": "Q36",
-          "category": "Investment Income - South32 Dividends",
-          "query_text": "Dear Client, please provide the South32 dividend statements for: 1. 17/10/2024 - CR $275.72; 2. 03/04/2025 - CR $323.84. Thank you.",
-          "transactions": [
+            },
             {
               "date": "17/10/2024",
               "description": "Direct Credit 458106 SOUTH32 DIVIDEND AF016/00981943",
@@ -3582,71 +3370,1004 @@
               "date": "03/04/2025",
               "description": "Direct Credit 458106 SOUTH32 DIVIDEND AI017/00973486",
               "amount": "CR $323.84"
-            }
-          ]
-        },
-        {
-          "id": "Q37",
-          "category": "Investment Income - Medibank Dividends",
-          "query_text": "Dear Client, the Medibank dividend statement is required for the credit on 26/03/2025 - CR $429.00. Please provide this document. Thank you.",
-          "transactions": [
+            },
             {
               "date": "26/03/2025",
               "description": "Direct Credit 458106 MEDIBANK DIV MAR25/00959629",
               "amount": "CR $429.00"
-            }
-          ]
-        },
-        {
-          "id": "Q38",
-          "category": "Investment Income - Dropsuite Sale Proceeds",
-          "query_text": "Dear Client, we could not locate supporting documentation for the following large credit which appears to relate to the sale of Dropsuite shares. Please provide the trade confirmation, contract note or updated portfolio valuation showing the sale: 1. 30/05/2025 - CR $59,000.00 (ITF Dropsuite); 2. 07/11/2024 - CR $27,856.13 (Sell 30000 DRO @ 0.9351 from Ord Minnett). Thank you.",
-          "transactions": [
+            },
             {
               "date": "30/05/2025",
               "description": "Direct Credit 667459 ITF Dropsuite Li cm-3375317",
               "amount": "CR $59000.00"
+            }
+          ],
+          "sub_queries": [
+            {
+              "id": "Q3.1",
+              "category": "Investment Income \u2013 ACDC",
+              "query_text": "We have identified 2 unmatched ACDC transactions totalling $966.13 that require supporting documentation. Please provide the relevant supporting documentation for each of the following:\n\n  16/07/2024 | Direct Credit 458106 ACDC PAYMENT JUL24/00805730 | CR $798.49\n  16/07/2025 | Direct Credit 458106 ACDC PAYMENT JUL25/00804398 | CR $167.64\n\nKindly forward the supporting documentation at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "16/07/2024",
+                  "description": "Direct Credit 458106 ACDC PAYMENT JUL24/00805730",
+                  "amount": "CR $798.49"
+                },
+                {
+                  "date": "16/07/2025",
+                  "description": "Direct Credit 458106 ACDC PAYMENT JUL25/00804398",
+                  "amount": "CR $167.64"
+                }
+              ],
+              "status": "pending"
             },
+            {
+              "id": "Q3.2",
+              "category": "Investment Income \u2013 BENPH",
+              "query_text": "We have identified 5 unmatched BENPH transactions totalling $5,363.12 that require supporting documentation. Please provide the relevant distribution notice for each of the following:\n\n  17/06/2024 | Direct Credit 660166 BENPH QRT DST 001318840932 | CR $1101.23\n  16/09/2024 | Direct Credit 660166 BENPH QRT DST 001324893256 | CR $1069.50\n  16/12/2024 | Direct Credit 660166 BENPH DST 001328031496 | CR $1075.43\n  17/03/2025 | Direct Credit 669534 BENPH DST 001332592837 | CR $1081.13\n  16/06/2025 | Direct Credit 669534 BENPH DST 001337429590 | CR $1035.83\n\nKindly forward the distribution notice at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "17/06/2024",
+                  "description": "Direct Credit 660166 BENPH QRT DST 001318840932",
+                  "amount": "CR $1101.23"
+                },
+                {
+                  "date": "16/09/2024",
+                  "description": "Direct Credit 660166 BENPH QRT DST 001324893256",
+                  "amount": "CR $1069.50"
+                },
+                {
+                  "date": "16/12/2024",
+                  "description": "Direct Credit 660166 BENPH DST 001328031496",
+                  "amount": "CR $1075.43"
+                },
+                {
+                  "date": "17/03/2025",
+                  "description": "Direct Credit 669534 BENPH DST 001332592837",
+                  "amount": "CR $1081.13"
+                },
+                {
+                  "date": "16/06/2025",
+                  "description": "Direct Credit 669534 BENPH DST 001337429590",
+                  "amount": "CR $1035.83"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.3",
+              "category": "Investment Income \u2013 BHP GROUP",
+              "query_text": "We have identified 2 unmatched BHP GROUP transactions totalling $2,281.10 that require supporting documentation. Please provide the relevant dividend statement for each of the following:\n\n  03/10/2024 | Direct Credit 458106 BHP GROUP DIV AF390/00408163 | CR $1331.98\n  27/03/2025 | Direct Credit 458106 BHP GROUP DIV AI391/00401481 | CR $949.12\n\nKindly forward the dividend statement at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "03/10/2024",
+                  "description": "Direct Credit 458106 BHP GROUP DIV AF390/00408163",
+                  "amount": "CR $1331.98"
+                },
+                {
+                  "date": "27/03/2025",
+                  "description": "Direct Credit 458106 BHP GROUP DIV AI391/00401481",
+                  "amount": "CR $949.12"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.4",
+              "category": "Investment Income \u2013 BLX",
+              "query_text": "We have identified 2 unmatched BLX transactions totalling $1,975.00 that require supporting documentation. Please provide the relevant dividend statement for each of the following:\n\n  20/09/2024 | Direct Credit 458106 BLX DIVIDEND SEP24/00800941 | CR $950.00\n  21/03/2025 | Direct Credit 458106 BLX DIVIDEND MAR25/00800917 | CR $1025.00\n\nKindly forward the dividend statement at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "20/09/2024",
+                  "description": "Direct Credit 458106 BLX DIVIDEND SEP24/00800941",
+                  "amount": "CR $950.00"
+                },
+                {
+                  "date": "21/03/2025",
+                  "description": "Direct Credit 458106 BLX DIVIDEND MAR25/00800917",
+                  "amount": "CR $1025.00"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.5",
+              "category": "Investment Income \u2013 CAP NOTES 7",
+              "query_text": "We have identified 5 unmatched CAP NOTES 7 transactions totalling $4,296.05 that require supporting documentation. Please provide the relevant distribution notice for each of the following:\n\n  20/06/2024 | Direct Credit 397204 CAP NOTES 7 DIST C7J24/00905298 | CR $859.67\n  20/09/2024 | Direct Credit 397204 CAP NOTES 7 DIST C7S24/00905221 | CR $863.89\n  20/12/2024 | Direct Credit 397204 CAP NOTES 7 DIST C7D24/00905134 | CR $868.47\n  20/03/2025 | Direct Credit 397204 CAP NOTES 7 DIST C7M25/00905024 | CR $862.37\n  20/06/2025 | Direct Credit 397204 CAP NOTES 7 DIST C7J25/00904871 | CR $841.65\n\nKindly forward the distribution notice at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "20/06/2024",
+                  "description": "Direct Credit 397204 CAP NOTES 7 DIST C7J24/00905298",
+                  "amount": "CR $859.67"
+                },
+                {
+                  "date": "20/09/2024",
+                  "description": "Direct Credit 397204 CAP NOTES 7 DIST C7S24/00905221",
+                  "amount": "CR $863.89"
+                },
+                {
+                  "date": "20/12/2024",
+                  "description": "Direct Credit 397204 CAP NOTES 7 DIST C7D24/00905134",
+                  "amount": "CR $868.47"
+                },
+                {
+                  "date": "20/03/2025",
+                  "description": "Direct Credit 397204 CAP NOTES 7 DIST C7M25/00905024",
+                  "amount": "CR $862.37"
+                },
+                {
+                  "date": "20/06/2025",
+                  "description": "Direct Credit 397204 CAP NOTES 7 DIST C7J25/00904871",
+                  "amount": "CR $841.65"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.6",
+              "category": "Investment Income \u2013 CHC",
+              "query_text": "We have identified 3 unmatched CHC transactions totalling $2,832.00 that require supporting documentation. Please provide the relevant distribution notice for each of the following:\n\n  30/08/2024 | Direct Credit 323551 CHC DST 001320849053 | CR $920.00\n  28/02/2025 | Direct Credit 323551 CHC DST 001329915174 | CR $936.80\n  29/08/2025 | Direct Credit 323551 CHC DST 001339859818 | CR $975.20\n\nKindly forward the distribution notice at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "30/08/2024",
+                  "description": "Direct Credit 323551 CHC DST 001320849053",
+                  "amount": "CR $920.00"
+                },
+                {
+                  "date": "28/02/2025",
+                  "description": "Direct Credit 323551 CHC DST 001329915174",
+                  "amount": "CR $936.80"
+                },
+                {
+                  "date": "29/08/2025",
+                  "description": "Direct Credit 323551 CHC DST 001339859818",
+                  "amount": "CR $975.20"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.7",
+              "category": "Investment Income \u2013 CSL LTD",
+              "query_text": "We have identified 2 unmatched CSL LTD transactions totalling $576.88 that require supporting documentation. Please provide the relevant dividend statement for each of the following:\n\n  02/10/2024 | Direct Credit 458106 CSL LTD DIVIDEND AUF24/01012098 | CR $295.69\n  09/04/2025 | Direct Credit 458106 CSL LTD DIVIDEND AUI25/01010981 | CR $281.19\n\nKindly forward the dividend statement at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "02/10/2024",
+                  "description": "Direct Credit 458106 CSL LTD DIVIDEND AUF24/01012098",
+                  "amount": "CR $295.69"
+                },
+                {
+                  "date": "09/04/2025",
+                  "description": "Direct Credit 458106 CSL LTD DIVIDEND AUI25/01010981",
+                  "amount": "CR $281.19"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.8",
+              "category": "Investment Income \u2013 EDV",
+              "query_text": "We have identified 2 unmatched EDV transactions totalling $500.00 that require supporting documentation. Please provide the relevant dividend statement for each of the following:\n\n  10/10/2024 | Direct Credit 624300 EDV DIV 001324154687 | CR $187.50\n  10/04/2025 | Direct Credit 624300 EDV DIV 001333765349 | CR $312.50\n\nKindly forward the dividend statement at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "10/10/2024",
+                  "description": "Direct Credit 624300 EDV DIV 001324154687",
+                  "amount": "CR $187.50"
+                },
+                {
+                  "date": "10/04/2025",
+                  "description": "Direct Credit 624300 EDV DIV 001333765349",
+                  "amount": "CR $312.50"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.9",
+              "category": "Investment Income \u2013 EVT",
+              "query_text": "We have identified 2 unmatched EVT transactions totalling $720.00 that require supporting documentation. Please provide the relevant supporting documentation for each of the following:\n\n  26/09/2024 | Direct Credit 123397 EVT PAYMENT SEP24/00803831 | CR $400.00\n  20/03/2025 | Direct Credit 123397 EVT PAYMENT MAR25/00803691 | CR $320.00\n\nKindly forward the supporting documentation at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "26/09/2024",
+                  "description": "Direct Credit 123397 EVT PAYMENT SEP24/00803831",
+                  "amount": "CR $400.00"
+                },
+                {
+                  "date": "20/03/2025",
+                  "description": "Direct Credit 123397 EVT PAYMENT MAR25/00803691",
+                  "amount": "CR $320.00"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.10",
+              "category": "Investment Income \u2013 GPT",
+              "query_text": "We have identified 3 unmatched GPT transactions totalling $3,600.00 that require supporting documentation. Please provide the relevant distribution notice for each of the following:\n\n  30/08/2024 | Direct Credit 089531 GPT DST 001320673734 | CR $1200.00\n  28/02/2025 | Direct Credit 089531 GPT DST 001329589059 | CR $1200.00\n  29/08/2025 | Direct Credit 089531 GPT DST 001339588049 | CR $1200.00\n\nKindly forward the distribution notice at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "30/08/2024",
+                  "description": "Direct Credit 089531 GPT DST 001320673734",
+                  "amount": "CR $1200.00"
+                },
+                {
+                  "date": "28/02/2025",
+                  "description": "Direct Credit 089531 GPT DST 001329589059",
+                  "amount": "CR $1200.00"
+                },
+                {
+                  "date": "29/08/2025",
+                  "description": "Direct Credit 089531 GPT DST 001339588049",
+                  "amount": "CR $1200.00"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.11",
+              "category": "Investment Income \u2013 GQG",
+              "query_text": "We have identified 5 unmatched GQG transactions totalling $3,757.09 that require supporting documentation. Please provide the relevant dividend statement for each of the following:\n\n  27/06/2024 | Direct Credit 513270 GQG DIV 001319007442 | CR $648.60\n  26/09/2024 | Direct Credit 513270 GQG DIV 001325587607 | CR $700.94\n  20/12/2024 | Direct Credit 513270 GQG DIV 001327748235 | CR $741.55\n  27/03/2025 | Direct Credit 513270 GQG DIV 001332636428 | CR $843.88\n  27/06/2025 | Direct Credit 513270 GQG DIV 001337543539 | CR $822.12\n\nKindly forward the dividend statement at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "27/06/2024",
+                  "description": "Direct Credit 513270 GQG DIV 001319007442",
+                  "amount": "CR $648.60"
+                },
+                {
+                  "date": "26/09/2024",
+                  "description": "Direct Credit 513270 GQG DIV 001325587607",
+                  "amount": "CR $700.94"
+                },
+                {
+                  "date": "20/12/2024",
+                  "description": "Direct Credit 513270 GQG DIV 001327748235",
+                  "amount": "CR $741.55"
+                },
+                {
+                  "date": "27/03/2025",
+                  "description": "Direct Credit 513270 GQG DIV 001332636428",
+                  "amount": "CR $843.88"
+                },
+                {
+                  "date": "27/06/2025",
+                  "description": "Direct Credit 513270 GQG DIV 001337543539",
+                  "amount": "CR $822.12"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.12",
+              "category": "Investment Income \u2013 ITF Dropsuite Li",
+              "query_text": "We have identified 1 unmatched ITF Dropsuite Li transaction totalling $59,000.00 that requires supporting documentation. Please provide the relevant supporting documentation for each of the following:\n\n  30/05/2025 | Direct Credit 667459 ITF Dropsuite Li cm-3375317 | CR $59000.00\n\nKindly forward the supporting documentation at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "30/05/2025",
+                  "description": "Direct Credit 667459 ITF Dropsuite Li cm-3375317",
+                  "amount": "CR $59000.00"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.13",
+              "category": "Investment Income \u2013 Lycopodium LTD",
+              "query_text": "We have identified 2 unmatched Lycopodium LTD transactions totalling $4,000.00 that require supporting documentation. Please provide the relevant supporting documentation for each of the following:\n\n  04/10/2024 | Direct Credit 458106 LYCOPODIUM LTD OCT24/00802029 | CR $3200.00\n  03/04/2025 | Direct Credit 458106 LYCOPODIUM LTD MAR25/00802066 | CR $800.00\n\nKindly forward the supporting documentation at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "04/10/2024",
+                  "description": "Direct Credit 458106 LYCOPODIUM LTD OCT24/00802029",
+                  "amount": "CR $3200.00"
+                },
+                {
+                  "date": "03/04/2025",
+                  "description": "Direct Credit 458106 LYCOPODIUM LTD MAR25/00802066",
+                  "amount": "CR $800.00"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.14",
+              "category": "Investment Income \u2013 MCP MASTER",
+              "query_text": "We have identified 15 unmatched MCP MASTER transactions totalling $2,772.00 that require supporting documentation. Please provide the relevant supporting documentation for each of the following:\n\n  11/06/2024 | Direct Credit 607019 MCP MASTER INCOM cm-2108460 | CR $189.00\n  08/07/2024 | Direct Credit 607019 MCP MASTER INCOM cm-2203142 | CR $194.60\n  08/08/2024 | Direct Credit 607019 MCP MASTER INCOM cm-2325599 | CR $184.80\n  09/09/2024 | Direct Credit 607019 MCP MASTER INCOM cm-2433880 | CR $189.00\n  09/10/2024 | Direct Credit 607019 MCP MASTER INCOM cm-2545008 | CR $189.00\n  08/11/2024 | Direct Credit 607019 MCP MASTER INCOM cm-2656472 | CR $184.80\n  09/12/2024 | Direct Credit 607019 MCP MASTER INCOM cm-2769612 | CR $176.40\n  09/01/2025 | Direct Credit 607019 MCP MASTER INCOM cm-2867109 | CR $179.20\n  10/02/2025 | Direct Credit 607019 MCP MASTER INCOM cm-2971134 | CR $191.80\n  10/03/2025 | Direct Credit 607019 MCP MASTER INCOM cm-3068038 | CR $168.00\n  08/04/2025 | Direct Credit 607019 MCP MASTER INCOM cm-3152959 | CR $186.20\n  08/05/2025 | Direct Credit 607019 MCP MASTER INCOM cm-3298032 | CR $177.80\n  10/06/2025 | Direct Credit 607019 MCP MASTER INCOM cm-3417612 | CR $201.60\n  08/07/2025 | Direct Credit 607019 MCP MASTER INCOM cm-3519018 | CR $179.20\n  08/08/2025 | Direct Credit 607019 MCP MASTER INCOM cm-3669931 | CR $180.60\n\nKindly forward the supporting documentation at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "11/06/2024",
+                  "description": "Direct Credit 607019 MCP MASTER INCOM cm-2108460",
+                  "amount": "CR $189.00"
+                },
+                {
+                  "date": "08/07/2024",
+                  "description": "Direct Credit 607019 MCP MASTER INCOM cm-2203142",
+                  "amount": "CR $194.60"
+                },
+                {
+                  "date": "08/08/2024",
+                  "description": "Direct Credit 607019 MCP MASTER INCOM cm-2325599",
+                  "amount": "CR $184.80"
+                },
+                {
+                  "date": "09/09/2024",
+                  "description": "Direct Credit 607019 MCP MASTER INCOM cm-2433880",
+                  "amount": "CR $189.00"
+                },
+                {
+                  "date": "09/10/2024",
+                  "description": "Direct Credit 607019 MCP MASTER INCOM cm-2545008",
+                  "amount": "CR $189.00"
+                },
+                {
+                  "date": "08/11/2024",
+                  "description": "Direct Credit 607019 MCP MASTER INCOM cm-2656472",
+                  "amount": "CR $184.80"
+                },
+                {
+                  "date": "09/12/2024",
+                  "description": "Direct Credit 607019 MCP MASTER INCOM cm-2769612",
+                  "amount": "CR $176.40"
+                },
+                {
+                  "date": "09/01/2025",
+                  "description": "Direct Credit 607019 MCP MASTER INCOM cm-2867109",
+                  "amount": "CR $179.20"
+                },
+                {
+                  "date": "10/02/2025",
+                  "description": "Direct Credit 607019 MCP MASTER INCOM cm-2971134",
+                  "amount": "CR $191.80"
+                },
+                {
+                  "date": "10/03/2025",
+                  "description": "Direct Credit 607019 MCP MASTER INCOM cm-3068038",
+                  "amount": "CR $168.00"
+                },
+                {
+                  "date": "08/04/2025",
+                  "description": "Direct Credit 607019 MCP MASTER INCOM cm-3152959",
+                  "amount": "CR $186.20"
+                },
+                {
+                  "date": "08/05/2025",
+                  "description": "Direct Credit 607019 MCP MASTER INCOM cm-3298032",
+                  "amount": "CR $177.80"
+                },
+                {
+                  "date": "10/06/2025",
+                  "description": "Direct Credit 607019 MCP MASTER INCOM cm-3417612",
+                  "amount": "CR $201.60"
+                },
+                {
+                  "date": "08/07/2025",
+                  "description": "Direct Credit 607019 MCP MASTER INCOM cm-3519018",
+                  "amount": "CR $179.20"
+                },
+                {
+                  "date": "08/08/2025",
+                  "description": "Direct Credit 607019 MCP MASTER INCOM cm-3669931",
+                  "amount": "CR $180.60"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.15",
+              "category": "Investment Income \u2013 MGR",
+              "query_text": "We have identified 3 unmatched MGR transactions totalling $2,100.00 that require supporting documentation. Please provide the relevant distribution notice for each of the following:\n\n  29/08/2024 | Direct Credit 480318 MGR DST 001320797620 | CR $840.00\n  27/02/2025 | Direct Credit 480318 MGR DST 001329854693 | CR $630.00\n  28/08/2025 | Direct Credit 480318 MGR DST 001339796632 | CR $630.00\n\nKindly forward the distribution notice at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "29/08/2024",
+                  "description": "Direct Credit 480318 MGR DST 001320797620",
+                  "amount": "CR $840.00"
+                },
+                {
+                  "date": "27/02/2025",
+                  "description": "Direct Credit 480318 MGR DST 001329854693",
+                  "amount": "CR $630.00"
+                },
+                {
+                  "date": "28/08/2025",
+                  "description": "Direct Credit 480318 MGR DST 001339796632",
+                  "amount": "CR $630.00"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.16",
+              "category": "Investment Income \u2013 MMS",
+              "query_text": "We have identified 2 unmatched MMS transactions totalling $2,980.00 that require supporting documentation. Please provide the relevant supporting documentation for each of the following:\n\n  27/09/2024 | Direct Credit 270211 MMS PAYMENT SEP24/00804971 | CR $1560.00\n  28/03/2025 | Direct Credit 270211 MMS PAYMENT MAR25/00805674 | CR $1420.00\n\nKindly forward the supporting documentation at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "27/09/2024",
+                  "description": "Direct Credit 270211 MMS PAYMENT SEP24/00804971",
+                  "amount": "CR $1560.00"
+                },
+                {
+                  "date": "28/03/2025",
+                  "description": "Direct Credit 270211 MMS PAYMENT MAR25/00805674",
+                  "amount": "CR $1420.00"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.17",
+              "category": "Investment Income \u2013 MQG",
+              "query_text": "We have identified 3 unmatched MQG transactions totalling $5,175.00 that require supporting documentation. Please provide the relevant dividend statement for each of the following:\n\n  02/07/2024 | Direct Credit 077669 MQG FNL DIV 001318575431 | CR $1925.00\n  17/12/2024 | Direct Credit 077669 MQG ITM DIV 001327488727 | CR $1300.00\n  02/07/2025 | Direct Credit 077669 MQG FNL DIV 001337085263 | CR $1950.00\n\nKindly forward the dividend statement at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "02/07/2024",
+                  "description": "Direct Credit 077669 MQG FNL DIV 001318575431",
+                  "amount": "CR $1925.00"
+                },
+                {
+                  "date": "17/12/2024",
+                  "description": "Direct Credit 077669 MQG ITM DIV 001327488727",
+                  "amount": "CR $1300.00"
+                },
+                {
+                  "date": "02/07/2025",
+                  "description": "Direct Credit 077669 MQG FNL DIV 001337085263",
+                  "amount": "CR $1950.00"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.18",
+              "category": "Investment Income \u2013 Medibank",
+              "query_text": "We have identified 1 unmatched Medibank transaction totalling $429.00 that requires supporting documentation. Please provide the relevant dividend statement for each of the following:\n\n  26/03/2025 | Direct Credit 458106 MEDIBANK DIV MAR25/00959629 | CR $429.00\n\nKindly forward the dividend statement at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "26/03/2025",
+                  "description": "Direct Credit 458106 MEDIBANK DIV MAR25/00959629",
+                  "amount": "CR $429.00"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.19",
+              "category": "Investment Income \u2013 Metcash Limited",
+              "query_text": "We have identified 3 unmatched Metcash Limited transactions totalling $1,762.25 that require supporting documentation. Please provide the relevant supporting documentation for each of the following:\n\n  27/08/2024 | Direct Credit 255730 METCASH LIMITED S00092695018 | CR $565.25\n  29/01/2025 | Direct Credit 255730 METCASH LIMITED S00092695018 | CR $565.25\n  27/08/2025 | Direct Credit 255730 METCASH LIMITED S00092695018 | CR $631.75\n\nKindly forward the supporting documentation at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "27/08/2024",
+                  "description": "Direct Credit 255730 METCASH LIMITED S00092695018",
+                  "amount": "CR $565.25"
+                },
+                {
+                  "date": "29/01/2025",
+                  "description": "Direct Credit 255730 METCASH LIMITED S00092695018",
+                  "amount": "CR $565.25"
+                },
+                {
+                  "date": "27/08/2025",
+                  "description": "Direct Credit 255730 METCASH LIMITED S00092695018",
+                  "amount": "CR $631.75"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.20",
+              "category": "Investment Income \u2013 NAB",
+              "query_text": "We have identified 3 unmatched NAB transactions totalling $7,620.00 that require supporting documentation. Please provide the relevant dividend statement for each of the following:\n\n  03/07/2024 | Direct Credit 531532 NAB INTERIM DIV DV251/01064980 | CR $2520.00\n  16/12/2024 | Direct Credit 531532 NAB FINAL DIV DV252/01053593 | CR $2550.00\n  02/07/2025 | Direct Credit 531532 NAB INTERIM DIV DV261/01047329 | CR $2550.00\n\nKindly forward the dividend statement at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "03/07/2024",
+                  "description": "Direct Credit 531532 NAB INTERIM DIV DV251/01064980",
+                  "amount": "CR $2520.00"
+                },
+                {
+                  "date": "16/12/2024",
+                  "description": "Direct Credit 531532 NAB FINAL DIV DV252/01053593",
+                  "amount": "CR $2550.00"
+                },
+                {
+                  "date": "02/07/2025",
+                  "description": "Direct Credit 531532 NAB INTERIM DIV DV261/01047329",
+                  "amount": "CR $2550.00"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.21",
+              "category": "Investment Income \u2013 NABPH",
+              "query_text": "We have identified 5 unmatched NABPH transactions totalling $6,928.00 that require supporting documentation. Please provide the relevant distribution notice for each of the following:\n\n  17/06/2024 | Direct Credit 531547 NABPH JUN DIS PH244/00811434 | CR $1384.41\n  17/09/2024 | Direct Credit 531547 NABPH SEP DIS PH251/00811231 | CR $1402.59\n  17/12/2024 | Direct Credit 531547 NABPH DEC DIS PH252/00811001 | CR $1395.62\n  17/03/2025 | Direct Credit 531547 NABPH MAR DIS PH253/00810857 | CR $1388.65\n  17/06/2025 | Direct Credit 531547 NABPH JUN DIS PH254/00810452 | CR $1356.73\n\nKindly forward the distribution notice at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "17/06/2024",
+                  "description": "Direct Credit 531547 NABPH JUN DIS PH244/00811434",
+                  "amount": "CR $1384.41"
+                },
+                {
+                  "date": "17/09/2024",
+                  "description": "Direct Credit 531547 NABPH SEP DIS PH251/00811231",
+                  "amount": "CR $1402.59"
+                },
+                {
+                  "date": "17/12/2024",
+                  "description": "Direct Credit 531547 NABPH DEC DIS PH252/00811001",
+                  "amount": "CR $1395.62"
+                },
+                {
+                  "date": "17/03/2025",
+                  "description": "Direct Credit 531547 NABPH MAR DIS PH253/00810857",
+                  "amount": "CR $1388.65"
+                },
+                {
+                  "date": "17/06/2025",
+                  "description": "Direct Credit 531547 NABPH JUN DIS PH254/00810452",
+                  "amount": "CR $1356.73"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.22",
+              "category": "Investment Income \u2013 NDIA ETFS",
+              "query_text": "We have identified 2 unmatched NDIA ETFS transactions totalling $568.07 that require supporting documentation. Please provide the relevant distribution notice for each of the following:\n\n  16/07/2024 | Direct Credit 458106 NDIA ETFS DIS JUL24/00801038 | CR $213.34\n  16/07/2025 | Direct Credit 458106 NDIA ETFS DIS JUL25/00801165 | CR $354.73\n\nKindly forward the distribution notice at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "16/07/2024",
+                  "description": "Direct Credit 458106 NDIA ETFS DIS JUL24/00801038",
+                  "amount": "CR $213.34"
+                },
+                {
+                  "date": "16/07/2025",
+                  "description": "Direct Credit 458106 NDIA ETFS DIS JUL25/00801165",
+                  "amount": "CR $354.73"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.23",
+              "category": "Investment Income \u2013 PERLS XV",
+              "query_text": "We have identified 5 unmatched PERLS XV transactions totalling $7,877.39 that require supporting documentation. Please provide the relevant distribution notice for each of the following:\n\n  17/06/2024 | Direct Credit 640006 PERLS XV DST 001318976928 | CR $1586.75\n  16/09/2024 | Direct Credit 640006 PERLS XV DST 001325024410 | CR $1592.50\n  16/12/2024 | Direct Credit 640006 PERLS XV DST 001328123068 | CR $1585.13\n  17/03/2025 | Direct Credit 640006 PERLS XV DST 001333224772 | CR $1577.13\n  16/06/2025 | Direct Credit 640006 PERLS XV DST 001337622521 | CR $1535.88\n\nKindly forward the distribution notice at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "17/06/2024",
+                  "description": "Direct Credit 640006 PERLS XV DST 001318976928",
+                  "amount": "CR $1586.75"
+                },
+                {
+                  "date": "16/09/2024",
+                  "description": "Direct Credit 640006 PERLS XV DST 001325024410",
+                  "amount": "CR $1592.50"
+                },
+                {
+                  "date": "16/12/2024",
+                  "description": "Direct Credit 640006 PERLS XV DST 001328123068",
+                  "amount": "CR $1585.13"
+                },
+                {
+                  "date": "17/03/2025",
+                  "description": "Direct Credit 640006 PERLS XV DST 001333224772",
+                  "amount": "CR $1577.13"
+                },
+                {
+                  "date": "16/06/2025",
+                  "description": "Direct Credit 640006 PERLS XV DST 001337622521",
+                  "amount": "CR $1535.88"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.24",
+              "category": "Investment Income \u2013 QUBE",
+              "query_text": "We have identified 2 unmatched QUBE transactions totalling $1,572.50 that require supporting documentation. Please provide the relevant dividend statement for each of the following:\n\n  15/10/2024 | Direct Credit 219036 QUBE DIVIDEND OCT24/00811505 | CR $875.50\n  10/04/2025 | Direct Credit 219036 QUBE DIVIDEND APR25/00811048 | CR $697.00\n\nKindly forward the dividend statement at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "15/10/2024",
+                  "description": "Direct Credit 219036 QUBE DIVIDEND OCT24/00811505",
+                  "amount": "CR $875.50"
+                },
+                {
+                  "date": "10/04/2025",
+                  "description": "Direct Credit 219036 QUBE DIVIDEND APR25/00811048",
+                  "amount": "CR $697.00"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.25",
+              "category": "Investment Income \u2013 RBTZ",
+              "query_text": "We have identified 2 unmatched RBTZ transactions totalling $2,147.96 that require supporting documentation. Please provide the relevant distribution notice for each of the following:\n\n  16/07/2024 | Direct Credit 513275 RBTZ DST 001319960466 | CR $1514.77\n  16/07/2025 | Direct Credit 513275 RBTZ DST 001339100368 | CR $633.19\n\nKindly forward the distribution notice at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "16/07/2024",
+                  "description": "Direct Credit 513275 RBTZ DST 001319960466",
+                  "amount": "CR $1514.77"
+                },
+                {
+                  "date": "16/07/2025",
+                  "description": "Direct Credit 513275 RBTZ DST 001339100368",
+                  "amount": "CR $633.19"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.26",
+              "category": "Investment Income \u2013 REG",
+              "query_text": "We have identified 2 unmatched REG transactions totalling $1,473.00 that require supporting documentation. Please provide the relevant dividend statement for each of the following:\n\n  25/09/2024 | Direct Credit 407459 REG DIV 001325443872 | CR $664.00\n  10/04/2025 | Direct Credit 407459 REG DIV 001334682632 | CR $809.00\n\nKindly forward the dividend statement at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "25/09/2024",
+                  "description": "Direct Credit 407459 REG DIV 001325443872",
+                  "amount": "CR $664.00"
+                },
+                {
+                  "date": "10/04/2025",
+                  "description": "Direct Credit 407459 REG DIV 001334682632",
+                  "amount": "CR $809.00"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.27",
+              "category": "Investment Income \u2013 RIO TINTO LTD",
+              "query_text": "We have identified 2 unmatched RIO TINTO LTD transactions totalling $3,798.10 that require supporting documentation. Please provide the relevant supporting documentation for each of the following:\n\n  26/09/2024 | Direct Credit 458106 RIO TINTO LTD AUI24/00163780 | CR $1570.19\n  17/04/2025 | Direct Credit 458106 RIO TINTO LTD AUF24/00162937 | CR $2227.91\n\nKindly forward the supporting documentation at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "26/09/2024",
+                  "description": "Direct Credit 458106 RIO TINTO LTD AUI24/00163780",
+                  "amount": "CR $1570.19"
+                },
+                {
+                  "date": "17/04/2025",
+                  "description": "Direct Credit 458106 RIO TINTO LTD AUF24/00162937",
+                  "amount": "CR $2227.91"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.28",
+              "category": "Investment Income \u2013 SANTOS",
+              "query_text": "We have identified 2 unmatched SANTOS transactions totalling $1,503.11 that require supporting documentation. Please provide the relevant dividend statement for each of the following:\n\n  25/09/2024 | Direct Credit 458106 SANTOS DIVIDEND AUI24/00893771 | CR $810.41\n  26/03/2025 | Direct Credit 458106 SANTOS DIVIDEND AUF24/00892947 | CR $692.70\n\nKindly forward the dividend statement at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "25/09/2024",
+                  "description": "Direct Credit 458106 SANTOS DIVIDEND AUI24/00893771",
+                  "amount": "CR $810.41"
+                },
+                {
+                  "date": "26/03/2025",
+                  "description": "Direct Credit 458106 SANTOS DIVIDEND AUF24/00892947",
+                  "amount": "CR $692.70"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.29",
+              "category": "Investment Income \u2013 SRG",
+              "query_text": "We have identified 2 unmatched SRG transactions totalling $2,500.00 that require supporting documentation. Please provide the relevant dividend statement for each of the following:\n\n  26/09/2024 | Direct Credit 326860 SRG DIVIDEND SEP24/00803127 | CR $1250.00\n  11/04/2025 | Direct Credit 326860 SRG DIVIDEND APR25/00803154 | CR $1250.00\n\nKindly forward the dividend statement at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "26/09/2024",
+                  "description": "Direct Credit 326860 SRG DIVIDEND SEP24/00803127",
+                  "amount": "CR $1250.00"
+                },
+                {
+                  "date": "11/04/2025",
+                  "description": "Direct Credit 326860 SRG DIVIDEND APR25/00803154",
+                  "amount": "CR $1250.00"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.30",
+              "category": "Investment Income \u2013 SUBD",
+              "query_text": "We have identified 9 unmatched SUBD transactions totalling $1,132.00 that require supporting documentation. Please provide the relevant distribution notice for each of the following:\n\n  17/12/2024 | Direct Credit 535912 SUBD DST 001328016085 | CR $98.75\n  23/01/2025 | Direct Credit 535912 SUBD DST 001329209549 | CR $98.75\n  18/02/2025 | Direct Credit 535912 SUBD DST 001329825416 | CR $98.75\n  17/03/2025 | Direct Credit 535912 SUBD DST 001332915352 | CR $98.75\n  16/04/2025 | Direct Credit 535912 SUBD DST 001336077391 | CR $94.80\n  16/05/2025 | Direct Credit 535912 SUBD DST 001336499424 | CR $94.80\n  18/06/2025 | Direct Credit 535912 SUBD DST 001337593215 | CR $90.85\n  25/07/2025 | Direct Credit 535912 SUBD DST 001339234856 | CR $90.85\n  18/08/2025 | Direct Credit 535912 SUBD DST 001339672342 | CR $365.70\n\nKindly forward the distribution notice at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "17/12/2024",
+                  "description": "Direct Credit 535912 SUBD DST 001328016085",
+                  "amount": "CR $98.75"
+                },
+                {
+                  "date": "23/01/2025",
+                  "description": "Direct Credit 535912 SUBD DST 001329209549",
+                  "amount": "CR $98.75"
+                },
+                {
+                  "date": "18/02/2025",
+                  "description": "Direct Credit 535912 SUBD DST 001329825416",
+                  "amount": "CR $98.75"
+                },
+                {
+                  "date": "17/03/2025",
+                  "description": "Direct Credit 535912 SUBD DST 001332915352",
+                  "amount": "CR $98.75"
+                },
+                {
+                  "date": "16/04/2025",
+                  "description": "Direct Credit 535912 SUBD DST 001336077391",
+                  "amount": "CR $94.80"
+                },
+                {
+                  "date": "16/05/2025",
+                  "description": "Direct Credit 535912 SUBD DST 001336499424",
+                  "amount": "CR $94.80"
+                },
+                {
+                  "date": "18/06/2025",
+                  "description": "Direct Credit 535912 SUBD DST 001337593215",
+                  "amount": "CR $90.85"
+                },
+                {
+                  "date": "25/07/2025",
+                  "description": "Direct Credit 535912 SUBD DST 001339234856",
+                  "amount": "CR $90.85"
+                },
+                {
+                  "date": "18/08/2025",
+                  "description": "Direct Credit 535912 SUBD DST 001339672342",
+                  "amount": "CR $365.70"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.31",
+              "category": "Investment Income \u2013 SUNPH",
+              "query_text": "We have identified 5 unmatched SUNPH transactions totalling $1,926.63 that require supporting documentation. Please provide the relevant distribution notice for each of the following:\n\n  17/06/2024 | Direct Credit 234619 SUNPH QRT DST 001318687840 | CR $385.02\n  17/09/2024 | Direct Credit 234619 SUNPH QRT DST 001323617215 | CR $390.15\n  17/12/2024 | Direct Credit 234619 SUNPH QRT DST 001327821939 | CR $388.35\n  17/03/2025 | Direct Credit 234619 SUNPH QRT DST 001332468859 | CR $386.58\n  17/06/2025 | Direct Credit 234619 SUNPH QRT DST 001337385353 | CR $376.53\n\nKindly forward the distribution notice at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "17/06/2024",
+                  "description": "Direct Credit 234619 SUNPH QRT DST 001318687840",
+                  "amount": "CR $385.02"
+                },
+                {
+                  "date": "17/09/2024",
+                  "description": "Direct Credit 234619 SUNPH QRT DST 001323617215",
+                  "amount": "CR $390.15"
+                },
+                {
+                  "date": "17/12/2024",
+                  "description": "Direct Credit 234619 SUNPH QRT DST 001327821939",
+                  "amount": "CR $388.35"
+                },
+                {
+                  "date": "17/03/2025",
+                  "description": "Direct Credit 234619 SUNPH QRT DST 001332468859",
+                  "amount": "CR $386.58"
+                },
+                {
+                  "date": "17/06/2025",
+                  "description": "Direct Credit 234619 SUNPH QRT DST 001337385353",
+                  "amount": "CR $376.53"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.32",
+              "category": "Investment Income \u2013 South32",
+              "query_text": "We have identified 2 unmatched South32 transactions totalling $599.56 that require supporting documentation. Please provide the relevant dividend statement for each of the following:\n\n  17/10/2024 | Direct Credit 458106 SOUTH32 DIVIDEND AF016/00981943 | CR $275.72\n  03/04/2025 | Direct Credit 458106 SOUTH32 DIVIDEND AI017/00973486 | CR $323.84\n\nKindly forward the dividend statement at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "17/10/2024",
+                  "description": "Direct Credit 458106 SOUTH32 DIVIDEND AF016/00981943",
+                  "amount": "CR $275.72"
+                },
+                {
+                  "date": "03/04/2025",
+                  "description": "Direct Credit 458106 SOUTH32 DIVIDEND AI017/00973486",
+                  "amount": "CR $323.84"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.33",
+              "category": "Investment Income \u2013 TCL",
+              "query_text": "We have identified 3 unmatched TCL transactions totalling $1,714.98 that require supporting documentation. Please provide the relevant distribution notice for each of the following:\n\n  13/08/2024 | Direct Credit 396297 TCL DISTRIBUTION AUF24/00852366 | CR $565.88\n  25/02/2025 | Direct Credit 396297 TCL DISTRIBUTION AUI25/00849818 | CR $565.88\n  22/08/2025 | Direct Credit 396297 TCL DISTRIBUTION AUF25/00845941 | CR $583.22\n\nKindly forward the distribution notice at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "13/08/2024",
+                  "description": "Direct Credit 396297 TCL DISTRIBUTION AUF24/00852366",
+                  "amount": "CR $565.88"
+                },
+                {
+                  "date": "25/02/2025",
+                  "description": "Direct Credit 396297 TCL DISTRIBUTION AUI25/00849818",
+                  "amount": "CR $565.88"
+                },
+                {
+                  "date": "22/08/2025",
+                  "description": "Direct Credit 396297 TCL DISTRIBUTION AUF25/00845941",
+                  "amount": "CR $583.22"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.34",
+              "category": "Investment Income \u2013 TECH",
+              "query_text": "We have identified 2 unmatched TECH transactions totalling $5,841.71 that require supporting documentation. Please provide the relevant supporting documentation for each of the following:\n\n  16/07/2024 | Direct Credit 458106 TECH PAYMENT JUL24/00802338 | CR $2230.87\n  16/07/2025 | Direct Credit 458106 TECH PAYMENT JUL25/00802059 | CR $3610.84\n\nKindly forward the supporting documentation at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "16/07/2024",
+                  "description": "Direct Credit 458106 TECH PAYMENT JUL24/00802338",
+                  "amount": "CR $2230.87"
+                },
+                {
+                  "date": "16/07/2025",
+                  "description": "Direct Credit 458106 TECH PAYMENT JUL25/00802059",
+                  "amount": "CR $3610.84"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.35",
+              "category": "Investment Income \u2013 TLS",
+              "query_text": "We have identified 2 unmatched TLS transactions totalling $2,220.00 that require supporting documentation. Please provide the relevant dividend statement for each of the following:\n\n  26/09/2024 | Direct Credit 629786 TLS FNL DIV 001322881434 | CR $1080.00\n  28/03/2025 | Direct Credit 629786 TLS ITM DIV 001331737382 | CR $1140.00\n\nKindly forward the dividend statement at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "26/09/2024",
+                  "description": "Direct Credit 629786 TLS FNL DIV 001322881434",
+                  "amount": "CR $1080.00"
+                },
+                {
+                  "date": "28/03/2025",
+                  "description": "Direct Credit 629786 TLS ITM DIV 001331737382",
+                  "amount": "CR $1140.00"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.36",
+              "category": "Investment Income \u2013 VNT",
+              "query_text": "We have identified 2 unmatched VNT transactions totalling $4,527.00 that require supporting documentation. Please provide the relevant dividend statement for each of the following:\n\n  07/10/2024 | Direct Credit 629649 VNT DIVIDEND OCT24/00805141 | CR $2118.50\n  07/04/2025 | Direct Credit 629649 VNT DIVIDEND APR25/00804937 | CR $2408.50\n\nKindly forward the dividend statement at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "07/10/2024",
+                  "description": "Direct Credit 629649 VNT DIVIDEND OCT24/00805141",
+                  "amount": "CR $2118.50"
+                },
+                {
+                  "date": "07/04/2025",
+                  "description": "Direct Credit 629649 VNT DIVIDEND APR25/00804937",
+                  "amount": "CR $2408.50"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.37",
+              "category": "Investment Income \u2013 WBC",
+              "query_text": "We have identified 3 unmatched WBC transactions totalling $3,630.00 that require supporting documentation. Please provide the relevant dividend statement for each of the following:\n\n  25/06/2024 | Direct Credit 250556 WBC ITM DIV 001318357153 | CR $1350.00\n  19/12/2024 | Direct Credit 250556 WBC FNL DIV 001327163386 | CR $1140.00\n  27/06/2025 | Direct Credit 250556 WBC ITM DIV 001336726894 | CR $1140.00\n\nKindly forward the dividend statement at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "25/06/2024",
+                  "description": "Direct Credit 250556 WBC ITM DIV 001318357153",
+                  "amount": "CR $1350.00"
+                },
+                {
+                  "date": "19/12/2024",
+                  "description": "Direct Credit 250556 WBC FNL DIV 001327163386",
+                  "amount": "CR $1140.00"
+                },
+                {
+                  "date": "27/06/2025",
+                  "description": "Direct Credit 250556 WBC ITM DIV 001336726894",
+                  "amount": "CR $1140.00"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.38",
+              "category": "Investment Income \u2013 WBCPL",
+              "query_text": "We have identified 5 unmatched WBCPL transactions totalling $6,790.70 that require supporting documentation. Please provide the relevant distribution notice for each of the following:\n\n  24/06/2024 | Direct Credit 634934 WBCPL DST 001319073695 | CR $1368.10\n  23/09/2024 | Direct Credit 634934 WBCPL DST 001325574312 | CR $1374.90\n  23/12/2024 | Direct Credit 634934 WBCPL DST 001328206896 | CR $1366.20\n  24/03/2025 | Direct Credit 634934 WBCPL DST 001334673701 | CR $1355.20\n  23/06/2025 | Direct Credit 634934 WBCPL DST 001337698299 | CR $1326.30\n\nKindly forward the distribution notice at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "24/06/2024",
+                  "description": "Direct Credit 634934 WBCPL DST 001319073695",
+                  "amount": "CR $1368.10"
+                },
+                {
+                  "date": "23/09/2024",
+                  "description": "Direct Credit 634934 WBCPL DST 001325574312",
+                  "amount": "CR $1374.90"
+                },
+                {
+                  "date": "23/12/2024",
+                  "description": "Direct Credit 634934 WBCPL DST 001328206896",
+                  "amount": "CR $1366.20"
+                },
+                {
+                  "date": "24/03/2025",
+                  "description": "Direct Credit 634934 WBCPL DST 001334673701",
+                  "amount": "CR $1355.20"
+                },
+                {
+                  "date": "23/06/2025",
+                  "description": "Direct Credit 634934 WBCPL DST 001337698299",
+                  "amount": "CR $1326.30"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.39",
+              "category": "Investment Income \u2013 WOW",
+              "query_text": "We have identified 2 unmatched WOW transactions totalling $2,325.60 that require supporting documentation. Please provide the relevant dividend statement for each of the following:\n\n  30/09/2024 | Direct Credit 516612 WOW FNL DIV 001325859745 | CR $1658.70\n  23/04/2025 | Direct Credit 516612 WOW ITM DIV 001333330132 | CR $666.90\n\nKindly forward the dividend statement at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "30/09/2024",
+                  "description": "Direct Credit 516612 WOW FNL DIV 001325859745",
+                  "amount": "CR $1658.70"
+                },
+                {
+                  "date": "23/04/2025",
+                  "description": "Direct Credit 516612 WOW ITM DIV 001333330132",
+                  "amount": "CR $666.90"
+                }
+              ],
+              "status": "pending"
+            },
+            {
+              "id": "Q3.40",
+              "category": "Investment Income \u2013 Woodside",
+              "query_text": "We have identified 2 unmatched Woodside transactions totalling $403.65 that require supporting documentation. Please provide the relevant supporting documentation for each of the following:\n\n  03/10/2024 | Direct Credit 458106 WOODSIDE INT24/00883944 | CR $220.34\n  02/04/2025 | Direct Credit 458106 WOODSIDE FIN24/00874130 | CR $183.31\n\nKindly forward the supporting documentation at your earliest convenience so we can complete the reconciliation for the period.",
+              "transactions": [
+                {
+                  "date": "03/10/2024",
+                  "description": "Direct Credit 458106 WOODSIDE INT24/00883944",
+                  "amount": "CR $220.34"
+                },
+                {
+                  "date": "02/04/2025",
+                  "description": "Direct Credit 458106 WOODSIDE FIN24/00874130",
+                  "amount": "CR $183.31"
+                }
+              ],
+              "status": "pending"
+            }
+          ],
+          "status": "pending"
+        },
+        {
+          "id": "Q4",
+          "category": "Other \u2013 Sell 30000 DRO @ 0.9351",
+          "query_text": "Dear Client, the following sale transaction on the ADMCM Investments Super Fund remains unmatched. Please provide the contract note, sale confirmation or broker advice for the transaction dated 07/11/2024 described as 'Sell 30000 DRO @ 0.9351' with credit of $27,856.13 so we can correctly record the proceeds and any capital gain or loss.",
+          "transactions": [
             {
               "date": "07/11/2024",
               "description": "Sell 30000 DRO @ 0.9351",
               "amount": "CR $27856.13"
             }
-          ]
+          ],
+          "sub_queries": null,
+          "status": "pending"
         },
         {
-          "id": "Q39",
-          "category": "Investment Purchases - Broker Settlements",
-          "query_text": "Dear Client, the following large debits from the CBA Accelerator Cash Account to FinClear Service appear to relate to investment purchases. We were unable to match them to any trade confirmations or portfolio reports. Please provide the corresponding buy contract notes, trade confirmations or updated portfolio valuations for these transactions: 1. 10/07/2025 - DR $60,360.79; 2. 26/08/2025 - DR $45,134.37; 3. 28/08/2025 - DR $20,208.42. Thank you for your assistance in resolving these items.",
-          "transactions": [
-            {
-              "date": "10/07/2025",
-              "description": "Direct Debit 625407 FinClear Service 3815994",
-              "amount": "DR $60360.79"
-            },
-            {
-              "date": "26/08/2025",
-              "description": "Direct Debit 625407 FinClear Service 3890807",
-              "amount": "DR $45134.37"
-            },
-            {
-              "date": "28/08/2025",
-              "description": "Direct Debit 625407 FinClear Service 3895874",
-              "amount": "DR $20208.42"
-            }
-          ]
-        },
-        {
-          "id": "Q40",
-          "category": "Regulatory Fees - ASIC",
-          "query_text": "Dear Client, we could not locate supporting documentation for the following debit. Please provide a copy of the ASIC invoice or statement for this fee so it can be correctly classified and recorded: 23/11/2024 - DR $65.00 (ASIC CommBank app BPAY). Thank you.",
+          "id": "Q5",
+          "category": "Regulatory Fees \u2013 ASIC",
+          "query_text": "Dear Client, the following regulatory fee payment on the ADMCM Investments Super Fund bank account requires supporting documentation. Please provide a copy of the ASIC invoice or notice for the BPAY payment dated 23/11/2024 of $65.00 so we can correctly classify this expense.",
           "transactions": [
             {
               "date": "23/11/2024",
               "description": "ASIC CommBank app BPAY 1 2296022368049 2296022368049",
               "amount": "DR $65.00"
             }
-          ]
+          ],
+          "sub_queries": null,
+          "status": "pending"
         }
       ],
       "summary": {

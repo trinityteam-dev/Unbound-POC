@@ -1324,6 +1324,36 @@
             color: var(--text-muted);
             border-color: rgba(100, 116, 139, 0.15);
         }
+
+        .queries-view-toggle {
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+        .queries-view-toggle button {
+            background: none;
+            border: none;
+            padding: 0.3rem 0.75rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: background 0.15s, color 0.15s;
+        }
+        .queries-view-toggle button.active {
+            background: var(--primary);
+            color: #fff;
+        }
+        .queries-view-toggle button:not(.active):hover {
+            background: var(--card-bg-hover, rgba(99,102,241,0.06));
+            color: var(--primary);
+        }
+        .query-card.query-granular-sub {
+            border-left: 3px solid rgba(99, 102, 241, 0.3);
+            margin-left: 0.5rem;
+        }
     </style>
 </head>
 <body>
@@ -1687,9 +1717,14 @@
 
                         <!-- Client Query Cards Panel -->
                         <div id="client-queries-panel" style="display:none; margin-bottom:1.75rem;">
-                            <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1rem;">
+                            <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1rem; flex-wrap:wrap;">
                                 <span style="font-family:var(--font-display); font-size:1.05rem; font-weight:700; color:var(--text-main);">Client Queries</span>
                                 <span id="queries-count-badge" class="badge badge-pending_reviewer_approval"></span>
+                                <!-- Coarse / Granular toggle — hidden until sub_queries are available -->
+                                <div class="queries-view-toggle" id="queries-view-toggle" style="display:none; margin-left:auto;">
+                                    <button id="btn-coarse-view" class="active" onclick="setQueryView('coarse')">Summary</button>
+                                    <button id="btn-granular-view" onclick="setQueryView('granular')">Per Security</button>
+                                </div>
                             </div>
                             <div class="queries-grid" id="queries-cards-container">
                                 <!-- One card per query, rendered dynamically -->
@@ -2630,79 +2665,123 @@
             // --- Client query cards ---
             if (queries && queries.length > 0) {
                 queriesPanel.style.display = 'block';
-                const pendingCount = queries.filter(q => (q.status || 'pending') === 'pending').length;
-                document.getElementById('queries-count-badge').textContent =
-                    pendingCount > 0
-                        ? `${pendingCount} pending`
-                        : `${queries.length} total — all actioned`;
+                // Store queries for toggle use
+                window._currentQueries = queries;
 
-                const cardsContainer = document.getElementById('queries-cards-container');
-                cardsContainer.innerHTML = '';
+                // Show toggle only when at least one coarse query has sub_queries
+                const hasSubQueries = queries.some(q => Array.isArray(q.sub_queries) && q.sub_queries.length > 0);
+                const toggleEl = document.getElementById('queries-view-toggle');
+                if (toggleEl) toggleEl.style.display = hasSubQueries ? 'inline-flex' : 'none';
 
-                queries.forEach((q, idx) => {
-                    const cardStatus = q.status || 'pending';
-                    const cardId = q.id != null ? q.id : idx;
-                    const card = document.createElement('div');
-                    card.className = 'query-card' + (cardStatus !== 'pending' ? ` query-${cardStatus}` : '');
-                    card.id = `query-card-${cardId}`;
-
-                    const txRows = (q.transactions || []).map(t => {
-                        const amtRaw = t.amount || '-';
-                        const amtDisplay = typeof amtRaw === 'number'
-                            ? '$' + Math.abs(amtRaw).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})
-                            : amtRaw;
-                        return `
-                            <tr>
-                                <td style="font-size:0.78rem; color:var(--text-muted);">${t.date || '-'}</td>
-                                <td style="font-size:0.8rem;">${t.description || '-'}</td>
-                                <td class="val-num" style="font-size:0.8rem;">${amtDisplay}</td>
-                            </tr>`;
-                    }).join('');
-
-                    const txTableId = `query-tx-${cardId}`;
-                    const txCount = (q.transactions || []).length;
-
-                    const statusBadgeHtml = cardStatus !== 'pending'
-                        ? `<span class="badge-table ${cardStatus === 'sent' ? 'badge-sent' : 'badge-dismissed'} query-status-badge">&#9679; ${cardStatus === 'sent' ? 'Sent' : 'Dismissed'}</span>`
-                        : '';
-
-                    const actionsHtml = cardStatus === 'pending' ? `
-                        <div class="query-card-actions">
-                            <button class="btn-query-dismiss" onclick="dismissQuery('${cardId}')">Dismiss</button>
-                            <button class="btn-query-send" onclick="openSendQueryModal('${cardId}')">Send</button>
-                        </div>` : '';
-
-                    card.innerHTML = `
-                        <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem; flex-wrap:wrap;">
-                            <div class="query-card-category">${q.category || 'Unclassified'}</div>
-                            ${statusBadgeHtml}
-                        </div>
-                        <textarea class="query-card-textarea"${cardStatus !== 'pending' ? ' disabled' : ''}>${(q.query_text || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
-                        ${txCount > 0 ? `
-                            <button class="query-tx-toggle" onclick="toggleQueryTransactions('${txTableId}', this)">
-                                &#9658; Show ${txCount} transaction${txCount === 1 ? '' : 's'}
-                            </button>
-                            <div id="${txTableId}" class="query-tx-list">
-                                <div class="table-container">
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th>Date</th>
-                                                <th>Description</th>
-                                                <th class="val-num">Amount</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>${txRows}</tbody>
-                                    </table>
-                                </div>
-                            </div>` : ''}
-                        ${actionsHtml}
-                    `;
-                    cardsContainer.appendChild(card);
-                });
+                renderQueryCards(queries, window._queryViewMode || 'coarse');
             } else {
                 queriesPanel.style.display = 'none';
+                window._currentQueries = [];
             }
+        }
+
+        // Current view mode: 'coarse' (default) or 'granular'
+        window._queryViewMode = 'coarse';
+        window._currentQueries = [];
+
+        function setQueryView(mode) {
+            window._queryViewMode = mode;
+            document.getElementById('btn-coarse-view').classList.toggle('active', mode === 'coarse');
+            document.getElementById('btn-granular-view').classList.toggle('active', mode === 'granular');
+            renderQueryCards(window._currentQueries, mode);
+        }
+
+        function _buildQueryCard(q, isSubCard) {
+            const cardStatus = q.status || 'pending';
+            const cardId = q.id != null ? q.id : Math.random().toString(36).slice(2);
+            const card = document.createElement('div');
+            card.className = 'query-card'
+                + (isSubCard ? ' query-granular-sub' : '')
+                + (cardStatus !== 'pending' ? ` query-${cardStatus}` : '');
+            card.id = `query-card-${cardId}`;
+
+            const txRows = (q.transactions || []).map(t => {
+                const amtRaw = t.amount || '-';
+                const amtDisplay = typeof amtRaw === 'number'
+                    ? '$' + Math.abs(amtRaw).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})
+                    : amtRaw;
+                return `
+                    <tr>
+                        <td style="font-size:0.78rem; color:var(--text-muted);">${t.date || '-'}</td>
+                        <td style="font-size:0.8rem;">${t.description || '-'}</td>
+                        <td class="val-num" style="font-size:0.8rem;">${amtDisplay}</td>
+                    </tr>`;
+            }).join('');
+
+            const txTableId = `query-tx-${cardId}`;
+            const txCount = (q.transactions || []).length;
+
+            const statusBadgeHtml = cardStatus !== 'pending'
+                ? `<span class="badge-table ${cardStatus === 'sent' ? 'badge-sent' : 'badge-dismissed'} query-status-badge">&#9679; ${cardStatus === 'sent' ? 'Sent' : 'Dismissed'}</span>`
+                : '';
+
+            const actionsHtml = cardStatus === 'pending' ? `
+                <div class="query-card-actions">
+                    <button class="btn-query-dismiss" onclick="dismissQuery('${cardId}')">Dismiss</button>
+                    <button class="btn-query-send" onclick="openSendQueryModal('${cardId}')">Send</button>
+                </div>` : '';
+
+            card.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                    <div class="query-card-category">${q.category || 'Unclassified'}</div>
+                    ${statusBadgeHtml}
+                </div>
+                <textarea class="query-card-textarea"${cardStatus !== 'pending' ? ' disabled' : ''}>${(q.query_text || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                ${txCount > 0 ? `
+                    <button class="query-tx-toggle" onclick="toggleQueryTransactions('${txTableId}', this)">
+                        &#9658; Show ${txCount} transaction${txCount === 1 ? '' : 's'}
+                    </button>
+                    <div id="${txTableId}" class="query-tx-list">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Description</th>
+                                        <th class="val-num">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>${txRows}</tbody>
+                            </table>
+                        </div>
+                    </div>` : ''}
+                ${actionsHtml}
+            `;
+            return card;
+        }
+
+        function renderQueryCards(queries, mode) {
+            const cardsContainer = document.getElementById('queries-cards-container');
+            cardsContainer.innerHTML = '';
+
+            // Collect the cards to show based on mode
+            const cardsToRender = [];
+            queries.forEach(q => {
+                if (mode === 'granular' && Array.isArray(q.sub_queries) && q.sub_queries.length > 0) {
+                    // In granular mode: replace coarse card with its sub-query cards
+                    q.sub_queries.forEach(sq => cardsToRender.push({ q: sq, isSub: true }));
+                } else {
+                    // Coarse mode (or granular with no sub_queries): show coarse card as-is
+                    cardsToRender.push({ q, isSub: false });
+                }
+            });
+
+            cardsToRender.forEach(({ q, isSub }) => {
+                cardsContainer.appendChild(_buildQueryCard(q, isSub));
+            });
+
+            // Update pending count badge
+            const allCards = cardsContainer.querySelectorAll('.query-card');
+            const pendingCount = Array.from(allCards).filter(c => !c.classList.contains('query-sent') && !c.classList.contains('query-dismissed')).length;
+            document.getElementById('queries-count-badge').textContent =
+                pendingCount > 0
+                    ? `${pendingCount} pending`
+                    : `${allCards.length} total — all actioned`;
         }
 
         function toggleQueryTransactions(elementId, btn) {

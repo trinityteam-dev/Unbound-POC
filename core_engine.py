@@ -1,10 +1,12 @@
 import os
+import re
 import sys
 import json
 import shutil
 import tempfile
 import subprocess
 import requests
+from collections import defaultdict
 from pypdf import PdfReader, PdfWriter
 
 # Phase 2 model selection (Story 4 — benchmarked 2026-06-19)
@@ -1427,6 +1429,348 @@ def run_query_generation_call(unmatched_transactions, fund_name, api_key, update
     return queries
 
 
+# ---------------------------------------------------------------------------
+# Story 3R — Deterministic grouping helpers
+# ---------------------------------------------------------------------------
+
+# Last-token patterns that mark the end of a 'Direct Credit {BSB} {PAYEE…} {REF}' description.
+_REF_RE = re.compile(
+    r'\s+(?:cm-\d+|[A-Z0-9]{2,8}/\d{5,}|\d{9,}|[A-Z]\d{9,})$',
+    re.IGNORECASE,
+)
+
+# Words stripped from the right of the payee string (dividend/distribution indicators and month/period qualifiers)
+_STRIP_WORDS = {
+    'DST', 'DIST', 'DIV', 'DIS', 'DISTRIBUTION', 'DIVIDEND', 'PAYMENT', 'INCOM',
+    'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC',
+    'FNL', 'ITM', 'QRT', 'INTERIM', 'FINAL',
+}
+
+def _tx_amount_str(tx):
+    """Return a display amount string for a transaction regardless of field format.
+
+    New-format transactions have numeric 'debit' / 'credit' fields.
+    Old-format (LLM Story 3) transactions have a single 'amount' string like 'CR $61.29'.
+    """
+    debit = tx.get('debit')
+    credit = tx.get('credit')
+    if debit:
+        return f'DR ${debit}'
+    if credit:
+        return f'CR ${credit}'
+    amount = tx.get('amount', '')
+    return amount if amount else 'Amount unknown'
+
+
+def _tx_credit_float(tx):
+    """Return the credit value as a float, or 0.0 if not available / not a credit."""
+    credit = tx.get('credit')
+    if credit:
+        try:
+            return float(credit)
+        except (ValueError, TypeError):
+            pass
+    # Old-format: parse 'CR $61.29'
+    amount = tx.get('amount', '')
+    if isinstance(amount, str) and amount.upper().startswith('CR '):
+        try:
+            return float(amount[3:].replace('$', '').replace(',', ''))
+        except (ValueError, TypeError):
+            pass
+    return 0.0
+
+
+# ASX-ticker–style tokens (≤6 all-caps chars) kept uppercase; everything else title-cased.
+def _format_payee_token(token):
+    return token if (token == token.upper() and len(token) <= 6) else token.title()
+
+
+def _extract_payee(description):
+    """Extract the payee/security name from a 'Direct Credit {BSB} {PAYEE…} {REF}' description."""
+    m = re.match(r'^Direct Credit \d{6}\s+', description)
+    if not m:
+        return description[:30].strip()
+    remainder = description[m.end():]
+    remainder = _REF_RE.sub('', remainder).strip()
+    tokens = remainder.split()
+    while tokens and tokens[-1].upper() in _STRIP_WORDS:
+        tokens.pop()
+    if not tokens:
+        return 'Unknown'
+    return ' '.join(_format_payee_token(t) for t in tokens)
+
+
+def group_unmatched_transactions(unmatched_transactions):
+    """Group unmatched transactions deterministically into coarse and granular buckets.
+
+    Returns { "coarse": [{category, transactions}], "granular": [{category, transactions}] }.
+    Investment Income granular groups are rolled up to a single coarse group; all other
+    groups carry through 1:1.  Never drops a transaction — unrecognised descriptions fall
+    into an 'Other – …' bucket.
+    """
+    granular: dict = defaultdict(list)
+    coarse: dict = defaultdict(list)
+    rule_hits: dict = defaultdict(int)
+
+    for tx in unmatched_transactions:
+        desc = (tx.get('description') or '').strip()
+        debit = tx.get('debit')
+
+        if desc == 'Credit Interest':
+            gcat = 'Bank Interest'
+            ccat = 'Bank Interest'
+            rule_hits['Bank Interest'] += 1
+
+        elif 'FinClear Service' in desc:
+            gcat = 'Broker Settlements'
+            ccat = 'Broker Settlements'
+            rule_hits['Broker Settlements'] += 1
+
+        elif 'ASIC' in desc.upper():
+            gcat = 'Regulatory Fees – ASIC'
+            ccat = 'Regulatory Fees – ASIC'
+            rule_hits['Regulatory Fees – ASIC'] += 1
+
+        elif 'ATO' in desc.upper() and not (debit or (tx.get('amount', '').upper().startswith('DR '))):
+            gcat = 'ATO Tax Refund'
+            ccat = 'ATO Tax Refund'
+            rule_hits['ATO Tax Refund'] += 1
+
+        elif re.search(r'\bTransfer\s+(?:To|From)\b', desc, re.IGNORECASE):
+            gcat = 'Internal Transfer'
+            ccat = 'Internal Transfer'
+            rule_hits['Internal Transfer'] += 1
+
+        elif desc.startswith('Direct Credit '):
+            payee = _extract_payee(desc)
+            gcat = f'Investment Income – {payee}'
+            ccat = 'Investment Income – Dividends & Distributions'
+            rule_hits['Investment Income'] += 1
+
+        else:
+            label = desc[:40].rstrip()
+            gcat = f'Other – {label}'
+            ccat = f'Other – {label}'
+            rule_hits['Other'] += 1
+
+        granular[gcat].append(tx)
+        coarse[ccat].append(tx)
+
+    print(
+        f'[Phase 2] group_unmatched_transactions: {sum(rule_hits.values())} transactions → '
+        + ', '.join(f'{k}: {v}' for k, v in sorted(rule_hits.items())),
+        file=sys.stderr,
+    )
+
+    coarse_list = [{'category': k, 'transactions': v} for k, v in sorted(coarse.items())]
+    granular_list = [{'category': k, 'transactions': v} for k, v in sorted(granular.items())]
+    return {'coarse': coarse_list, 'granular': granular_list}
+
+
+# Coarse groups that have no meaningful per-security sub-division.
+_NO_SUBQUERIES = {'Bank Interest', 'Broker Settlements', 'Internal Transfer'}
+
+
+def build_coarse_query_text_prompt(coarse_groups, fund_name):
+    """Build (system_prompt, user_content) for the single LLM call that writes coarse query texts.
+
+    The LLM only writes query_text — all grouping is already done in Python.
+    Response schema: { groups: [{ category, query_text }] }
+    """
+    groups_block = []
+    for g in coarse_groups:
+        cat = g['category']
+        txs = g['transactions']
+        tx_lines = []
+        for tx in txs:
+            tx_lines.append(f"  {tx.get('date', '?')} | {tx.get('description', '')} | {_tx_amount_str(tx)}")
+        groups_block.append(
+            f'Category: {cat}\nTransactions ({len(txs)}):\n' + '\n'.join(tx_lines)
+        )
+
+    system_prompt = (
+        'IMPORTANT: Your entire response must be a single valid JSON object. '
+        'Do not include any text, explanation, or markdown before or after the JSON.\n\n'
+        f'You are an expert SMSF accountant preparing client queries for {fund_name}.\n\n'
+        'You have been given pre-grouped categories of unmatched bank transactions. '
+        'For each category write a clear, professional query text that the accountant '
+        'can send to the client requesting the missing supporting documentation. '
+        'Do NOT regroup the transactions — only write the query_text per category.\n\n'
+        '## REQUIRED JSON SCHEMA\n'
+        '{\n'
+        '  "groups": [\n'
+        '    {\n'
+        '      "category": "<exact category name as provided>",\n'
+        '      "query_text": "Professional query text listing specific transactions and requesting documentation"\n'
+        '    }\n'
+        '  ]\n'
+        '}\n\n'
+        'Rules:\n'
+        '- Return EXACTLY the same categories provided — do not rename, merge, or split them\n'
+        '- query_text must be addressed to the client in professional tone\n'
+        '- Include specific dates and amounts from the transaction list\n'
+        '- State what documentation is needed (e.g. dividend statements, distribution notices, tax certificates)\n'
+        '- Use the same order as the input\n'
+        '- Respond with ONLY the JSON object — no other text\n'
+    )
+
+    user_content = (
+        f'Please write query_text for each of the following {len(coarse_groups)} '
+        f'pre-grouped transaction categories for {fund_name}:\n\n'
+        + '\n\n'.join(groups_block)
+    )
+
+    return system_prompt, user_content
+
+
+def generate_granular_query_text(category, transactions):
+    """Generate query text for a granular Investment Income group using a Python template (no LLM).
+
+    Infers the document type from keywords in the transaction descriptions.
+    """
+    payee = category.replace('Investment Income – ', '')
+    total = sum(_tx_credit_float(tx) for tx in transactions)
+
+    # Infer document type from description keywords
+    descs_upper = ' '.join(tx.get('description', '') for tx in transactions).upper()
+    if 'DIV' in descs_upper or 'DIVIDEND' in descs_upper:
+        doc_type = 'dividend statement'
+    elif 'DST' in descs_upper or 'DIST' in descs_upper or 'DISTRIBUTION' in descs_upper:
+        doc_type = 'distribution notice'
+    elif 'DIS' in descs_upper:
+        doc_type = 'distribution notice'
+    else:
+        doc_type = 'supporting documentation'
+
+    n = len(transactions)
+    total_str = f'${total:,.2f}' if total > 0 else 'an unknown total'
+
+    tx_lines = '\n'.join(
+        f"  {tx.get('date', '?')} | {tx.get('description', '')} | {_tx_amount_str(tx)}"
+        for tx in transactions
+    )
+
+    return (
+        f'We have identified {n} unmatched {payee} transaction{"s" if n != 1 else ""} '
+        f'totalling {total_str} that require{"s" if n == 1 else ""} supporting documentation. '
+        f'Please provide the relevant {doc_type} for each of the following:\n\n'
+        f'{tx_lines}\n\n'
+        f'Kindly forward the {doc_type} at your earliest convenience so we can complete '
+        f'the reconciliation for the period.'
+    )
+
+
+def run_coarse_query_text_call(coarse_groups, fund_name, api_key, update_progress,
+                               model=PHASE2_DEFAULT_MODEL):
+    """Call the LLM once to write query_text for all coarse groups.
+
+    Returns a dict { category → query_text }.
+    """
+    update_progress(
+        None,
+        f'Phase 2: Generating query text for {len(coarse_groups)} coarse groups...',
+    )
+    system_prompt, user_content = build_coarse_query_text_prompt(coarse_groups, fund_name)
+    res = query_openrouter(
+        api_key, system_prompt, user_content,
+        response_format={'type': 'json_object'},
+        model=model,
+        timeout=180,
+    )
+    result = json.loads(res)
+    groups_out = result.get('groups', [])
+    mapping = {g['category']: g.get('query_text', '') for g in groups_out if 'category' in g}
+    print(
+        f'[Phase 2] run_coarse_query_text_call: received query_text for {len(mapping)} categories',
+        file=sys.stderr,
+    )
+    return mapping
+
+
+def regroup_stored_queries(existing_queries, fund_name, api_key, update_progress):
+    """Re-group queries from an old LLM-based Story 3 run using deterministic Python grouping.
+
+    If ≥80% of transactions match a named pattern, replaces with fresh coarse+granular groups.
+    Otherwise returns the original queries with sub_queries: null added (no LLM call).
+
+    Returns (queries, regrouped: bool, match_rate: float).
+    """
+    all_txs = []
+    for q in existing_queries:
+        all_txs.extend(q.get('transactions') or [])
+
+    if not all_txs:
+        update_progress(None, 'Phase 2: regroup — no transactions found in stored queries, skipping.')
+        for q in existing_queries:
+            q.setdefault('sub_queries', None)
+        return existing_queries, False, 0.0
+
+    groups = group_unmatched_transactions(all_txs)
+    other_count = sum(
+        len(g['transactions'])
+        for g in groups['granular']
+        if g['category'].startswith('Other –')
+    )
+    match_rate = 1.0 - (other_count / len(all_txs))
+
+    if match_rate < 0.80:
+        update_progress(
+            None,
+            f'Phase 2: regroup — only {match_rate:.0%} match rate (<80%), keeping existing queries.',
+        )
+        for q in existing_queries:
+            q.setdefault('sub_queries', None)
+        return existing_queries, False, match_rate
+
+    update_progress(
+        None,
+        f'Phase 2: regroup — {match_rate:.0%} match rate, producing fresh coarse+granular groups.',
+    )
+    coarse_text_map = run_coarse_query_text_call(
+        groups['coarse'], fund_name, api_key, update_progress
+    )
+
+    # Build granular lookup: coarse_category → [granular_groups]
+    coarse_to_granular: dict = defaultdict(list)
+    for g in groups['granular']:
+        cat = g['category']
+        if cat.startswith('Investment Income –'):
+            ccat = 'Investment Income – Dividends & Distributions'
+        else:
+            ccat = cat
+        coarse_to_granular[ccat].append(g)
+
+    new_queries = []
+    for idx, cg in enumerate(groups['coarse'], 1):
+        ccat = cg['category']
+        query_text = coarse_text_map.get(ccat, '')
+        sub_granular = coarse_to_granular.get(ccat, [])
+        has_sub = ccat not in _NO_SUBQUERIES and len(sub_granular) > 1
+
+        sub_queries = None
+        if has_sub:
+            sub_queries = []
+            for sidx, sg in enumerate(sub_granular, 1):
+                sub_queries.append({
+                    'id': f'Q{idx}.{sidx}',
+                    'category': sg['category'],
+                    'query_text': generate_granular_query_text(sg['category'], sg['transactions']),
+                    'transactions': sg['transactions'],
+                    'status': 'pending',
+                })
+
+        new_queries.append({
+            'id': f'Q{idx}',
+            'category': ccat,
+            'query_text': query_text,
+            'transactions': cg['transactions'],
+            'sub_queries': sub_queries,
+            'status': 'pending',
+        })
+
+    return new_queries, True, match_rate
+
+
 def run_bank_reconciliation_phase(job_id, fund_profile, job_type, api_key, scratch_dir, update_progress):
     """Phase 2 orchestrator: classify context → extract transactions → reconcile → generate queries.
 
@@ -1448,7 +1792,7 @@ def run_bank_reconciliation_phase(job_id, fund_profile, job_type, api_key, scrat
     update_progress(None, "Phase 2: Running bank transaction reconciliation...")
     reconciliation_results = run_reconciliation_call(phase2_context, api_key, update_progress)
 
-    # Story 3: collect unmatched transactions and generate client queries
+    # Story 3R: collect unmatched transactions, group deterministically, generate queries
     total = matched = unmatched_count = 0
     unmatched_transactions = []
     fund_name = fund_profile.get("name", "the fund")
@@ -1466,7 +1810,47 @@ def run_bank_reconciliation_phase(job_id, fund_profile, job_type, api_key, scrat
                     "account_name": acc_result.get("account_name", acc_num),
                 })
 
-    queries = run_query_generation_call(unmatched_transactions, fund_name, api_key, update_progress)
+    queries = []
+    if unmatched_transactions:
+        groups = group_unmatched_transactions(unmatched_transactions)
+        coarse_text_map = run_coarse_query_text_call(
+            groups['coarse'], fund_name, api_key, update_progress
+        )
+
+        # Build granular lookup: coarse_category → [granular_groups]
+        coarse_to_granular: dict = defaultdict(list)
+        for g in groups['granular']:
+            cat = g['category']
+            ccat = 'Investment Income – Dividends & Distributions' if cat.startswith('Investment Income –') else cat
+            coarse_to_granular[ccat].append(g)
+
+        for idx, cg in enumerate(groups['coarse'], 1):
+            ccat = cg['category']
+            sub_granular = coarse_to_granular.get(ccat, [])
+            has_sub = ccat not in _NO_SUBQUERIES and len(sub_granular) > 1
+
+            sub_queries = None
+            if has_sub:
+                sub_queries = []
+                for sidx, sg in enumerate(sub_granular, 1):
+                    sub_queries.append({
+                        'id': f'Q{idx}.{sidx}',
+                        'category': sg['category'],
+                        'query_text': generate_granular_query_text(sg['category'], sg['transactions']),
+                        'transactions': sg['transactions'],
+                        'status': 'pending',
+                    })
+
+            queries.append({
+                'id': f'Q{idx}',
+                'category': ccat,
+                'query_text': coarse_text_map.get(ccat, ''),
+                'transactions': cg['transactions'],
+                'sub_queries': sub_queries,
+                'status': 'pending',
+            })
+    else:
+        update_progress(None, 'Phase 2: No unmatched transactions — skipping query generation.')
 
     return {
         "phase2_context": phase2_context,

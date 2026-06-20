@@ -827,19 +827,7 @@ JSON Schema:
     }}
   }},
   "cash_reconciliation": {{
-    "accounts": {json.dumps(cash_accounts_reconciliation)},
-    "audit_checks": [
-      {{
-        "description": "ATO Income Tax Refund Reconciliation",
-        "status": "Pass|Fail|N/A",
-        "details": "detail tax refund match description"
-      }},
-      {{
-        "description": "Ord Minnett Cash Transfer Reconciliation",
-        "status": "Pass|Fail|N/A",
-        "details": "detail EFT check description"
-      }}
-    ]
+    "accounts": {json.dumps(cash_accounts_reconciliation)}
   }},
   "portfolio_reconciliation": {{
     "totals": {{

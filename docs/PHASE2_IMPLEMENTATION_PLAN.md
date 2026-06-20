@@ -351,11 +351,11 @@ A `POST /api/jobs/<job_id>/regroup-queries` endpoint exposes this on demand for 
 
 **Done when:** The new engine runs as part of the standard job lifecycle, alongside (not replacing) the existing checklist and lead schedules.
 
-- [ ] **7.1** Confirm approach with review: run both `reconcile_papers()` (checklist + lead schedules) AND `run_bank_reconciliation_phase()` in sequence within `run_phase2_worker` — requires P1-E approval
-- [ ] **7.2** Update `run_phase2_worker` in `app.py` to call `run_bank_reconciliation_phase()` and store results in `job["phase2_context"]`
-- [ ] **7.3** Apply P1-D (remove the two hardcoded `audit_checks` from `reconcile_papers()`) — requires P1-D approval
-- [ ] **7.4** Verify no regressions: checklist panel, lead schedules, exception log all render correctly after integration
-- [ ] **7.5** Verify new reconciliation and query panels appear correctly in the same job view
+- [x] **7.1** Confirm approach with review: run both `reconcile_papers()` (checklist + lead schedules) AND `run_bank_reconciliation_phase()` in sequence within `run_phase2_worker` — requires P1-E approval
+- [x] **7.2** Update `run_phase2_worker` in `app.py` to call `run_bank_reconciliation_phase()` and store results in `job["phase2_context"]`
+- [x] **7.3** Apply P1-D (remove the two hardcoded `audit_checks` from `reconcile_papers()`) — requires P1-D approval
+- [x] **7.4** Verify no regressions: checklist panel, lead schedules, exception log all render correctly after integration
+- [x] **7.5** Verify new reconciliation and query panels appear correctly in the same job view
 
 ---
 

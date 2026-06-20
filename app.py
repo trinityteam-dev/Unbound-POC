@@ -109,12 +109,13 @@ def run_phase2_worker(job_id, fund_profile, job_type, api_key):
     """Thread running the reconciliations phase (AI Reviewer Agent)"""
     job_dir = get_job_dir(job_id)
     scratch_dir = os.path.join(job_dir, "scratch")
-    
+
     def update_job_progress(percent, msg, add_log=None):
         jobs = load_jobs()
         for j in jobs:
             if j["job_id"] == job_id:
-                j["progress_percent"] = percent
+                if percent is not None:
+                    j["progress_percent"] = percent
                 j["message"] = msg
                 if add_log:
                     j["logs"].append(f"[{datetime.datetime.now().strftime('%H:%M:%S')}] {add_log}")
@@ -125,7 +126,7 @@ def run_phase2_worker(job_id, fund_profile, job_type, api_key):
 
     try:
         update_job_progress(70, "Initiating AI Reviewer Agent reconciliations and calculations...")
-        from core_engine import run_ai_reviewer_phase, build_phase2_context
+        from core_engine import run_ai_reviewer_phase, build_phase2_context, run_bank_reconciliation_phase
 
         # Build Phase 2 context and persist it before any AI calls
         jobs = load_jobs()
@@ -137,13 +138,31 @@ def run_phase2_worker(job_id, fund_profile, job_type, api_key):
                     j["phase2_context"] = phase2_context
                     break
             save_jobs(jobs)
-        
+
+        # Run bank transaction reconciliation and query generation (Stories 2–3R)
+        update_job_progress(None, "Phase 2: Running bank transaction reconciliation and query generation...")
+        bank_recon = run_bank_reconciliation_phase(
+            job_id, fund_profile, job_type, api_key, scratch_dir, update_job_progress
+        )
+        jobs = load_jobs()
+        for j in jobs:
+            if j["job_id"] == job_id:
+                ctx = j.get("phase2_context") or {}
+                ctx["reconciliation_results"] = bank_recon["reconciliation_results"]
+                ctx["queries"] = bank_recon["queries"]
+                ctx["summary"] = bank_recon["summary"]
+                j["phase2_context"] = ctx
+                break
+        save_jobs(jobs)
+
+        # Run existing AI reviewer phase: checklist + lead schedules
+        update_job_progress(80, "Phase 2: Running checklist and lead schedule verification...")
         results = run_ai_reviewer_phase(
-            os.path.join("jobs", job_id), 
-            fund_profile, 
-            job_type, 
-            api_key, 
-            scratch_dir, 
+            os.path.join("jobs", job_id),
+            fund_profile,
+            job_type,
+            api_key,
+            scratch_dir,
             update_job_progress
         )
         

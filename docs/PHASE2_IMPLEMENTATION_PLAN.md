@@ -363,10 +363,10 @@ A `POST /api/jobs/<job_id>/regroup-queries` endpoint exposes this on demand for 
 
 **Done when:** A full run is reviewed and demo/sign-off-ready.
 
-- [ ] **8.1** Run full ADMCM job end-to-end: Phase 1 classification → human processor sign-off → Phase 2 (reconciliation + checklist) → query review → human reviewer sign-off
-- [ ] **8.2** Verify all bank statement transactions are extracted correctly (no missing rows)
-- [ ] **8.3** Verify known expected matches are tagged correctly: ATO refund, accountancy fee, audit fee, Ord Minnett EFT transfers, MXT distribution
-- [ ] **8.4** Verify unmatched items generate meaningful, readable client queries
-- [ ] **8.5** Verify checklist, lead schedules, and exception log are unaffected
-- [ ] **8.6** Verify query edit + Send CTA + confirmation flow works end-to-end
+- [x] **8.1** Run full ADMCM job end-to-end: Phase 1 classification → human processor sign-off → Phase 2 (reconciliation + checklist) → query review → human reviewer sign-off
+- [x] **8.2** Verify all bank statement transactions are extracted correctly (no missing rows)
+- [x] **8.3** Verify known expected matches are tagged correctly: ATO refund, accountancy fee, audit fee, Ord Minnett EFT transfers, MXT distribution
+- [x] **8.4** Verify unmatched items generate meaningful, readable client queries
+- [x] **8.5** Verify checklist, lead schedules, and exception log are unaffected
+- [x] **8.6** Verify query edit + Send CTA + confirmation flow works end-to-end
 - [ ] **8.7** Sign-off review with stakeholder; update `PHASE2_SPRINT_PLAN.md` story statuses

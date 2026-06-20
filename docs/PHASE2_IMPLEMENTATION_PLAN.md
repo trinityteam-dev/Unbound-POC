@@ -136,12 +136,12 @@ Task 2.1 produces the structured rows. There are two ways to do it; the data con
 
 **Done when:** Each query card is editable; Send opens a confirmation dialog; query status is tracked. No actual sending behind it.
 
-- [ ] **6.1** Make query text editable per card (textarea, pre-populated with LLM-generated text)
-- [ ] **6.2** Add "Send" button per card; clicking it opens a confirmation dialog showing the final query text and a placeholder recipient field
-- [ ] **6.3** Confirmation dialog has Confirm and Cancel actions; Confirm marks the query as `sent` in the UI
-- [ ] **6.4** Add `POST /api/jobs/<job_id>/queries/<query_id>/status` endpoint in `app.py` — accepts `{ status: sent|dismissed, query_text }`, persists to `job["phase2_context"]["queries"]` in `jobs_db.json`
-- [ ] **6.5** Reflect per-query status visually on the card (pending / sent / dismissed badge)
-- [ ] **6.6** Test: edit a query, send, confirm dialog, verify status persists on page refresh
+- [x] **6.1** Make query text editable per card (textarea, pre-populated with LLM-generated text)
+- [x] **6.2** Add "Send" button per card; clicking it opens a confirmation dialog showing the final query text and a placeholder recipient field
+- [x] **6.3** Confirmation dialog has Confirm and Cancel actions; Confirm marks the query as `sent` in the UI
+- [x] **6.4** Add `POST /api/jobs/<job_id>/queries/<query_id>/status` endpoint in `app.py` — accepts `{ status: sent|dismissed, query_text }`, persists to `job["phase2_context"]["queries"]` in `jobs_db.json`
+- [x] **6.5** Reflect per-query status visually on the card (pending / sent / dismissed badge)
+- [x] **6.6** Test: edit a query, send, confirm dialog, verify status persists on page refresh
 
 ---
 

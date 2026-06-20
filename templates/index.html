@@ -1244,6 +1244,86 @@
             display: none;
             margin-top: 0.25rem;
         }
+
+        .query-card-textarea {
+            font-size: 0.88rem;
+            font-family: var(--font-sans);
+            color: var(--text-main);
+            line-height: 1.65;
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 0.75rem;
+            border: 1px solid var(--surface-border);
+            flex: 1;
+            resize: vertical;
+            min-height: 6rem;
+            width: 100%;
+            box-sizing: border-box;
+            transition: border-color 0.2s ease;
+        }
+
+        .query-card-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .query-card-textarea:disabled {
+            opacity: 0.65;
+            cursor: default;
+            resize: none;
+        }
+
+        .query-card-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+            margin-top: 0.25rem;
+        }
+
+        .query-card.query-sent { opacity: 0.7; }
+        .query-card.query-dismissed { opacity: 0.45; }
+
+        .btn-query-send {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 7px;
+            cursor: pointer;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.82rem;
+            transition: opacity 0.2s;
+        }
+
+        .btn-query-send:hover { opacity: 0.85; }
+
+        .btn-query-dismiss {
+            background: transparent;
+            border: 1px solid var(--surface-border);
+            color: var(--text-muted);
+            padding: 0.4rem 0.85rem;
+            border-radius: 7px;
+            cursor: pointer;
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 0.82rem;
+            transition: all 0.2s;
+        }
+
+        .btn-query-dismiss:hover { border-color: var(--danger); color: var(--danger); }
+
+        .badge-sent {
+            background: var(--success-glow);
+            color: var(--success);
+            border-color: rgba(0, 175, 90, 0.2);
+        }
+
+        .badge-dismissed {
+            background: rgba(100, 116, 139, 0.08);
+            color: var(--text-muted);
+            border-color: rgba(100, 116, 139, 0.15);
+        }
     </style>
 </head>
 <body>
@@ -1807,6 +1887,30 @@
             <div class="modal-actions">
                 <button class="btn-secondary" onclick="closeOverrideModal()">Cancel</button>
                 <button class="btn-primary" onclick="saveFileOverride()">Save Changes &amp; Approve</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Send Query Confirmation Modal -->
+    <div class="modal-overlay" id="send-query-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Confirm &amp; Send Query</h3>
+                <button class="modal-close" onclick="closeSendQueryModal()">×</button>
+            </div>
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label for="send-query-recipient">Recipient (placeholder)</label>
+                    <input type="text" id="send-query-recipient" class="text-input" placeholder="e.g. trustee@example.com">
+                </div>
+                <div class="form-group full-width">
+                    <label>Query Text (preview)</label>
+                    <textarea id="send-query-preview" class="text-input" rows="6" readonly style="resize:none; background:rgba(0,0,0,0.02); font-size:0.88rem; line-height:1.6;"></textarea>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeSendQueryModal()">Cancel</button>
+                <button class="btn-primary" onclick="confirmSendQuery()">Confirm Send</button>
             </div>
         </div>
     </div>
@@ -2526,15 +2630,21 @@
             // --- Client query cards ---
             if (queries && queries.length > 0) {
                 queriesPanel.style.display = 'block';
+                const pendingCount = queries.filter(q => (q.status || 'pending') === 'pending').length;
                 document.getElementById('queries-count-badge').textContent =
-                    `${queries.length} quer${queries.length === 1 ? 'y' : 'ies'} pending`;
+                    pendingCount > 0
+                        ? `${pendingCount} pending`
+                        : `${queries.length} total — all actioned`;
 
                 const cardsContainer = document.getElementById('queries-cards-container');
                 cardsContainer.innerHTML = '';
 
                 queries.forEach((q, idx) => {
+                    const cardStatus = q.status || 'pending';
+                    const cardId = q.id != null ? q.id : idx;
                     const card = document.createElement('div');
-                    card.className = 'query-card';
+                    card.className = 'query-card' + (cardStatus !== 'pending' ? ` query-${cardStatus}` : '');
+                    card.id = `query-card-${cardId}`;
 
                     const txRows = (q.transactions || []).map(t => {
                         const amtRaw = t.amount || '-';
@@ -2549,11 +2659,25 @@
                             </tr>`;
                     }).join('');
 
-                    const txTableId = `query-tx-${idx}`;
+                    const txTableId = `query-tx-${cardId}`;
                     const txCount = (q.transactions || []).length;
+
+                    const statusBadgeHtml = cardStatus !== 'pending'
+                        ? `<span class="badge-table ${cardStatus === 'sent' ? 'badge-sent' : 'badge-dismissed'} query-status-badge">&#9679; ${cardStatus === 'sent' ? 'Sent' : 'Dismissed'}</span>`
+                        : '';
+
+                    const actionsHtml = cardStatus === 'pending' ? `
+                        <div class="query-card-actions">
+                            <button class="btn-query-dismiss" onclick="dismissQuery('${cardId}')">Dismiss</button>
+                            <button class="btn-query-send" onclick="openSendQueryModal('${cardId}')">Send</button>
+                        </div>` : '';
+
                     card.innerHTML = `
-                        <div class="query-card-category">${q.category || 'Unclassified'}</div>
-                        <div class="query-card-text">${q.query_text || ''}</div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                            <div class="query-card-category">${q.category || 'Unclassified'}</div>
+                            ${statusBadgeHtml}
+                        </div>
+                        <textarea class="query-card-textarea"${cardStatus !== 'pending' ? ' disabled' : ''}>${(q.query_text || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
                         ${txCount > 0 ? `
                             <button class="query-tx-toggle" onclick="toggleQueryTransactions('${txTableId}', this)">
                                 &#9658; Show ${txCount} transaction${txCount === 1 ? '' : 's'}
@@ -2572,6 +2696,7 @@
                                     </table>
                                 </div>
                             </div>` : ''}
+                        ${actionsHtml}
                     `;
                     cardsContainer.appendChild(card);
                 });
@@ -2587,6 +2712,92 @@
             btn.innerHTML = isHidden
                 ? btn.innerHTML.replace('&#9658; Show', '&#9660; Hide')
                 : btn.innerHTML.replace('&#9660; Hide', '&#9658; Show');
+        }
+
+        let _sendQueryContext = null;
+
+        function openSendQueryModal(queryId) {
+            const cardEl = document.getElementById('query-card-' + queryId);
+            if (!cardEl) return;
+            const textarea = cardEl.querySelector('.query-card-textarea');
+            _sendQueryContext = { queryId };
+            document.getElementById('send-query-preview').value = textarea ? textarea.value : '';
+            document.getElementById('send-query-recipient').value = '';
+            document.getElementById('send-query-modal').style.display = 'flex';
+        }
+
+        function closeSendQueryModal() {
+            document.getElementById('send-query-modal').style.display = 'none';
+            _sendQueryContext = null;
+        }
+
+        async function confirmSendQuery() {
+            if (!_sendQueryContext) return;
+            const { queryId } = _sendQueryContext;
+            const cardEl = document.getElementById('query-card-' + queryId);
+            const textarea = cardEl ? cardEl.querySelector('.query-card-textarea') : null;
+            const queryText = textarea ? textarea.value : document.getElementById('send-query-preview').value;
+
+            try {
+                const resp = await fetch(`/api/jobs/${activeJob.job_id}/queries/${queryId}/status`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'sent', query_text: queryText })
+                });
+                if (!resp.ok) throw new Error('Request failed');
+                if (cardEl) _applyQueryCardStatus(cardEl, 'sent');
+                closeSendQueryModal();
+            } catch (e) {
+                alert('Failed to send query. Please try again.');
+            }
+        }
+
+        async function dismissQuery(queryId) {
+            const cardEl = document.getElementById('query-card-' + queryId);
+            const textarea = cardEl ? cardEl.querySelector('.query-card-textarea') : null;
+            const queryText = textarea ? textarea.value : '';
+
+            try {
+                const resp = await fetch(`/api/jobs/${activeJob.job_id}/queries/${queryId}/status`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'dismissed', query_text: queryText })
+                });
+                if (!resp.ok) throw new Error('Request failed');
+                if (cardEl) _applyQueryCardStatus(cardEl, 'dismissed');
+            } catch (e) {
+                alert('Failed to dismiss query. Please try again.');
+            }
+        }
+
+        function _applyQueryCardStatus(cardEl, status) {
+            cardEl.classList.remove('query-sent', 'query-dismissed');
+            cardEl.classList.add('query-' + status);
+
+            let badge = cardEl.querySelector('.query-status-badge');
+            if (!badge) {
+                badge = document.createElement('span');
+                badge.className = 'badge-table query-status-badge';
+                const headerRow = cardEl.querySelector('[style*="justify-content:space-between"]');
+                if (headerRow) headerRow.appendChild(badge);
+            }
+            badge.textContent = status === 'sent' ? '● Sent' : '● Dismissed';
+            badge.className = `badge-table query-status-badge ${status === 'sent' ? 'badge-sent' : 'badge-dismissed'}`;
+
+            const ta = cardEl.querySelector('.query-card-textarea');
+            if (ta) ta.disabled = true;
+            const actions = cardEl.querySelector('.query-card-actions');
+            if (actions) actions.style.display = 'none';
+
+            // Update the pending count badge in the panel header
+            const allCards = document.querySelectorAll('#queries-cards-container .query-card');
+            const pendingLeft = Array.from(allCards).filter(c => !c.classList.contains('query-sent') && !c.classList.contains('query-dismissed')).length;
+            const countBadge = document.getElementById('queries-count-badge');
+            if (countBadge) {
+                countBadge.textContent = pendingLeft > 0
+                    ? `${pendingLeft} pending`
+                    : `${allCards.length} total — all actioned`;
+            }
         }
 
         function renderPlaybookManager() {

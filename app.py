@@ -469,6 +469,35 @@ def api_job_reconciliation(job_id):
         "summary": ctx.get("summary"),
     })
 
+# API - Update Query Status
+@app.route("/api/jobs/<job_id>/queries/<query_id>/status", methods=["POST"])
+def api_update_query_status(job_id, query_id):
+    data = request.json or {}
+    status = data.get("status", "").strip()
+    query_text = data.get("query_text", "").strip()
+
+    if status not in ("sent", "dismissed"):
+        return jsonify({"error": "Invalid status. Must be 'sent' or 'dismissed'."}), 400
+
+    jobs = load_jobs()
+    job = next((j for j in jobs if j["job_id"] == job_id), None)
+    if not job:
+        return jsonify({"error": "Job not found."}), 404
+
+    ctx = job.get("phase2_context") or {}
+    queries = ctx.get("queries") or []
+
+    query = next((q for q in queries if str(q.get("id")) == str(query_id)), None)
+    if not query:
+        return jsonify({"error": "Query not found."}), 404
+
+    query["status"] = status
+    if query_text:
+        query["query_text"] = query_text
+
+    save_jobs(jobs)
+    return jsonify({"status": "success", "query_id": query_id, "new_status": status})
+
 # Serving PDF files directly from job directories (staging or workpaper)
 @app.route("/api/jobs/<job_id>/file/<phase>/<filename>", methods=["GET"])
 def api_serve_job_file(job_id, phase, filename):

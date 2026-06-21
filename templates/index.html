@@ -2892,7 +2892,7 @@
             let cashOpenTotal = 0;
             let cashCloseTotal = 0;
 
-            cash.accounts.forEach(acc => {
+            (cash.accounts || []).forEach(acc => {
                 cashOpenTotal += acc.opening_bal_1jul24;
                 cashCloseTotal += acc.closing_bal_30jun25;
 
@@ -2930,7 +2930,7 @@
             // Cash checks sidebar
             const checksList = document.getElementById("cash-checks-list");
             checksList.innerHTML = "";
-            cash.audit_checks.forEach(chk => {
+            (cash.audit_checks || []).forEach(chk => {
                 const item = document.createElement("div");
                 item.className = "check-box-item";
                 
@@ -2953,14 +2953,16 @@
             const portTbody = document.getElementById("portfolio-tbody");
             portTbody.innerHTML = "";
 
-            const totals = portfolio.totals;
-            const openCost = totals.opening_1jul24.total_cost || 0;
-            const openMv = totals.opening_1jul24.total_market_value || 0;
-            const openInc = totals.opening_1jul24.estimated_annual_income || 0;
-            
-            const closeCost = totals.closing_30jun25.total_cost || 0;
-            const closeMv = totals.closing_30jun25.total_market_value || 0;
-            const closeInc = totals.closing_30jun25.estimated_annual_income || 0;
+            const totals = portfolio.totals || {};
+            const openTotals = totals.opening_1jul24 || {};
+            const closeTotals = totals.closing_30jun25 || {};
+            const openCost = openTotals.total_cost || 0;
+            const openMv = openTotals.total_market_value || 0;
+            const openInc = openTotals.estimated_annual_income || 0;
+
+            const closeCost = closeTotals.total_cost || 0;
+            const closeMv = closeTotals.total_market_value || 0;
+            const closeInc = closeTotals.estimated_annual_income || 0;
 
             const trOpen = document.createElement("tr");
             trOpen.innerHTML = `
@@ -3025,7 +3027,7 @@
             const taxTbody = document.getElementById("tax-tbody");
             taxTbody.innerHTML = "";
             
-            tax.accounts.forEach(acc => {
+            (tax.accounts || []).forEach(acc => {
                 const tr = document.createElement("tr");
                 let badgeClass = acc.status === "Reconciled" ? "badge-verified" : "badge-na";
                 tr.innerHTML = `

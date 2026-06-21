@@ -1,5 +1,6 @@
 import os
 import sys
+import re
 import json
 import datetime
 import threading
@@ -9,7 +10,7 @@ from flask import Flask, jsonify, request, render_template, send_file
 from dotenv import load_dotenv
 
 load_dotenv()
-from core_engine import determine_target_filename
+from core_engine import determine_target_filename, discover_fund_profile
 
 
 app = Flask(__name__, template_folder="templates")
@@ -259,6 +260,138 @@ def api_funds():
             
         save_funds(funds)
         return jsonify({"status": "success", "funds": funds})
+
+
+def _derive_fund_id(folder_name):
+    return re.sub(r'[^a-z0-9]+', '_', folder_name.lower()).strip('_')
+
+
+def _empty_fund_config(fund_id, folder_path, keywords):
+    return {
+        "id": fund_id,
+        "name": "",
+        "abn": "",
+        "folder_path": folder_path,
+        "bank_accounts": [],
+        "members": [],
+        "keywords": keywords,
+    }
+
+
+def _profile_to_fund_config(fund_id, folder_path, profile, keywords):
+    bank_accounts = [
+        {
+            "name": acc.get("name") or "",
+            "number": acc.get("number") or "",
+            "bsb": acc.get("bsb") or "",
+        }
+        for acc in (profile.get("bank_accounts") or [])
+    ]
+    members = [
+        {
+            "name": m.get("name") or "",
+            "tfn": m.get("tfn") or "",
+            "prior_year_tsb": 0,
+            "current_year_tsb": 0,
+        }
+        for m in (profile.get("members") or [])
+    ]
+    return {
+        "id": fund_id,
+        "name": profile.get("fund_name") or "",
+        "abn": profile.get("abn") or "",
+        "folder_path": folder_path,
+        "bank_accounts": bank_accounts,
+        "members": members,
+        "keywords": keywords,
+    }
+
+
+# API - Discover unregistered fund folders
+@app.route("/api/funds/discover", methods=["GET"])
+def api_funds_discover():
+    data_dir = os.path.join(WORKSPACE_DIR, "data")
+    if not os.path.isdir(data_dir):
+        return jsonify([])
+
+    funds = load_funds()
+    registered_paths = {
+        os.path.abspath(f["folder_path"])
+        for f in funds
+        if f.get("folder_path")
+    }
+
+    discovered = []
+    for entry in os.scandir(data_dir):
+        if not entry.is_dir():
+            continue
+        if os.path.abspath(entry.path) in registered_paths:
+            continue
+        pdf_count = sum(
+            1 for f in os.scandir(entry.path)
+            if f.is_file() and f.name.lower().endswith(".pdf")
+        )
+        discovered.append({
+            "folder_name": entry.name,
+            "folder_path": os.path.relpath(entry.path, WORKSPACE_DIR),
+            "pdf_count": pdf_count,
+        })
+
+    return jsonify(discovered)
+
+
+# API - Bootstrap fund configs from discovered folders (LLM extraction)
+@app.route("/api/funds/bootstrap", methods=["POST"])
+def api_funds_bootstrap():
+    data = request.json or {}
+    folder_paths = data.get("folders", [])
+
+    api_key = os.environ.get("OPENROUTER_API_KEY", "")
+    if not api_key:
+        return jsonify({"error": "OPENROUTER_API_KEY not set"}), 500
+
+    funds = load_funds()
+    keyword_template = funds[0]["keywords"] if funds else {}
+    existing_ids = {f["id"] for f in funds}
+
+    scratch_dir = os.path.join(WORKSPACE_DIR, "jobs", "_bootstrap_scratch")
+    os.makedirs(scratch_dir, exist_ok=True)
+
+    results = []
+    for folder_path in folder_paths:
+        abs_path = os.path.abspath(folder_path)
+        folder_name = os.path.basename(abs_path)
+
+        raw_id = _derive_fund_id(folder_name)
+        candidate_id = raw_id
+        suffix = 2
+        while candidate_id in existing_ids:
+            candidate_id = f"{raw_id}_{suffix}"
+            suffix += 1
+        existing_ids.add(candidate_id)
+
+        warning = None
+        has_pdfs = any(
+            f.name.lower().endswith(".pdf")
+            for f in os.scandir(abs_path)
+            if f.is_file()
+        ) if os.path.isdir(abs_path) else False
+
+        if not has_pdfs:
+            warning = "no PDFs found — fill in manually"
+            proposed = _empty_fund_config(candidate_id, folder_path, keyword_template)
+        else:
+            try:
+                profile = discover_fund_profile(abs_path, api_key, scratch_dir)
+                proposed = _profile_to_fund_config(candidate_id, folder_path, profile, keyword_template)
+            except Exception as e:
+                warning = f"extraction failed: {str(e)}"
+                proposed = _empty_fund_config(candidate_id, folder_path, keyword_template)
+
+        results.append({"proposed": proposed, "warning": warning})
+
+    return jsonify(results)
+
 
 # API - List Jobs
 @app.route("/api/jobs", methods=["GET"])

@@ -1470,6 +1470,106 @@
             .di-sub-btn { padding: 0.5rem 0.65rem; font-size: 0.75rem; }
             .kpi-strip { gap: 0.5rem 0.75rem; }
         }
+
+        /* Story 10 — Fund discovery bar */
+        .discovery-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.55rem 1rem;
+            background: rgba(99, 102, 241, 0.08);
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.82rem;
+        }
+        .discovery-bar-text { flex: 1; color: var(--text-main); }
+        .discovery-bar-text strong { color: var(--primary); }
+        .btn-discovery-setup {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 0.32rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: var(--font-display);
+            white-space: nowrap;
+        }
+        .btn-discovery-setup:hover { opacity: 0.88; }
+        .btn-discovery-dismiss {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1rem;
+            line-height: 1;
+            padding: 0 0.15rem;
+        }
+        /* Story 10 — Bootstrap modal */
+        #bootstrap-modal .modal { max-width: 700px; max-height: 88vh; overflow-y: auto; }
+        .bootstrap-folder-card {
+            border: 1px solid var(--surface-border);
+            border-radius: 10px;
+            padding: 1rem 1rem 0.75rem;
+            margin-bottom: 0.75rem;
+            background: var(--bg-main);
+        }
+        .bootstrap-folder-card.bs-registered {
+            border-color: #22c55e;
+            background: rgba(34,197,94,0.06);
+        }
+        .bootstrap-mini-input {
+            font-size: 0.8rem;
+            padding: 0.3rem 0.5rem;
+            border-radius: 5px;
+            border: 1px solid var(--surface-border);
+            background: var(--surface-color);
+            color: var(--text-main);
+            width: 100%;
+            box-sizing: border-box;
+            font-family: var(--font-sans);
+        }
+        .bootstrap-mini-input:focus { outline: 1px solid var(--primary); border-color: var(--primary); }
+        .btn-bootstrap-add-row {
+            font-size: 0.72rem;
+            background: none;
+            border: 1px dashed var(--surface-border);
+            color: var(--text-muted);
+            padding: 0.22rem 0.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: var(--font-display);
+            font-weight: 600;
+            margin-top: 0.25rem;
+        }
+        .btn-bootstrap-add-row:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-row-del {
+            background: none;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 0.85rem;
+            padding: 0.1rem 0.2rem;
+            line-height: 1;
+            align-self: center;
+        }
+        .bs-warn {
+            background: rgba(245,158,11,0.1);
+            border: 1px solid rgba(245,158,11,0.3);
+            border-radius: 6px;
+            padding: 0.35rem 0.6rem;
+            font-size: 0.75rem;
+            color: #f59e0b;
+            margin-bottom: 0.6rem;
+        }
+        .bs-col-label {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            padding: 0 0.1rem;
+            margin-bottom: 0.15rem;
+        }
     </style>
 </head>
 <body>
@@ -1601,7 +1701,16 @@
 
         <!-- Dynamic Content Workspace -->
         <div class="workspace-content">
-            
+
+            <!-- Story 10: Fund Discovery Bar (shown when unregistered folders detected) -->
+            <div id="discovery-bar" class="discovery-bar" style="display:none;">
+                <span class="discovery-bar-text">
+                    <strong id="discovery-count">0</strong> new fund folder(s) detected in <code>data/</code> — set up to include them in processing.
+                </span>
+                <button class="btn-discovery-setup" onclick="openBootstrapModal()">Set up now</button>
+                <button class="btn-discovery-dismiss" onclick="document.getElementById('discovery-bar').style.display='none'" title="Dismiss">✕</button>
+            </div>
+
             <!-- Default Welcome Screen when no active job is selected -->
             <div id="welcome-view" class="welcome-screen">
                 <div class="welcome-icon">⚡</div>
@@ -2078,6 +2187,23 @@
         </div>
     </div>
 
+    <!-- Story 10: Fund Bootstrap Modal -->
+    <div class="modal-overlay" id="bootstrap-modal" style="display:none;">
+        <div class="modal" style="max-width:700px; max-height:88vh; overflow-y:auto;">
+            <div class="modal-header">
+                <h3>Set Up New Fund(s)</h3>
+                <button class="modal-close" onclick="closeBootstrapModal()">×</button>
+            </div>
+            <div id="bootstrap-modal-body" style="padding:0 0 0.5rem;">
+                <!-- Populated by openBootstrapModal() / renderBootstrapCards() -->
+            </div>
+            <div class="modal-actions" id="bootstrap-modal-actions" style="display:none;">
+                <button class="btn-secondary" onclick="closeBootstrapModal()">Close</button>
+                <button class="btn-primary" onclick="registerAllBootstrapFunds()">Register All</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Floating background decorations -->
     <div class="floating-decoration bubble-percent">%</div>
     <div class="floating-decoration bubble-like">👍</div>
@@ -2096,6 +2222,10 @@
         let selectedFileIndex = null;
         let pollingInterval = null;
 
+        // Story 10 — fund bootstrap state
+        let _discoveredFolders = [];
+        let _bootstrapProposals = [];
+
         // On document load
         window.addEventListener('load', () => {
             fetchFunds();
@@ -2111,8 +2241,232 @@
                     funds = data;
                     populateFundDropdown();
                     loadActiveFundPlaybook();
+                    checkForNewFunds();
                 })
                 .catch(err => console.error("Error loading funds list:", err));
+        }
+
+        // ── Story 10: Fund bootstrap helpers ─────────────────────────────────
+
+        function checkForNewFunds() {
+            fetch('/api/funds/discover')
+                .then(r => r.json())
+                .then(folders => {
+                    _discoveredFolders = folders;
+                    const bar = document.getElementById('discovery-bar');
+                    if (folders.length > 0) {
+                        document.getElementById('discovery-count').textContent = folders.length;
+                        bar.style.display = 'flex';
+                    } else {
+                        bar.style.display = 'none';
+                    }
+                })
+                .catch(() => { /* silently suppress — data/ may not exist */ });
+        }
+
+        function openBootstrapModal() {
+            _bootstrapProposals = [];
+            document.getElementById('bootstrap-modal-actions').style.display = 'none';
+            const body = document.getElementById('bootstrap-modal-body');
+            body.innerHTML = _discoveredFolders.map(f => `
+                <div style="display:flex; align-items:center; gap:0.6rem; padding:0.6rem 0; border-bottom:1px solid var(--surface-border);">
+                    <span style="font-family:var(--font-display); font-weight:700;">${_esc(f.folder_name)}</span>
+                    <span style="font-size:0.72rem; color:var(--text-muted);">${f.pdf_count} PDF${f.pdf_count !== 1 ? 's' : ''}</span>
+                </div>
+            `).join('') + `
+                <div style="text-align:center; padding:1.25rem 0 0.25rem;">
+                    <button class="btn-primary" id="btn-scan-all" onclick="scanAllFolders()">Scan &amp; Propose Config</button>
+                    <div style="font-size:0.74rem; color:var(--text-muted); margin-top:0.45rem;">The AI will read each folder&rsquo;s documents and extract fund details.</div>
+                </div>`;
+            document.getElementById('bootstrap-modal').style.display = 'flex';
+        }
+
+        function closeBootstrapModal() {
+            document.getElementById('bootstrap-modal').style.display = 'none';
+        }
+
+        async function scanAllFolders() {
+            const scanBtn = document.getElementById('btn-scan-all');
+            if (scanBtn) { scanBtn.disabled = true; scanBtn.textContent = 'Scanning…'; }
+            const body = document.getElementById('bootstrap-modal-body');
+            body.innerHTML = `<div style="text-align:center; padding:2.5rem 1rem; color:var(--text-muted);">
+                <div style="font-size:1.6rem; margin-bottom:0.6rem;">🔍</div>
+                <div style="font-weight:600; margin-bottom:0.25rem;">Reading documents…</div>
+                <div style="font-size:0.78rem;">Extracting fund details via AI — this may take 15–30s per folder.</div>
+            </div>`;
+            try {
+                const resp = await fetch('/api/funds/bootstrap', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ folders: _discoveredFolders.map(f => f.folder_path) })
+                });
+                if (!resp.ok) throw new Error(`Server error ${resp.status}`);
+                _bootstrapProposals = await resp.json();
+                renderBootstrapCards();
+                document.getElementById('bootstrap-modal-actions').style.display = 'flex';
+            } catch (e) {
+                body.innerHTML = `<div style="color:#ef4444; padding:1rem 0;">Scan failed: ${_esc(e.message)}</div>
+                    <div style="margin-top:0.5rem;"><button class="btn-secondary" onclick="openBootstrapModal()">Retry</button></div>`;
+            }
+        }
+
+        function _esc(s) {
+            return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
+        function _bsAcctRow(a) {
+            return `<div class="bootstrap-acct-row" style="display:grid; grid-template-columns:2fr 2fr 1.2fr 1.6rem; gap:0.3rem; margin-bottom:0.25rem;">
+                <input class="bootstrap-mini-input" data-field="name" value="${_esc(a.name)}" placeholder="Account name">
+                <input class="bootstrap-mini-input" data-field="number" value="${_esc(a.number)}" placeholder="Account #">
+                <input class="bootstrap-mini-input" data-field="bsb" value="${_esc(a.bsb)}" placeholder="BSB">
+                <button class="btn-row-del" onclick="this.closest('.bootstrap-acct-row').remove()" title="Remove">✕</button>
+            </div>`;
+        }
+
+        function _bsMemberRow(m) {
+            return `<div class="bootstrap-mem-row" style="display:grid; grid-template-columns:2fr 2fr 1fr 1fr 1.6rem; gap:0.3rem; margin-bottom:0.25rem;">
+                <input class="bootstrap-mini-input" data-field="name" value="${_esc(m.name)}" placeholder="Member name">
+                <input class="bootstrap-mini-input" data-field="tfn" value="${_esc(m.tfn)}" placeholder="TFN">
+                <input class="bootstrap-mini-input" data-field="prior" value="${m.prior_year_tsb || 0}" placeholder="Prior TSB">
+                <input class="bootstrap-mini-input" data-field="current" value="${m.current_year_tsb || 0}" placeholder="Current TSB">
+                <button class="btn-row-del" onclick="this.closest('.bootstrap-mem-row').remove()" title="Remove">✕</button>
+            </div>`;
+        }
+
+        function renderBootstrapCards() {
+            const body = document.getElementById('bootstrap-modal-body');
+            body.innerHTML = _bootstrapProposals.map((result, idx) => {
+                const p = result.proposed;
+                const folder = _discoveredFolders[idx] || {};
+                const warn = result.warning
+                    ? `<div class="bs-warn">⚠ ${_esc(result.warning)}</div>`
+                    : '';
+                const acctRows = (p.bank_accounts || []).map(a => _bsAcctRow(a)).join('');
+                const memberRows = (p.members || []).map(m => _bsMemberRow(m)).join('');
+                return `
+                <div class="bootstrap-folder-card" id="bs-card-${idx}">
+                    <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.75rem; flex-wrap:wrap;">
+                        <span style="font-family:var(--font-display); font-weight:700; font-size:1rem;">${_esc(folder.folder_name || '')}</span>
+                        <span style="font-size:0.7rem; background:rgba(99,102,241,0.12); color:var(--primary); padding:0.15rem 0.5rem; border-radius:4px; font-family:monospace;">${_esc(p.id)}</span>
+                        <button class="btn-primary" style="margin-left:auto; font-size:0.75rem; padding:0.28rem 0.75rem;" onclick="registerBootstrapFund(${idx})">Register</button>
+                    </div>
+                    ${warn}
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-bottom:0.75rem;">
+                        <div>
+                            <div class="bs-col-label">Fund Name</div>
+                            <input class="bootstrap-mini-input" id="bs-${idx}-name" value="${_esc(p.name)}">
+                        </div>
+                        <div>
+                            <div class="bs-col-label">ABN</div>
+                            <input class="bootstrap-mini-input" id="bs-${idx}-abn" value="${_esc(p.abn)}">
+                        </div>
+                    </div>
+                    <div style="margin-bottom:0.65rem;">
+                        <div class="bs-col-label" style="font-weight:700; margin-bottom:0.3rem;">Bank Accounts</div>
+                        <div style="display:grid; grid-template-columns:2fr 2fr 1.2fr 1.6rem; gap:0.3rem; margin-bottom:0.2rem;">
+                            <span class="bs-col-label">Name</span><span class="bs-col-label">Account #</span><span class="bs-col-label">BSB</span><span></span>
+                        </div>
+                        <div id="bs-${idx}-accounts">${acctRows}</div>
+                        <button class="btn-bootstrap-add-row" onclick="_bsAddAcct(${idx})">+ Add account</button>
+                    </div>
+                    <div>
+                        <div class="bs-col-label" style="font-weight:700; margin-bottom:0.3rem;">Members</div>
+                        <div style="display:grid; grid-template-columns:2fr 2fr 1fr 1fr 1.6rem; gap:0.3rem; margin-bottom:0.2rem;">
+                            <span class="bs-col-label">Name</span><span class="bs-col-label">TFN</span><span class="bs-col-label">Prior TSB</span><span class="bs-col-label">Current TSB</span><span></span>
+                        </div>
+                        <div id="bs-${idx}-members">${memberRows}</div>
+                        <button class="btn-bootstrap-add-row" onclick="_bsAddMember(${idx})">+ Add member</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function _bsAddAcct(idx) {
+            const el = document.createElement('div');
+            el.innerHTML = _bsAcctRow({name:'',number:'',bsb:''});
+            document.getElementById(`bs-${idx}-accounts`).appendChild(el.firstElementChild);
+        }
+
+        function _bsAddMember(idx) {
+            const el = document.createElement('div');
+            el.innerHTML = _bsMemberRow({name:'',tfn:'',prior_year_tsb:0,current_year_tsb:0});
+            document.getElementById(`bs-${idx}-members`).appendChild(el.firstElementChild);
+        }
+
+        function _readBsCard(idx) {
+            const p = _bootstrapProposals[idx].proposed;
+            const bankAccounts = [];
+            document.querySelectorAll(`#bs-${idx}-accounts .bootstrap-acct-row`).forEach(row => {
+                const name = row.querySelector('[data-field="name"]')?.value || '';
+                const number = row.querySelector('[data-field="number"]')?.value || '';
+                const bsb = row.querySelector('[data-field="bsb"]')?.value || '';
+                if (name || number) bankAccounts.push({ name, number, bsb });
+            });
+            const members = [];
+            document.querySelectorAll(`#bs-${idx}-members .bootstrap-mem-row`).forEach(row => {
+                const name = row.querySelector('[data-field="name"]')?.value || '';
+                const tfn = row.querySelector('[data-field="tfn"]')?.value || '';
+                const prior = parseFloat(row.querySelector('[data-field="prior"]')?.value || '0') || 0;
+                const current = parseFloat(row.querySelector('[data-field="current"]')?.value || '0') || 0;
+                if (name) members.push({ name, tfn, prior_year_tsb: prior, current_year_tsb: current });
+            });
+            return {
+                id: p.id,
+                name: document.getElementById(`bs-${idx}-name`)?.value || '',
+                abn: document.getElementById(`bs-${idx}-abn`)?.value || '',
+                folder_path: p.folder_path,
+                bank_accounts: bankAccounts,
+                members,
+                keywords: p.keywords,
+            };
+        }
+
+        async function registerBootstrapFund(idx) {
+            const fund = _readBsCard(idx);
+            const card = document.getElementById(`bs-card-${idx}`);
+            const regBtn = card?.querySelector('.btn-primary');
+            if (regBtn) { regBtn.disabled = true; regBtn.textContent = 'Registering…'; }
+            try {
+                const resp = await fetch('/api/funds', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(fund),
+                });
+                if (!resp.ok) throw new Error(`Server error ${resp.status}`);
+                if (card) {
+                    card.classList.add('bs-registered');
+                    card.innerHTML = `<div style="display:flex; align-items:center; gap:0.6rem; padding:0.15rem 0;">
+                        <span style="color:#22c55e; font-size:1.1rem;">✓</span>
+                        <strong style="color:#22c55e;">${_esc(fund.name || fund.id)}</strong>
+                        <span style="font-size:0.8rem; color:var(--text-muted);">registered</span>
+                    </div>`;
+                }
+                // Refresh fund dropdown and hide discovery bar
+                fetch('/api/funds').then(r => r.json()).then(data => {
+                    funds = data;
+                    populateFundDropdown();
+                    loadActiveFundPlaybook();
+                });
+                // Update discovery bar count
+                _discoveredFolders = _discoveredFolders.filter(f => f.folder_path !== fund.folder_path);
+                if (_discoveredFolders.length === 0) {
+                    document.getElementById('discovery-bar').style.display = 'none';
+                } else {
+                    document.getElementById('discovery-count').textContent = _discoveredFolders.length;
+                }
+            } catch (e) {
+                if (regBtn) { regBtn.disabled = false; regBtn.textContent = 'Register'; }
+                alert(`Registration failed: ${e.message}`);
+            }
+        }
+
+        async function registerAllBootstrapFunds() {
+            for (let i = 0; i < _bootstrapProposals.length; i++) {
+                const card = document.getElementById(`bs-card-${i}`);
+                if (card && !card.classList.contains('bs-registered')) {
+                    await registerBootstrapFund(i);
+                }
+            }
         }
 
         function populateFundDropdown() {

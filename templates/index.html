@@ -3276,14 +3276,16 @@
             const status = q.status || 'pending';
 
             const txRows = (q.transactions || []).map(t => {
-                const amtRaw = t.amount;
+                const amtRaw = t.amount != null ? t.amount : (t.debit != null ? t.debit : t.credit);
+                const isDebit = t.debit != null || t.type === 'debit';
                 const amtDisplay = typeof amtRaw === 'number'
-                    ? '$' + Math.abs(amtRaw).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})
+                    ? (isDebit ? '-' : '+') + '$' + Math.abs(amtRaw).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})
                     : (amtRaw || '-');
+                const amtColor = typeof amtRaw === 'number' ? (isDebit ? 'var(--danger, #e53e3e)' : 'var(--success, #38a169)') : '';
                 return `<tr>
                     <td style="font-size:0.78rem; color:var(--text-muted); white-space:nowrap;">${t.date || '-'}</td>
                     <td style="font-size:0.8rem;">${t.description || '-'}</td>
-                    <td class="val-num" style="font-size:0.8rem;">${amtDisplay}</td>
+                    <td class="val-num" style="font-size:0.8rem; color:${amtColor};">${amtDisplay}</td>
                 </tr>`;
             }).join('');
 

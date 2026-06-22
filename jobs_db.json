@@ -983,128 +983,8 @@
       "queries": [
         {
           "id": "Q1",
-          "category": "Other \u2013 ATO ATO002000021374899",
-          "query_text": "Dear Client, we have the following unmatched transaction in The Cobble Family Super Fund: 20/05/2025 ATO ATO002000021374899 DR $21,462.80. Please provide the supporting documentation such as the ATO notice or correspondence explaining the nature of this debit.",
-          "transactions": [
-            {
-              "date": "20/05/2025",
-              "description": "ATO ATO002000021374899",
-              "debit": 21462.8,
-              "credit": null,
-              "type": "debit",
-              "status": "unmatched",
-              "matched_document": null,
-              "unmatched_reason": "No ATO notice of assessment, tax invoice or payment authority found to support this tax payment",
-              "account_number": "122593890",
-              "account_name": "Macquarie CMA"
-            }
-          ],
-          "sub_queries": null,
-          "status": "pending"
-        },
-        {
-          "id": "Q2",
-          "category": "Other \u2013 CHERYL'S RE-CONTRIBUTION",
-          "query_text": "Dear Client, we have the following unmatched transactions in The Cobble Family Super Fund: 11/06/2025 CHERYL'S RE-CONTRIBUTION CR $60,000.00, 10/06/2025 CHERYL'S RE-CONTRIBUTION CR $100,000.00, 05/06/2025 CHERYL'S RE-CONTRIBUTION CR $100,000.00 and 04/06/2025 CHERYL'S RE-CONTRIBUTION CR $100,000.00. Please provide the contribution documentation, including any re-contribution notices or rollover statements, to support these credits.",
-          "transactions": [
-            {
-              "date": "11/06/2025",
-              "description": "CHERYL'S RE-CONTRIBUTION",
-              "debit": null,
-              "credit": 60000.0,
-              "type": "credit",
-              "status": "unmatched",
-              "matched_document": null,
-              "unmatched_reason": "No contribution receipt, bank deposit confirmation or member re-contribution authority found",
-              "account_number": "122593890",
-              "account_name": "Macquarie CMA"
-            },
-            {
-              "date": "10/06/2025",
-              "description": "CHERYL'S RE-CONTRIBUTION",
-              "debit": null,
-              "credit": 100000.0,
-              "type": "credit",
-              "status": "unmatched",
-              "matched_document": null,
-              "unmatched_reason": "No contribution receipt, bank deposit confirmation or member re-contribution authority found",
-              "account_number": "122593890",
-              "account_name": "Macquarie CMA"
-            },
-            {
-              "date": "05/06/2025",
-              "description": "CHERYL'S RE-CONTRIBUTION",
-              "debit": null,
-              "credit": 100000.0,
-              "type": "credit",
-              "status": "unmatched",
-              "matched_document": null,
-              "unmatched_reason": "No contribution receipt, bank deposit confirmation or member re-contribution authority found",
-              "account_number": "122593890",
-              "account_name": "Macquarie CMA"
-            },
-            {
-              "date": "04/06/2025",
-              "description": "CHERYL'S RE-CONTRIBUTION",
-              "debit": null,
-              "credit": 100000.0,
-              "type": "credit",
-              "status": "unmatched",
-              "matched_document": null,
-              "unmatched_reason": "No contribution receipt, bank deposit confirmation or member re-contribution authority found",
-              "account_number": "122593890",
-              "account_name": "Macquarie CMA"
-            }
-          ],
-          "sub_queries": null,
-          "status": "pending"
-        },
-        {
-          "id": "Q3",
-          "category": "Other \u2013 COMPLETE RECONTRIBUTION 1",
-          "query_text": "Dear Client, we have the following unmatched transaction in The Cobble Family Super Fund: 03/06/2025 COMPLETE RECONTRIBUTION 1 CR $60,000.00. Please provide the supporting re-contribution documentation or rollover statements for this credit.",
-          "transactions": [
-            {
-              "date": "03/06/2025",
-              "description": "COMPLETE RECONTRIBUTION 1",
-              "debit": null,
-              "credit": 60000.0,
-              "type": "credit",
-              "status": "unmatched",
-              "matched_document": null,
-              "unmatched_reason": "No contribution receipt, bank deposit confirmation or member re-contribution authority found",
-              "account_number": "122593890",
-              "account_name": "Macquarie CMA"
-            }
-          ],
-          "sub_queries": null,
-          "status": "pending"
-        },
-        {
-          "id": "Q4",
-          "category": "Other \u2013 LUMP SUM SHORTFALL PENSION",
-          "query_text": "Dear Client, we have the following unmatched transaction in The Cobble Family Super Fund: 03/04/2025 LUMP SUM SHORTFALL PENSION DR $5,980.00. Please provide the relevant pension documentation or shortfall notice explaining this debit.",
-          "transactions": [
-            {
-              "date": "03/04/2025",
-              "description": "LUMP SUM SHORTFALL PENSION",
-              "debit": 5980.0,
-              "credit": null,
-              "type": "debit",
-              "status": "unmatched",
-              "matched_document": null,
-              "unmatched_reason": "No pension payment receipt, member advice or withdrawal authority found to support this pension payment",
-              "account_number": "122593890",
-              "account_name": "Macquarie CMA"
-            }
-          ],
-          "sub_queries": null,
-          "status": "pending"
-        },
-        {
-          "id": "Q5",
-          "category": "Other \u2013 MACQUARIE CMA INTEREST PAID",
-          "query_text": "Dear Client, we have the following unmatched transactions in The Cobble Family Super Fund: 30/06/2025 MACQUARIE CMA INTEREST PAID CR $427.62, 30/05/2025 MACQUARIE CMA INTEREST PAID CR $219.36, 30/04/2025 MACQUARIE CMA INTEREST PAID CR $54.58, 31/03/2025 MACQUARIE CMA INTEREST PAID CR $35.54, 28/02/2025 MACQUARIE CMA INTEREST PAID CR $17.33, 31/01/2025 MACQUARIE CMA INTEREST PAID CR $35.44, 31/12/2024 MACQUARIE CMA INTEREST PAID CR $42.30, 29/11/2024 MACQUARIE CMA INTEREST PAID CR $34.63, 31/10/2024 MACQUARIE CMA INTEREST PAID CR $53.09, 30/09/2024 MACQUARIE CMA INTEREST PAID CR $71.96, 30/08/2024 MACQUARIE CMA INTEREST PAID CR $86.24 and 31/07/2024 MACQUARIE CMA INTEREST PAID CR $112.71. Please provide the Macquarie CMA interest statements or tax certificates for these credits.",
+          "category": "Bank Interest",
+          "query_text": "Dear Client, we are preparing the accounts for The Cobble Family Super Fund and require supporting documentation for the following bank interest credits received into the Macquarie CMA account: 31/07/2024 - $112.71, 30/08/2024 - $86.24, 30/09/2024 - $71.96, 31/10/2024 - $53.09, 29/11/2024 - $34.63, 31/12/2024 - $42.30, 31/01/2025 - $35.44, 28/02/2025 - $17.33, 31/03/2025 - $35.54, 30/04/2025 - $54.58, 30/05/2025 - $219.36 and 30/06/2025 - $427.62. Please provide the year-end interest statement or tax certificate from Macquarie Bank that details the total interest earned for the period.",
           "transactions": [
             {
               "date": "30/06/2025",
@@ -1116,7 +996,8 @@
               "matched_document": null,
               "unmatched_reason": "No bank interest statement or interest schedule found in supporting documents to evidence the interest received",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Bank Interest"
             },
             {
               "date": "30/05/2025",
@@ -1128,7 +1009,8 @@
               "matched_document": null,
               "unmatched_reason": "No bank interest statement or interest schedule found in supporting documents to evidence the interest received",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Bank Interest"
             },
             {
               "date": "30/04/2025",
@@ -1140,7 +1022,8 @@
               "matched_document": null,
               "unmatched_reason": "No bank interest statement or interest schedule found in supporting documents to evidence the interest received",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Bank Interest"
             },
             {
               "date": "31/03/2025",
@@ -1152,7 +1035,8 @@
               "matched_document": null,
               "unmatched_reason": "No bank interest statement or interest schedule found in supporting documents to evidence the interest received",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Bank Interest"
             },
             {
               "date": "28/02/2025",
@@ -1164,7 +1048,8 @@
               "matched_document": null,
               "unmatched_reason": "No bank interest statement or interest schedule found in supporting documents to evidence the interest received",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Bank Interest"
             },
             {
               "date": "31/01/2025",
@@ -1176,7 +1061,8 @@
               "matched_document": null,
               "unmatched_reason": "No bank interest statement or interest schedule found in supporting documents to evidence the interest received",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Bank Interest"
             },
             {
               "date": "31/12/2024",
@@ -1188,7 +1074,8 @@
               "matched_document": null,
               "unmatched_reason": "No bank interest statement or interest schedule found in supporting documents to evidence the interest received",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Bank Interest"
             },
             {
               "date": "29/11/2024",
@@ -1200,7 +1087,8 @@
               "matched_document": null,
               "unmatched_reason": "No bank interest statement or interest schedule found in supporting documents to evidence the interest received",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Bank Interest"
             },
             {
               "date": "31/10/2024",
@@ -1212,7 +1100,8 @@
               "matched_document": null,
               "unmatched_reason": "No bank interest statement or interest schedule found in supporting documents to evidence the interest received",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Bank Interest"
             },
             {
               "date": "30/09/2024",
@@ -1224,7 +1113,8 @@
               "matched_document": null,
               "unmatched_reason": "No bank interest statement or interest schedule found in supporting documents to evidence the interest received",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Bank Interest"
             },
             {
               "date": "30/08/2024",
@@ -1236,7 +1126,8 @@
               "matched_document": null,
               "unmatched_reason": "No bank interest statement or interest schedule found in supporting documents to evidence the interest received",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Bank Interest"
             },
             {
               "date": "31/07/2024",
@@ -1248,28 +1139,30 @@
               "matched_document": null,
               "unmatched_reason": "No bank interest statement or interest schedule found in supporting documents to evidence the interest received",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Bank Interest"
             }
           ],
           "sub_queries": null,
           "status": "pending"
         },
         {
-          "id": "Q6",
-          "category": "Other \u2013 MR IAN WILLIAM COBBLE COBBLE",
-          "query_text": "Dear Client, we have the following unmatched transactions in The Cobble Family Super Fund: 11/06/2025 MR IAN WILLIAM COBBLE COBBLE CR $60,000.00, 10/06/2025 MR IAN WILLIAM COBBLE COBBLE DR $100,000.00, 05/06/2025 MR IAN WILLIAM COBBLE COBBLE DR $100,000.00, 04/06/2025 MR IAN WILLIAM COBBLE COBBLE DR $100,000.00, 03/06/2025 MR IAN WILLIAM COBBLE COBBLE DR $60,000.00, 02/06/2025 MR IAN WILLIAM COBBLE COBBLE DR $100,000.00 and 02/06/2025 MR IAN WILLIAM COBBLE COBBLE CR $100,000.00. Please provide the supporting documentation such as contribution notices, rollover statements or withdrawal requests for these entries.",
+          "id": "Q2",
+          "category": "Pension Payments",
+          "query_text": "Dear Client, we are preparing the accounts for The Cobble Family Super Fund and require supporting documentation for the following pension payment debits: 19/07/2024 - $7,500, 20/08/2024 - $7,500, 20/09/2024 - $7,500, 18/10/2024 - $7,500, 20/11/2024 - $7,500, 20/12/2024 - $7,500, 20/01/2025 - $7,500, 20/02/2025 - $7,500, 24/03/2025 - $7,500, 17/04/2025 - $7,500, 20/05/2025 - $7,500, 20/06/2025 - $7,500, 03/04/2025 - $5,980 (lump sum shortfall), and the large lump sum payments made in June 2025 to Mr Ian William Cobble of $100,000 (on 02/06, 04/06, 05/06 & 10/06), $60,000 (on 03/06) and $100,000 (on 30/05). Please provide the pension payment statements, recipient acknowledgements or any other supporting records for these transactions.",
           "transactions": [
             {
-              "date": "11/06/2025",
-              "description": "MR IAN WILLIAM COBBLE COBBLE",
-              "debit": null,
-              "credit": 60000.0,
-              "type": "credit",
+              "date": "03/04/2025",
+              "description": "LUMP SUM SHORTFALL PENSION",
+              "debit": 5980.0,
+              "credit": null,
+              "type": "debit",
               "status": "unmatched",
               "matched_document": null,
-              "unmatched_reason": "No contribution receipt, bank deposit confirmation or member re-contribution authority found",
+              "unmatched_reason": "No pension payment receipt, member advice or withdrawal authority found to support this pension payment",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Pension Payments"
             },
             {
               "date": "10/06/2025",
@@ -1281,7 +1174,8 @@
               "matched_document": null,
               "unmatched_reason": "No pension payment receipt, member advice or withdrawal authority found to support this pension payment",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Pension Payments"
             },
             {
               "date": "05/06/2025",
@@ -1293,7 +1187,8 @@
               "matched_document": null,
               "unmatched_reason": "No pension payment receipt, member advice or withdrawal authority found to support this pension payment",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Pension Payments"
             },
             {
               "date": "04/06/2025",
@@ -1305,7 +1200,8 @@
               "matched_document": null,
               "unmatched_reason": "No pension payment receipt, member advice or withdrawal authority found to support this pension payment",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Pension Payments"
             },
             {
               "date": "03/06/2025",
@@ -1317,7 +1213,8 @@
               "matched_document": null,
               "unmatched_reason": "No pension payment receipt, member advice or withdrawal authority found to support this pension payment",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Pension Payments"
             },
             {
               "date": "02/06/2025",
@@ -1329,29 +1226,9 @@
               "matched_document": null,
               "unmatched_reason": "No pension payment receipt, member advice or withdrawal authority found to support this pension payment",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Pension Payments"
             },
-            {
-              "date": "02/06/2025",
-              "description": "MR IAN WILLIAM COBBLE COBBLE",
-              "debit": null,
-              "credit": 100000.0,
-              "type": "credit",
-              "status": "unmatched",
-              "matched_document": null,
-              "unmatched_reason": "No contribution receipt, bank deposit confirmation or member re-contribution authority found",
-              "account_number": "122593890",
-              "account_name": "Macquarie CMA"
-            }
-          ],
-          "sub_queries": null,
-          "status": "pending"
-        },
-        {
-          "id": "Q7",
-          "category": "Other \u2013 MR IAN WILLIAM COBBLE Cobble",
-          "query_text": "Dear Client, we have the following unmatched transaction in The Cobble Family Super Fund: 30/05/2025 MR IAN WILLIAM COBBLE Cobble DR $100,000.00. Please provide the supporting documentation such as a withdrawal request or rollover statement for this debit.",
-          "transactions": [
             {
               "date": "30/05/2025",
               "description": "MR IAN WILLIAM COBBLE Cobble",
@@ -1362,17 +1239,9 @@
               "matched_document": null,
               "unmatched_reason": "No pension payment receipt, member advice or withdrawal authority found to support this pension payment",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
-            }
-          ],
-          "sub_queries": null,
-          "status": "pending"
-        },
-        {
-          "id": "Q8",
-          "category": "Other \u2013 PENSION",
-          "query_text": "Dear Client, we have the following unmatched transactions in The Cobble Family Super Fund: 20/06/2025 PENSION DR $7,500.00, 20/05/2025 PENSION DR $7,500.00, 17/04/2025 PENSION DR $7,500.00, 24/03/2025 PENSION DR $7,500.00, 20/02/2025 PENSION DR $7,500.00, 20/01/2025 PENSION DR $7,500.00, 20/12/2024 PENSION DR $7,500.00, 20/11/2024 PENSION DR $7,500.00, 18/10/2024 PENSION DR $7,500.00, 20/09/2024 PENSION DR $7,500.00, 20/08/2024 PENSION DR $7,500.00 and 19/07/2024 PENSION DR $7,500.00. Please provide the pension payment statements or distribution notices to support these debits.",
-          "transactions": [
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Pension Payments"
+            },
             {
               "date": "20/06/2025",
               "description": "PENSION",
@@ -1383,7 +1252,8 @@
               "matched_document": null,
               "unmatched_reason": "No pension payment receipt, member advice or withdrawal authority found to support this pension payment",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Pension Payments"
             },
             {
               "date": "20/05/2025",
@@ -1395,7 +1265,8 @@
               "matched_document": null,
               "unmatched_reason": "No pension payment receipt, member advice or withdrawal authority found to support this pension payment",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Pension Payments"
             },
             {
               "date": "17/04/2025",
@@ -1407,7 +1278,8 @@
               "matched_document": null,
               "unmatched_reason": "No pension payment receipt, member advice or withdrawal authority found to support this pension payment",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Pension Payments"
             },
             {
               "date": "24/03/2025",
@@ -1419,7 +1291,8 @@
               "matched_document": null,
               "unmatched_reason": "No pension payment receipt, member advice or withdrawal authority found to support this pension payment",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Pension Payments"
             },
             {
               "date": "20/02/2025",
@@ -1431,7 +1304,8 @@
               "matched_document": null,
               "unmatched_reason": "No pension payment receipt, member advice or withdrawal authority found to support this pension payment",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Pension Payments"
             },
             {
               "date": "20/01/2025",
@@ -1443,7 +1317,8 @@
               "matched_document": null,
               "unmatched_reason": "No pension payment receipt, member advice or withdrawal authority found to support this pension payment",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Pension Payments"
             },
             {
               "date": "20/12/2024",
@@ -1455,7 +1330,8 @@
               "matched_document": null,
               "unmatched_reason": "No pension payment receipt, member advice or withdrawal authority found to support this pension payment",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Pension Payments"
             },
             {
               "date": "20/11/2024",
@@ -1467,7 +1343,8 @@
               "matched_document": null,
               "unmatched_reason": "No pension payment receipt, member advice or withdrawal authority found to support this pension payment",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Pension Payments"
             },
             {
               "date": "18/10/2024",
@@ -1479,7 +1356,8 @@
               "matched_document": null,
               "unmatched_reason": "No pension payment receipt, member advice or withdrawal authority found to support this pension payment",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Pension Payments"
             },
             {
               "date": "20/09/2024",
@@ -1491,7 +1369,8 @@
               "matched_document": null,
               "unmatched_reason": "No pension payment receipt, member advice or withdrawal authority found to support this pension payment",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Pension Payments"
             },
             {
               "date": "20/08/2024",
@@ -1503,7 +1382,8 @@
               "matched_document": null,
               "unmatched_reason": "No pension payment receipt, member advice or withdrawal authority found to support this pension payment",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Pension Payments"
             },
             {
               "date": "19/07/2024",
@@ -1515,17 +1395,109 @@
               "matched_document": null,
               "unmatched_reason": "No pension payment receipt, member advice or withdrawal authority found to support this pension payment",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Pension Payments"
             }
           ],
           "sub_queries": null,
           "status": "pending"
         },
         {
-          "id": "Q9",
-          "category": "Other \u2013 RE-CONTRIBUTION 1",
-          "query_text": "Dear Client, we have the following unmatched transaction in The Cobble Family Super Fund: 29/05/2025 RE-CONTRIBUTION 1 CR $100,000.00. Please provide the re-contribution documentation or rollover statements for this credit.",
+          "id": "Q3",
+          "category": "Member Contributions",
+          "query_text": "Dear Client, we are preparing the accounts for The Cobble Family Super Fund and require supporting documentation for the following member contribution credits: 29/05/2025 - $100,000 (Re-contribution 1), 30/05/2025 - $100,000 (Re-contribution 2), 02/06/2025 - $100,000 (Re-contribution 3 & Mr Ian William Cobble), 03/06/2025 - $60,000 (Complete Recontribution 1), 04/06/2025 - $100,000 (Cheryl's Re-contribution), 05/06/2025 - $100,000 (Cheryl's Re-contribution), 10/06/2025 - $100,000 (Cheryl's Re-contribution), and 11/06/2025 - $60,000 (Cheryl's Re-contribution & Mr Ian William Cobble). Please provide the contribution notices, rollover or transfer statements, and any relevant tax deduction declarations or re-contribution documentation.",
           "transactions": [
+            {
+              "date": "11/06/2025",
+              "description": "CHERYL'S RE-CONTRIBUTION",
+              "debit": null,
+              "credit": 60000.0,
+              "type": "credit",
+              "status": "unmatched",
+              "matched_document": null,
+              "unmatched_reason": "No contribution receipt, bank deposit confirmation or member re-contribution authority found",
+              "account_number": "122593890",
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Member Contributions"
+            },
+            {
+              "date": "10/06/2025",
+              "description": "CHERYL'S RE-CONTRIBUTION",
+              "debit": null,
+              "credit": 100000.0,
+              "type": "credit",
+              "status": "unmatched",
+              "matched_document": null,
+              "unmatched_reason": "No contribution receipt, bank deposit confirmation or member re-contribution authority found",
+              "account_number": "122593890",
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Member Contributions"
+            },
+            {
+              "date": "05/06/2025",
+              "description": "CHERYL'S RE-CONTRIBUTION",
+              "debit": null,
+              "credit": 100000.0,
+              "type": "credit",
+              "status": "unmatched",
+              "matched_document": null,
+              "unmatched_reason": "No contribution receipt, bank deposit confirmation or member re-contribution authority found",
+              "account_number": "122593890",
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Member Contributions"
+            },
+            {
+              "date": "04/06/2025",
+              "description": "CHERYL'S RE-CONTRIBUTION",
+              "debit": null,
+              "credit": 100000.0,
+              "type": "credit",
+              "status": "unmatched",
+              "matched_document": null,
+              "unmatched_reason": "No contribution receipt, bank deposit confirmation or member re-contribution authority found",
+              "account_number": "122593890",
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Member Contributions"
+            },
+            {
+              "date": "03/06/2025",
+              "description": "COMPLETE RECONTRIBUTION 1",
+              "debit": null,
+              "credit": 60000.0,
+              "type": "credit",
+              "status": "unmatched",
+              "matched_document": null,
+              "unmatched_reason": "No contribution receipt, bank deposit confirmation or member re-contribution authority found",
+              "account_number": "122593890",
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Member Contributions"
+            },
+            {
+              "date": "11/06/2025",
+              "description": "MR IAN WILLIAM COBBLE COBBLE",
+              "debit": null,
+              "credit": 60000.0,
+              "type": "credit",
+              "status": "unmatched",
+              "matched_document": null,
+              "unmatched_reason": "No contribution receipt, bank deposit confirmation or member re-contribution authority found",
+              "account_number": "122593890",
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Member Contributions"
+            },
+            {
+              "date": "02/06/2025",
+              "description": "MR IAN WILLIAM COBBLE COBBLE",
+              "debit": null,
+              "credit": 100000.0,
+              "type": "credit",
+              "status": "unmatched",
+              "matched_document": null,
+              "unmatched_reason": "No contribution receipt, bank deposit confirmation or member re-contribution authority found",
+              "account_number": "122593890",
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Member Contributions"
+            },
             {
               "date": "29/05/2025",
               "description": "RE-CONTRIBUTION 1",
@@ -1536,17 +1508,9 @@
               "matched_document": null,
               "unmatched_reason": "No contribution receipt, bank deposit confirmation or member re-contribution authority found",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
-            }
-          ],
-          "sub_queries": null,
-          "status": "pending"
-        },
-        {
-          "id": "Q10",
-          "category": "Other \u2013 RE-CONTRIBUTION 2",
-          "query_text": "Dear Client, we have the following unmatched transaction in The Cobble Family Super Fund: 30/05/2025 RE-CONTRIBUTION 2 CR $100,000.00. Please provide the re-contribution documentation or rollover statements for this credit.",
-          "transactions": [
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Member Contributions"
+            },
             {
               "date": "30/05/2025",
               "description": "RE-CONTRIBUTION 2",
@@ -1557,17 +1521,9 @@
               "matched_document": null,
               "unmatched_reason": "No contribution receipt, bank deposit confirmation or member re-contribution authority found",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
-            }
-          ],
-          "sub_queries": null,
-          "status": "pending"
-        },
-        {
-          "id": "Q11",
-          "category": "Other \u2013 RE-CONTRIBUTION 3",
-          "query_text": "Dear Client, we have the following unmatched transaction in The Cobble Family Super Fund: 02/06/2025 RE-CONTRIBUTION 3 CR $100,000.00. Please provide the re-contribution documentation or rollover statements for this credit.",
-          "transactions": [
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Member Contributions"
+            },
             {
               "date": "02/06/2025",
               "description": "RE-CONTRIBUTION 3",
@@ -1578,7 +1534,30 @@
               "matched_document": null,
               "unmatched_reason": "No contribution receipt, bank deposit confirmation or member re-contribution authority found",
               "account_number": "122593890",
-              "account_name": "Macquarie CMA"
+              "account_name": "Macquarie CMA",
+              "smsf_category": "Member Contributions"
+            }
+          ],
+          "sub_queries": null,
+          "status": "pending"
+        },
+        {
+          "id": "Q4",
+          "category": "ATO Tax Payment",
+          "query_text": "Dear Client, we are preparing the accounts for The Cobble Family Super Fund and require the supporting documentation for the ATO tax payment debit on 20/05/2025 of $21,462.80 (reference ATO002000021374899). Please provide a copy of the notice of assessment or the payment advice from the ATO that corresponds to this amount.",
+          "transactions": [
+            {
+              "date": "20/05/2025",
+              "description": "ATO ATO002000021374899",
+              "debit": 21462.8,
+              "credit": null,
+              "type": "debit",
+              "status": "unmatched",
+              "matched_document": null,
+              "unmatched_reason": "No ATO notice of assessment, tax invoice or payment authority found to support this tax payment",
+              "account_number": "122593890",
+              "account_name": "Macquarie CMA",
+              "smsf_category": "ATO Tax Payment"
             }
           ],
           "sub_queries": null,

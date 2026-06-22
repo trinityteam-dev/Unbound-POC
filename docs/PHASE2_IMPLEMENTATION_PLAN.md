@@ -147,6 +147,8 @@ Task 2.1 produces the structured rows. There are two ways to do it; the data con
 
 ## Story 3R — Deterministic Query Grouping with Coarse / Granular Toggle
 
+> ⚠️ **Partially superseded by [Story 3S](#story-3s--semantic-transaction-classification-with-fixed-smsf-taxonomy).** Tasks 3R.1 and 3R.5 are replaced. The coarse/granular toggle (3R.7), query-text generation (3R.2, 3R.3), and the coarse/granular data structure (Step 4) are unchanged.
+
 **Revises:** Story 3's grouping step. The LLM query-text generation is retained but scoped to coarse groups only. The grouping decision itself moves to Python.
 
 **Done when:** Unmatched transactions are grouped deterministically by Python into coarse (default, 5 buckets) and granular (per-security) views; coarse `query_text` is LLM-generated in one fixed call; granular `query_text` is Python-templated at zero additional LLM cost; the UI shows a toggle; existing stored jobs are re-grouped where possible.
@@ -165,14 +167,16 @@ Story 3 delegated both grouping and query-text writing to a single LLM call. Thi
 
 The variance is a problem in production: a reviewer would see a different number of cards each time the job is re-run, with no stable mapping between cards and security names.
 
-Examining what grouping actually requires reveals it is **pure string pattern-matching** on the transaction description. Australian bank transaction descriptions follow a predictable format:
+~~Examining what grouping actually requires reveals it is **pure string pattern-matching** on the transaction description. Australian bank transaction descriptions follow a predictable format:~~
 
-```
-"Direct Credit 531532 NAB INTERIM DIV DV251/01064980"
-                ↑ BSB  ↑ PAYEE NAME      ↑ reference
-```
+~~```~~
+~~"Direct Credit 531532 NAB INTERIM DIV DV251/01064980"~~
+~~                ↑ BSB  ↑ PAYEE NAME      ↑ reference~~
+~~```~~
 
-Identifying the payee ("NAB") does not require language understanding. Delegating it to an LLM adds cost, latency, and non-determinism with no benefit over a regex rule.
+~~Identifying the payee ("NAB") does not require language understanding. Delegating it to an LLM adds cost, latency, and non-determinism with no benefit over a regex rule.~~
+
+> **Why this was superseded:** The `Direct Credit BSB PAYEE REF` format is CBA-specific. Macquarie, ANZ, Westpac, and most banks use free-form description text for pension payments, contributions, and interest credits. Any fund that isn't CBA-backed falls entirely into `Other –` buckets. See [Story 3S](#story-3s--semantic-transaction-classification-with-fixed-smsf-taxonomy).
 
 Additionally, the product needs a **coarse / granular toggle** for the reviewer:
 - **Coarse (default):** ~5 cards — one per broad category (Bank Interest, Investment Income, Broker Settlements, etc.). Easier to scan; suitable for quick decisions.
@@ -184,27 +188,27 @@ LLM-based grouping cannot serve both modes from a single call. Python grouping p
 
 ### Approach
 
-#### Step 1 — Python extracts both grouping levels in one pass
+#### ~~Step 1 — Python extracts both grouping levels in one pass~~ *(superseded by [Story 3S](#story-3s--semantic-transaction-classification-with-fixed-smsf-taxonomy) Step 1)*
 
-`group_unmatched_transactions(unmatched_transactions)` returns two lists from a single pass over the transactions:
+~~`group_unmatched_transactions(unmatched_transactions)` returns two lists from a single pass over the transactions:~~
 
-**Granular rules (applied first, in priority order):**
+~~**Granular rules (applied first, in priority order):**~~
 
-| Pattern in `description` | Granular group |
-|---|---|
-| `"Credit Interest"` | `"Bank Interest"` |
-| `"FinClear Service"` (debit) | `"Broker Settlements"` |
-| `"ASIC"` | `"Regulatory Fees – ASIC"` |
-| `"ATO"` + credit | `"ATO Tax Refund"` |
-| `"Direct Credit XXXXXX PAYEE ref"` | `"Investment Income – {PAYEE_NAME}"` |
-| `"Transfer To/From"` | `"Internal Transfer"` |
-| No match | `"Other – {description[:40]}"` |
+~~| Pattern in `description` | Granular group |~~
+~~|---|---|~~
+~~| `"Credit Interest"` | `"Bank Interest"` |~~
+~~| `"FinClear Service"` (debit) | `"Broker Settlements"` |~~
+~~| `"ASIC"` | `"Regulatory Fees – ASIC"` |~~
+~~| `"ATO"` + credit | `"ATO Tax Refund"` |~~
+~~| `"Direct Credit XXXXXX PAYEE ref"` | `"Investment Income – {PAYEE_NAME}"` |~~
+~~| `"Transfer To/From"` | `"Internal Transfer"` |~~
+~~| No match | `"Other – {description[:40]}"` |~~
 
-For `Direct Credit` transactions, the payee is extracted as the token(s) following the BSB number and before any trailing reference codes (e.g. `DV251/…`, `cm-…`, numeric IDs ≥9 digits). Payee tokens are joined and title-cased.
+~~For `Direct Credit` transactions, the payee is extracted as the token(s) following the BSB number and before any trailing reference codes (e.g. `DV251/…`, `cm-…`, numeric IDs ≥9 digits). Payee tokens are joined and title-cased.~~
 
-**Coarse roll-up (applied after):**
+~~**Coarse roll-up (applied after):**~~
 
-All `"Investment Income – *"` granular groups collapse to `"Investment Income – Dividends & Distributions"`. All other groups carry through 1:1. This roll-up is a plain Python dict.
+~~All `"Investment Income – *"` granular groups collapse to `"Investment Income – Dividends & Distributions"`. All other groups carry through 1:1. This roll-up is a plain Python dict.~~
 
 #### Step 2 — LLM generates `query_text` for coarse groups only (1 call, fixed output)
 
@@ -252,14 +256,14 @@ of the following:
 - **Granular view:** for each coarse query, render its `sub_queries` if present; otherwise render the coarse query as-is (e.g. Bank Interest and Broker Settlements have no meaningful sub-grouping)
 - **Toggle is front-end only** — no additional API call; both levels are pre-computed and stored
 
-#### Handling existing stored jobs
+#### Handling existing stored jobs *(superseded by [Story 3S](#story-3s--semantic-transaction-classification-with-fixed-smsf-taxonomy) Task 3S.4)*
 
 When a job's `phase2_context.queries` was produced by the old LLM-based Story 3 implementation:
 
 1. Flatten all `q.transactions` across all stored queries into one list
-2. Run `group_unmatched_transactions()` on the descriptions
-3. If ≥80% of transactions match a Python pattern → produce fresh coarse + granular groups; replace stored queries
-4. If <80% match (descriptions missing or unrecognisable) → retain existing queries as-is; set `sub_queries: null` on each
+2. ~~Run `group_unmatched_transactions()` on the descriptions~~
+3. ~~If ≥80% of transactions match a Python pattern → produce fresh coarse + granular groups; replace stored queries~~
+4. ~~If <80% match (descriptions missing or unrecognisable) → retain existing queries as-is; set `sub_queries: null` on each~~
 5. The UI hides the toggle button when all coarse queries have `sub_queries: null`
 
 A `POST /api/jobs/<job_id>/regroup-queries` endpoint exposes this on demand for older jobs.
@@ -293,12 +297,12 @@ A `POST /api/jobs/<job_id>/regroup-queries` endpoint exposes this on demand for 
 
 ### Tasks
 
-- [x] **3R.1** Write `group_unmatched_transactions(unmatched_transactions)` in `core_engine.py`
-  - Returns `{ "coarse": [{category, transactions}], "granular": [{category, transactions}] }`
-  - Granular: regex extraction of payee/security from `"Direct Credit XXXXXX PAYEE ref"` pattern; named rules for Interest, FinClear, ASIC, ATO
-  - Coarse: dict mapping granular category prefixes to coarse buckets
-  - Falls back to `"Other – {truncated description}"` for unmatched patterns — never silently drops a transaction
-  - Logs the distribution: how many transactions matched each rule
+- ~~[x] **3R.1** Write `group_unmatched_transactions(unmatched_transactions)` in `core_engine.py`~~ *(replaced by [Story 3S](#story-3s--semantic-transaction-classification-with-fixed-smsf-taxonomy) tasks 3S.1–3S.3)*
+  - ~~Returns `{ "coarse": [{category, transactions}], "granular": [{category, transactions}] }`~~
+  - ~~Granular: regex extraction of payee/security from `"Direct Credit XXXXXX PAYEE ref"` pattern; named rules for Interest, FinClear, ASIC, ATO~~
+  - ~~Coarse: dict mapping granular category prefixes to coarse buckets~~
+  - ~~Falls back to `"Other – {truncated description}"` for unmatched patterns — never silently drops a transaction~~
+  - ~~Logs the distribution: how many transactions matched each rule~~
 
 - [x] **3R.2** Write `build_coarse_query_text_prompt(coarse_groups, fund_name)` in `core_engine.py`
   - Sends the N coarse groups (category + transaction list) to the LLM
@@ -318,12 +322,12 @@ A `POST /api/jobs/<job_id>/regroup-queries` endpoint exposes this on demand for 
   - Assembles coarse queries with embedded `sub_queries` list; `sub_queries` is `null` if a coarse group has no meaningful sub-division (e.g. Bank Interest, Broker Settlements)
   - Returns `queries` list in same schema as before (backward compatible)
 
-- [x] **3R.5** Write `regroup_stored_queries(existing_queries, fund_name, api_key, update_progress)` in `core_engine.py`
-  - Flattens all transactions from existing queries into one list
-  - Runs `group_unmatched_transactions()` on them
-  - If ≥80% of transactions matched to a named pattern: runs LLM call for fresh coarse texts, returns new queries with `sub_queries`
-  - If <80%: returns original queries with `sub_queries: null` added to each (no change to `query_text`)
-  - Logs which path was taken and match rate
+- ~~[x] **3R.5** Write `regroup_stored_queries(existing_queries, fund_name, api_key, update_progress)` in `core_engine.py`~~ *(replaced by [Story 3S](#story-3s--semantic-transaction-classification-with-fixed-smsf-taxonomy) task 3S.4)*
+  - ~~Flattens all transactions from existing queries into one list~~
+  - ~~Runs `group_unmatched_transactions()` on them~~
+  - ~~If ≥80% of transactions matched to a named pattern: runs LLM call for fresh coarse texts, returns new queries with `sub_queries`~~
+  - ~~If <80%: returns original queries with `sub_queries: null` added to each (no change to `query_text`)~~
+  - ~~Logs which path was taken and match rate~~
 
 - [x] **3R.6** Add `POST /api/jobs/<job_id>/regroup-queries` endpoint in `app.py`
   - Calls `regroup_stored_queries()` on `job["phase2_context"]["queries"]`
@@ -344,6 +348,331 @@ A `POST /api/jobs/<job_id>/regroup-queries` endpoint exposes this on demand for 
   - LLM coarse texts are professional and reference specific amounts (verified all 4 groups)
   - UI toggle button appears only when sub_queries are present; switches between views
   - Edge case: job with no transactions → no toggle shown (`sub_queries: null`)
+
+---
+
+## Story 3S — Semantic Transaction Classification with Fixed SMSF Taxonomy
+
+**Revises:** Story 3R's grouping step (Task 3R.1 and 3R.5). The coarse/granular toggle (3R.7), LLM query-text call (3R.2), Python granular templates (3R.3), and the `sub_queries` data structure (Step 4) are all unchanged.
+
+**Done when:** A `transaction_categories.json` file at the workspace root defines the SMSF transaction taxonomy; unmatched transactions are classified by the LLM into those categories (one batched call per job) and then grouped deterministically in Python; the taxonomy is loaded at runtime — no category name, description, or example is hardcoded in the app; ADMCM produces the same 4 coarse groups as before; Cobble produces 4 meaningful groups instead of 11 `Other –` buckets; existing `POST /api/jobs/<job_id>/regroup-queries` endpoint re-classifies without the 80% threshold gate.
+
+---
+
+### Background & Premise
+
+Story 3R solved non-determinism by moving grouping to Python rules. The rules were validated against ADMCM, where every CBA bank account formats transaction descriptions as:
+
+```
+"Direct Credit 531532 NAB INTERIM DIV DV251/01064980"
+                ↑ BSB  ↑ PAYEE NAME      ↑ reference
+```
+
+When the **Cobble Family Super Fund** was onboarded — a Macquarie CMA pension fund — all 42 unmatched transactions fell through to the `else` branch (`Other – {description[:40]}`), producing 11 poorly-named queries:
+
+| Python output (Story 3R) | Correct grouping | Transactions |
+|---|---|---|
+| `Other – MACQUARIE CMA INTEREST PAID` | `Bank Interest` | 12 |
+| `Other – PENSION` | `Pension Payments` | 12 |
+| `Other – CHERYL'S RE-CONTRIBUTION` | `Member Contributions` | 4 |
+| `Other – RE-CONTRIBUTION 1` | `Member Contributions` | 1 |
+| `Other – RE-CONTRIBUTION 2` | `Member Contributions` | 1 |
+| `Other – RE-CONTRIBUTION 3` | `Member Contributions` | 1 |
+| `Other – COMPLETE RECONTRIBUTION 1` | `Member Contributions` | 1 |
+| `Other – ATO ATO002000021374899` | `ATO Tax Payment` | 1 |
+| `Other – LUMP SUM SHORTFALL PENSION` | `Pension Payments` | 1 |
+| `Other – MR IAN WILLIAM COBBLE COBBLE` | `Pension Payments` + `Member Contributions` | 7 |
+| `Other – MR IAN WILLIAM COBBLE Cobble` | `Pension Payments` | 1 |
+
+42 transactions → 11 `Other –` queries. Correct classification → 4 meaningful queries.
+
+The root cause is that Story 3R's premise — *"Australian bank transaction descriptions follow a predictable format"* — held only for CBA Direct Credit entries. Macquarie, ANZ, Westpac, and most banks use free-form description text for pension payments, contributions, and interest credits. Adding more Python rules would fix Cobble but not the next fund.
+
+**The key insight:** Story 3 non-determinism came from the LLM making *structural* decisions (how many groups? which to merge?). Story 3R correctly removed that freedom. Story 3S applies the same constraint at the classification step: the LLM picks from a **fixed, closed-set taxonomy** rather than inventing categories. Assigning a label from 11 known options at temperature=0 is a classification task — stable and near-deterministic — not a creative grouping exercise.
+
+---
+
+### Taxonomy Configuration File
+
+The category list lives in **`transaction_categories.json`** at the workspace root — not in the app code or the LLM prompt string. The app reads this file at runtime to build the classification prompt, validate the LLM's response, and label query groups. Editing categories, descriptions, or examples requires only a JSON edit; no code change or redeploy is needed.
+
+**Why a file, not code:** The accountants and processors at BeFree are the domain experts on what transaction categories matter in an SMSF audit. A JSON file they can open, read, and edit in any text editor is more accessible than a Python constant or a buried prompt string. It also means the taxonomy can be refined as new fund types are onboarded without touching the app.
+
+**Editing:** Directly in `transaction_categories.json`. No UI editor for now — the file is human-readable and the fields are self-explanatory.
+
+**Future scope (not built now):** A `playbook_overrides` key could allow per-playbook category lists (e.g. `Accounting_Only` jobs might not need `Broker Settlements`). The current design is a single global list.
+
+#### File structure
+
+```json
+{
+  "version": 1,
+  "categories": [
+    {
+      "id": "bank_interest",
+      "label": "Bank Interest",
+      "description": "Interest credited by any bank on any cash or investment account",
+      "direction": "credit",
+      "examples": [
+        "MACQUARIE CMA INTEREST PAID",
+        "Credit Interest",
+        "INT CREDIT WESTPAC"
+      ],
+      "sub_groupable": false
+    },
+    {
+      "id": "pension_payments",
+      "label": "Pension Payments",
+      "description": "Regular and lump-sum pension drawdowns paid to members",
+      "direction": "debit",
+      "examples": [
+        "PENSION",
+        "LUMP SUM SHORTFALL PENSION",
+        "MEMBER PENSION PAYMENT"
+      ],
+      "sub_groupable": false
+    },
+    {
+      "id": "member_contributions",
+      "label": "Member Contributions",
+      "description": "Contributions and re-contributions into the fund by members of any kind",
+      "direction": "credit",
+      "examples": [
+        "CHERYL'S RE-CONTRIBUTION",
+        "RE-CONTRIBUTION 1",
+        "COMPLETE RECONTRIBUTION 1",
+        "NON CONCESSIONAL CONTRIBUTION"
+      ],
+      "sub_groupable": false
+    },
+    {
+      "id": "ato_tax_payment",
+      "label": "ATO Tax Payment",
+      "description": "Tax instalments, PAYG, or tax balances paid to the ATO",
+      "direction": "debit",
+      "examples": [
+        "ATO ATO002000021374899",
+        "ATO PAYMENT",
+        "PAYG INSTALMENT"
+      ],
+      "sub_groupable": false
+    },
+    {
+      "id": "ato_tax_refund",
+      "label": "ATO Tax Refund",
+      "description": "Tax refunds received from the ATO",
+      "direction": "credit",
+      "examples": [
+        "ATO TAX REFUND",
+        "ATO EFT"
+      ],
+      "sub_groupable": false
+    },
+    {
+      "id": "investment_income",
+      "label": "Investment Income",
+      "description": "Dividends, trust distributions, and managed fund income received",
+      "direction": "credit",
+      "examples": [
+        "Direct Credit 531532 NAB INTERIM DIV DV251/01064980",
+        "Direct Credit 082401 GQG PARTNERS DST",
+        "MXT DISTRIBUTION"
+      ],
+      "sub_groupable": true
+    },
+    {
+      "id": "broker_settlements",
+      "label": "Broker Settlements",
+      "description": "Buy or sell trade settlements for shares, ETFs, or other securities",
+      "direction": "either",
+      "examples": [
+        "FinClear Service",
+        "CHESS SETTLEMENT",
+        "ORD MINNETT SETTLEMENT"
+      ],
+      "sub_groupable": false
+    },
+    {
+      "id": "regulatory_fees",
+      "label": "Regulatory Fees",
+      "description": "ASIC levies, ASX fees, and other government or regulatory charges",
+      "direction": "debit",
+      "examples": [
+        "ASIC ANNUAL REVIEW FEE",
+        "ASX LISTING FEE"
+      ],
+      "sub_groupable": false
+    },
+    {
+      "id": "administration_fees",
+      "label": "Administration Fees",
+      "description": "Accounting, audit, fund management, and administration fees",
+      "direction": "debit",
+      "examples": [
+        "BELL PARTNERSHIP ACCOUNTING FEE",
+        "AUDIT FEE",
+        "SMSF ADMINISTRATION"
+      ],
+      "sub_groupable": false
+    },
+    {
+      "id": "insurance_premiums",
+      "label": "Insurance Premiums",
+      "description": "Life insurance, TPD, and income protection premium payments",
+      "direction": "debit",
+      "examples": [
+        "TAL LIFE INSURANCE",
+        "AIA INCOME PROTECTION",
+        "INSURANCE PREMIUM"
+      ],
+      "sub_groupable": false
+    },
+    {
+      "id": "other",
+      "label": "Other",
+      "description": "Transactions that genuinely do not fit any of the above categories — use as a last resort only",
+      "direction": "either",
+      "examples": [],
+      "is_fallback": true,
+      "sub_groupable": false
+    }
+  ]
+}
+```
+
+#### Field reference
+
+| Field | Type | Purpose |
+|---|---|---|
+| `id` | string | Machine identifier — used internally; never shown in UI |
+| `label` | string | Display name — appears on query cards and in the LLM prompt |
+| `description` | string | Sent to the LLM verbatim to guide classification; edit this to tune accuracy |
+| `direction` | `"credit"` / `"debit"` / `"either"` | Hint injected into the prompt alongside the description |
+| `examples` | string[] | Real transaction descriptions; sent to the LLM as references; add more as new banks/funds are seen |
+| `sub_groupable` | bool | `true` → apply per-security granular breakdown (currently `investment_income` only) |
+| `is_fallback` | bool | Marks the catch-all category; the prompt instructs the LLM to use it only when nothing else fits |
+
+---
+
+### Approach
+
+#### Step 1 — Load taxonomy from `transaction_categories.json`
+
+New function `load_transaction_categories(workspace_dir)`:
+
+- Reads `{workspace_dir}/transaction_categories.json` at runtime
+- Returns the parsed list of category objects
+- Raises a clear error if the file is missing or malformed — the app cannot classify without it
+- Called once per Phase 2 run; the result is passed down to `build_classification_prompt()` and `classify_transactions()`
+
+#### Step 2 — LLM classifies each transaction into the loaded taxonomy (1 batched call)
+
+New function `classify_transactions(unmatched_transactions, categories, fund_name, api_key, model)`:
+
+- Sends all unmatched transactions in a single prompt as a numbered list: `{index} | {date} | {description} | {DR/CR} ${amount}`
+- System prompt is built from the loaded categories — `label`, `description`, `direction`, and `examples` fields are injected verbatim; nothing about categories is hardcoded in the prompt string
+- The label list is passed as a closed enum so the LLM cannot invent new category names
+- Response schema: `{ "classified": [{ "tx_index": 0, "category": "Bank Interest" }, ...] }`
+  - Index-based response avoids duplicating transaction text in the output; output tokens ≈ N × 8 regardless of description length
+- Validation: every index 0..N-1 must appear exactly once; `category` must match a `label` from the loaded taxonomy
+- On validation failure (missing index, unknown label): falls back to the `is_fallback` category for the offending transactions, logs a warning — never drops a transaction
+- Returns the original transaction list with `smsf_category` added to each dict
+
+#### Step 3 — Python groups by assigned category (deterministic)
+
+Simple `defaultdict(list)` keyed by `smsf_category`. Two levels:
+
+- **Coarse:** one bucket per taxonomy category (e.g. all `Bank Interest` transactions together)
+- **Granular:** for categories where `sub_groupable: true` (currently `investment_income` only), apply the existing `_extract_payee()` function to produce per-security sub-groups (e.g. `Investment Income – NAB`); all other categories get `sub_queries: null`
+- The `sub_groupable` flag is read from the loaded JSON — adding a new sub-groupable category in future requires only a JSON edit
+
+Steps 4, 5, 6 — LLM writes coarse `query_text`, Python templates granular `query_text`, `sub_queries` embedding — are **unchanged from Story 3R**.
+
+---
+
+### What changes vs Story 3R
+
+| | Story 3R | Story 3S |
+|---|---|---|
+| Grouping engine | Python rules (CBA patterns only) | LLM classification into fixed taxonomy |
+| Non-determinism | Eliminated (pure Python) | Minimised (fixed labels, temperature=0) |
+| Fund-agnosticism | CBA + known banks only | Any Australian bank/SMSF fund type |
+| Investment Income granular | Python payee extraction | Unchanged — same Python `_extract_payee()` |
+| Query text generation | LLM (1 call) | Unchanged |
+| Granular query text | Python template | Unchanged |
+| `sub_queries` structure | Same | Unchanged |
+| Regroup endpoint | 80% match-rate gate | Always re-classifies via LLM |
+
+---
+
+### Token Cost Analysis (grok-4.20)
+
+*Pricing: $3.00 / M input, $15.00 / M output tokens (OpenRouter, as of Story 4 benchmarking 2026-06-19).*
+
+*Classification call: N transactions × ~20 tokens each + ~400-token system prompt. Output: N × ~8 tokens (index + category label).*
+
+| Scenario | Classification call | Query-text call | Total est. cost |
+|---|---|---|---|
+| Cobble — 42 unmatched tx | ~$0.005 | ~$0.008 | **~$0.013** |
+| ADMCM — 164 unmatched tx | ~$0.013 | ~$0.010 | **~$0.023** |
+| Large fund — 300 unmatched tx | ~$0.022 | ~$0.012 | **~$0.034** |
+
+Cost is flat and predictable. The classification call's output is small (index + label only), so the additional call adds minimal cost vs Story 3R.
+
+---
+
+### Tasks
+
+- [ ] **3S.0** Create `transaction_categories.json` at the workspace root
+  - Initial content: the 11 categories defined in the Taxonomy Configuration File section above
+  - Reviewed by the processor/accountant before implementation goes live — categories, descriptions, and examples should reflect BeFree's actual practice
+  - This file is the single source of truth; no category data lives anywhere else in the codebase
+
+- [ ] **3S.1** Write `load_transaction_categories(workspace_dir)` in `core_engine.py`
+  - Reads `{workspace_dir}/transaction_categories.json`
+  - Returns the parsed `categories` list
+  - Raises `FileNotFoundError` with a clear message if the file is absent — the app cannot proceed without it
+  - Raises `ValueError` if the JSON is malformed or no `is_fallback` category is present
+
+- [ ] **3S.2** Write `build_classification_prompt(unmatched_transactions, categories)` in `core_engine.py`
+  - Accepts the loaded `categories` list — no hardcoded category data
+  - Formats transactions as a numbered list: `{i} | {date} | {description} | {DR/CR} ${amount}`
+  - System prompt is assembled from the categories: for each entry injects `label`, `description`, `direction`, and `examples` (if any)
+  - The closed enum of valid labels is derived from `[c["label"] for c in categories]` — injected into the prompt verbatim so the LLM cannot invent new labels
+  - Explicitly instructs the LLM to use the `is_fallback` category only as a last resort
+  - Response schema: `{ "classified": [{ "tx_index": int, "category": str }] }`
+
+- [ ] **3S.3** Write `classify_transactions(unmatched_transactions, categories, fund_name, api_key, model)` in `core_engine.py`
+  - Calls `build_classification_prompt()` → `query_openrouter()` with `response_format={"type": "json_object"}` and `temperature=0`
+  - Validates response: all indices 0..N-1 present exactly once; each `category` value matches a `label` in the loaded taxonomy
+  - On validation error: logs warning, assigns the `is_fallback` category to offending transactions, continues — never raises
+  - Returns the original transaction list with `smsf_category` field added to each dict
+  - Logs category distribution: `Bank Interest: 12, Pension Payments: 13, Member Contributions: 9, ATO Tax Payment: 1, Other: 0`
+
+- [ ] **3S.4** Replace `group_unmatched_transactions()` call in `run_bank_reconciliation_phase()` with the new pipeline
+  - Call `load_transaction_categories()` once at the start of the phase
+  - Call `classify_transactions()` to tag each transaction with `smsf_category`
+  - Coarse groups: `defaultdict(list)` keyed by `smsf_category` — sort order follows category order in the JSON
+  - Granular groups: for categories where `sub_groupable: true` apply `_extract_payee()`; all others get `sub_queries: null`
+  - `run_coarse_query_text_call()`, `generate_granular_query_text()`, and the `sub_queries` assembly in 3R.4 are unchanged
+
+- [ ] **3S.5** Update `regroup_stored_queries()` in `core_engine.py`
+  - Load taxonomy via `load_transaction_categories()` then call `classify_transactions()` — remove the 80% match-rate threshold entirely
+  - Always re-classify and regenerate: flatten existing query transactions → `classify_transactions()` → group → `run_coarse_query_text_call()`
+  - Log: category distribution before and after, to make re-grouping auditable
+  - Return value schema unchanged: `(queries, regrouped: bool, match_rate: float)` — set `match_rate=1.0`
+
+- [ ] **3S.6** Regression test against ADMCM
+  - All 164 unmatched ADMCM transactions classified into named categories — zero `Other`
+  - Granular toggle still shows per-security `Investment Income` sub-groups (payee extraction unchanged)
+  - Coarse query texts are professional and reference specific amounts
+  - Total cost within expected range (~$0.023)
+
+- [ ] **3S.7** Regression test against Cobble (`job_20260621_103331`)
+  - Call `POST /api/jobs/job_20260621_103331/regroup-queries`
+  - Verify result: 4 coarse groups (`ATO Tax Payment`, `Bank Interest`, `Pension Payments`, `Member Contributions`) — zero `Other` groups
+  - Verify `sub_queries: null` on all groups (Cobble has no Investment Income)
+  - Verify query text is professional and references specific transaction dates and amounts
 
 ---
 

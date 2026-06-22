@@ -1,0 +1,133 @@
+{
+  "version": 1,
+  "categories": [
+    {
+      "id": "bank_interest",
+      "label": "Bank Interest",
+      "description": "Interest credited by any bank on any cash or investment account",
+      "direction": "credit",
+      "examples": [
+        "MACQUARIE CMA INTEREST PAID",
+        "Credit Interest",
+        "INT CREDIT WESTPAC"
+      ],
+      "sub_groupable": false
+    },
+    {
+      "id": "pension_payments",
+      "label": "Pension Payments",
+      "description": "Regular and lump-sum pension drawdowns paid to members",
+      "direction": "debit",
+      "examples": [
+        "PENSION",
+        "LUMP SUM SHORTFALL PENSION",
+        "MEMBER PENSION PAYMENT"
+      ],
+      "sub_groupable": false
+    },
+    {
+      "id": "member_contributions",
+      "label": "Member Contributions",
+      "description": "Contributions and re-contributions into the fund by members of any kind",
+      "direction": "credit",
+      "examples": [
+        "CHERYL'S RE-CONTRIBUTION",
+        "RE-CONTRIBUTION 1",
+        "COMPLETE RECONTRIBUTION 1",
+        "NON CONCESSIONAL CONTRIBUTION"
+      ],
+      "sub_groupable": false
+    },
+    {
+      "id": "ato_tax_payment",
+      "label": "ATO Tax Payment",
+      "description": "Tax instalments, PAYG, or tax balances paid to the ATO",
+      "direction": "debit",
+      "examples": [
+        "ATO ATO002000021374899",
+        "ATO PAYMENT",
+        "PAYG INSTALMENT"
+      ],
+      "sub_groupable": false
+    },
+    {
+      "id": "ato_tax_refund",
+      "label": "ATO Tax Refund",
+      "description": "Tax refunds received from the ATO",
+      "direction": "credit",
+      "examples": [
+        "ATO TAX REFUND",
+        "ATO EFT"
+      ],
+      "sub_groupable": false
+    },
+    {
+      "id": "investment_income",
+      "label": "Investment Income",
+      "description": "Dividends, trust distributions, and managed fund income received",
+      "direction": "credit",
+      "examples": [
+        "Direct Credit 531532 NAB INTERIM DIV DV251/01064980",
+        "Direct Credit 082401 GQG PARTNERS DST",
+        "MXT DISTRIBUTION"
+      ],
+      "sub_groupable": true
+    },
+    {
+      "id": "broker_settlements",
+      "label": "Broker Settlements",
+      "description": "Buy or sell trade settlements for shares, ETFs, or other securities",
+      "direction": "either",
+      "examples": [
+        "FinClear Service",
+        "CHESS SETTLEMENT",
+        "ORD MINNETT SETTLEMENT"
+      ],
+      "sub_groupable": false
+    },
+    {
+      "id": "regulatory_fees",
+      "label": "Regulatory Fees",
+      "description": "ASIC levies, ASX fees, and other government or regulatory charges",
+      "direction": "debit",
+      "examples": [
+        "ASIC ANNUAL REVIEW FEE",
+        "ASX LISTING FEE"
+      ],
+      "sub_groupable": false
+    },
+    {
+      "id": "administration_fees",
+      "label": "Administration Fees",
+      "description": "Accounting, audit, fund management, and administration fees",
+      "direction": "debit",
+      "examples": [
+        "BELL PARTNERSHIP ACCOUNTING FEE",
+        "AUDIT FEE",
+        "SMSF ADMINISTRATION"
+      ],
+      "sub_groupable": false
+    },
+    {
+      "id": "insurance_premiums",
+      "label": "Insurance Premiums",
+      "description": "Life insurance, TPD, and income protection premium payments",
+      "direction": "debit",
+      "examples": [
+        "TAL LIFE INSURANCE",
+        "AIA INCOME PROTECTION",
+        "INSURANCE PREMIUM"
+      ],
+      "sub_groupable": false
+    },
+    {
+      "id": "other",
+      "label": "Other",
+      "description": "Transactions that genuinely do not fit any of the above categories — use as a last resort only",
+      "direction": "either",
+      "examples": [],
+      "is_fallback": true,
+      "sub_groupable": false
+    }
+  ]
+}

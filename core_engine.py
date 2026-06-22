@@ -1675,14 +1675,228 @@ def run_coarse_query_text_call(coarse_groups, fund_name, api_key, update_progres
     return mapping
 
 
+# ---------------------------------------------------------------------------
+# Story 3S — Semantic classification via transaction_categories.json
+# ---------------------------------------------------------------------------
+
+def load_transaction_categories(workspace_dir):
+    """Load and validate transaction_categories.json from workspace_dir.
+
+    Returns the parsed list of category dicts.
+    Raises FileNotFoundError if the file is absent, ValueError if malformed.
+    """
+    path = os.path.join(workspace_dir, 'transaction_categories.json')
+    if not os.path.exists(path):
+        raise FileNotFoundError(
+            f'transaction_categories.json not found at {path}. '
+            'Create it before running Phase 2.'
+        )
+    with open(path, 'r', encoding='utf-8') as fh:
+        data = json.load(fh)
+    categories = data.get('categories', [])
+    if not categories:
+        raise ValueError('transaction_categories.json has no categories.')
+    fallbacks = [c for c in categories if c.get('is_fallback')]
+    if not fallbacks:
+        raise ValueError('transaction_categories.json must have exactly one category with "is_fallback": true.')
+    return categories
+
+
+def build_classification_prompt(unmatched_transactions, categories):
+    """Build (system_prompt, user_content) for the LLM classification call.
+
+    The LLM receives the full taxonomy from categories and must assign each
+    transaction exactly one label.  Nothing about the taxonomy is hardcoded here.
+    """
+    fallback_label = next(c['label'] for c in categories if c.get('is_fallback'))
+    valid_labels = [c['label'] for c in categories]
+
+    # Build the category reference block from the JSON
+    cat_lines = []
+    for c in categories:
+        direction_hint = f" ({c['direction']})" if c.get('direction', 'either') != 'either' else ''
+        examples_str = ''
+        if c.get('examples'):
+            examples_str = '\n  Examples: ' + ' | '.join(c['examples'])
+        cat_lines.append(
+            f'**{c["label"]}**{direction_hint}\n  {c["description"]}{examples_str}'
+        )
+    categories_block = '\n\n'.join(cat_lines)
+
+    labels_enum = ' | '.join(valid_labels)
+
+    system_prompt = (
+        'IMPORTANT: Your entire response must be a single valid JSON object. '
+        'Do not include any text, explanation, or markdown before or after the JSON.\n\n'
+        'You are an SMSF accountant\'s assistant classifying unmatched bank transactions '
+        'for an Australian self-managed superannuation fund.\n\n'
+        'Assign each transaction exactly one category from the list below. '
+        f'Use "{fallback_label}" only as a last resort when no other category fits.\n\n'
+        '## CATEGORIES\n\n'
+        f'{categories_block}\n\n'
+        '## VALID LABELS (use exactly as shown — no other values allowed)\n'
+        f'{labels_enum}\n\n'
+        '## REQUIRED JSON SCHEMA\n'
+        '{\n'
+        '  "classified": [\n'
+        '    { "tx_index": 0, "category": "Bank Interest" },\n'
+        '    { "tx_index": 1, "category": "Pension Payments" }\n'
+        '  ]\n'
+        '}\n\n'
+        'Rules:\n'
+        '- Return EXACTLY one entry per transaction, indices 0 through N-1\n'
+        '- "category" must be one of the valid labels listed above — no other values\n'
+        '- Respond with ONLY the JSON object — no other text\n'
+    )
+
+    tx_lines = []
+    for i, tx in enumerate(unmatched_transactions):
+        tx_lines.append(f'  {i} | {tx.get("date", "?")} | {tx.get("description", "")} | {_tx_amount_str(tx)}')
+
+    user_content = (
+        f'Classify the following {len(unmatched_transactions)} unmatched transactions:\n\n'
+        + '\n'.join(tx_lines)
+    )
+
+    return system_prompt, user_content
+
+
+def classify_transactions(unmatched_transactions, categories, fund_name, api_key,
+                          model=PHASE2_DEFAULT_MODEL):
+    """Call the LLM to classify each transaction into the taxonomy from categories.
+
+    Returns the original transaction list with 'smsf_category' added to each dict.
+    Never drops a transaction — falls back to the is_fallback category on any error.
+    """
+    if not unmatched_transactions:
+        return []
+
+    valid_labels = {c['label'] for c in categories}
+    fallback_label = next(c['label'] for c in categories if c.get('is_fallback'))
+
+    print(
+        f'[Phase 2] classify_transactions: classifying {len(unmatched_transactions)} transactions '
+        f'for {fund_name} using {model}',
+        file=sys.stderr,
+    )
+
+    system_prompt, user_content = build_classification_prompt(unmatched_transactions, categories)
+
+    res = query_openrouter(
+        api_key, system_prompt, user_content,
+        response_format={'type': 'json_object'},
+        model=model,
+        timeout=120,
+    )
+    result = json.loads(res)
+    classified = result.get('classified', [])
+
+    # Build index → category map, validate as we go
+    index_map = {}
+    for item in classified:
+        idx = item.get('tx_index')
+        cat = item.get('category', '')
+        if not isinstance(idx, int) or idx < 0 or idx >= len(unmatched_transactions):
+            print(f'[Phase 2] classify_transactions: invalid tx_index {idx!r} — skipping', file=sys.stderr)
+            continue
+        if cat not in valid_labels:
+            print(f'[Phase 2] classify_transactions: unknown category {cat!r} for index {idx} — using {fallback_label}', file=sys.stderr)
+            cat = fallback_label
+        index_map[idx] = cat
+
+    # Apply classifications; any missing index gets fallback
+    result_txs = []
+    for i, tx in enumerate(unmatched_transactions):
+        if i not in index_map:
+            print(f'[Phase 2] classify_transactions: index {i} missing from response — using {fallback_label}', file=sys.stderr)
+        result_txs.append({**tx, 'smsf_category': index_map.get(i, fallback_label)})
+
+    # Log distribution
+    dist = defaultdict(int)
+    for tx in result_txs:
+        dist[tx['smsf_category']] += 1
+    print(
+        '[Phase 2] classify_transactions: ' + ', '.join(f'{k}: {v}' for k, v in sorted(dist.items())),
+        file=sys.stderr,
+    )
+
+    return result_txs
+
+
+def _build_queries_from_classified(classified_txs, categories, fund_name, api_key,
+                                   update_progress, model=PHASE2_DEFAULT_MODEL):
+    """Shared helper: group classified transactions, call LLM for coarse text, assemble queries.
+
+    Used by both run_bank_reconciliation_phase() and regroup_stored_queries().
+    Returns the queries list.
+    """
+    cat_order = {c['label']: i for i, c in enumerate(categories)}
+    sub_groupable_labels = {c['label'] for c in categories if c.get('sub_groupable')}
+
+    # Coarse grouping: one bucket per smsf_category
+    coarse_buckets = defaultdict(list)
+    for tx in classified_txs:
+        coarse_buckets[tx['smsf_category']].append(tx)
+
+    # Granular grouping: per-security within sub_groupable categories
+    granular_buckets = defaultdict(list)
+    for tx in classified_txs:
+        if tx['smsf_category'] in sub_groupable_labels:
+            payee = _extract_payee(tx.get('description', ''))
+            granular_buckets[f"{tx['smsf_category']} – {payee}"].append(tx)
+
+    coarse_list = [
+        {'category': cat, 'transactions': txs}
+        for cat, txs in sorted(coarse_buckets.items(), key=lambda kv: cat_order.get(kv[0], 999))
+    ]
+
+    coarse_text_map = run_coarse_query_text_call(
+        coarse_list, fund_name, api_key, update_progress, model=model
+    )
+
+    queries = []
+    for idx, cg in enumerate(coarse_list, 1):
+        ccat = cg['category']
+        sub_granular = sorted(
+            [{'category': gcat, 'transactions': gtxs}
+             for gcat, gtxs in granular_buckets.items()
+             if gcat.startswith(f'{ccat} –')],
+            key=lambda g: g['category'],
+        )
+        has_sub = ccat in sub_groupable_labels and len(sub_granular) > 1
+
+        sub_queries = None
+        if has_sub:
+            sub_queries = [
+                {
+                    'id': f'Q{idx}.{sidx}',
+                    'category': sg['category'],
+                    'query_text': generate_granular_query_text(sg['category'], sg['transactions']),
+                    'transactions': sg['transactions'],
+                    'status': 'pending',
+                }
+                for sidx, sg in enumerate(sub_granular, 1)
+            ]
+
+        queries.append({
+            'id': f'Q{idx}',
+            'category': ccat,
+            'query_text': coarse_text_map.get(ccat, ''),
+            'transactions': cg['transactions'],
+            'sub_queries': sub_queries,
+            'status': 'pending',
+        })
+
+    return queries
+
+
 def regroup_stored_queries(existing_queries, fund_name, api_key, update_progress):
-    """Re-group queries from an old LLM-based Story 3 run using deterministic Python grouping.
+    """Re-group queries from a stored job using LLM semantic classification (Story 3S).
 
-    If ≥80% of transactions match a named pattern, replaces with fresh coarse+granular groups.
-    Otherwise returns the original queries with sub_queries: null added (no LLM call).
-
+    Always re-classifies all transactions — no match-rate gate.
     Returns (queries, regrouped: bool, match_rate: float).
     """
+
     all_txs = []
     for q in existing_queries:
         all_txs.extend(q.get('transactions') or [])
@@ -1693,70 +1907,15 @@ def regroup_stored_queries(existing_queries, fund_name, api_key, update_progress
             q.setdefault('sub_queries', None)
         return existing_queries, False, 0.0
 
-    groups = group_unmatched_transactions(all_txs)
-    other_count = sum(
-        len(g['transactions'])
-        for g in groups['granular']
-        if g['category'].startswith('Other –')
+    update_progress(None, f'Phase 2: regroup — classifying {len(all_txs)} transactions...')
+    categories = load_transaction_categories(os.getcwd())
+    classified_txs = classify_transactions(all_txs, categories, fund_name, api_key)
+
+    new_queries = _build_queries_from_classified(
+        classified_txs, categories, fund_name, api_key, update_progress
     )
-    match_rate = 1.0 - (other_count / len(all_txs))
-
-    if match_rate < 0.80:
-        update_progress(
-            None,
-            f'Phase 2: regroup — only {match_rate:.0%} match rate (<80%), keeping existing queries.',
-        )
-        for q in existing_queries:
-            q.setdefault('sub_queries', None)
-        return existing_queries, False, match_rate
-
-    update_progress(
-        None,
-        f'Phase 2: regroup — {match_rate:.0%} match rate, producing fresh coarse+granular groups.',
-    )
-    coarse_text_map = run_coarse_query_text_call(
-        groups['coarse'], fund_name, api_key, update_progress
-    )
-
-    # Build granular lookup: coarse_category → [granular_groups]
-    coarse_to_granular: dict = defaultdict(list)
-    for g in groups['granular']:
-        cat = g['category']
-        if cat.startswith('Investment Income –'):
-            ccat = 'Investment Income – Dividends & Distributions'
-        else:
-            ccat = cat
-        coarse_to_granular[ccat].append(g)
-
-    new_queries = []
-    for idx, cg in enumerate(groups['coarse'], 1):
-        ccat = cg['category']
-        query_text = coarse_text_map.get(ccat, '')
-        sub_granular = coarse_to_granular.get(ccat, [])
-        has_sub = ccat not in _NO_SUBQUERIES and len(sub_granular) > 1
-
-        sub_queries = None
-        if has_sub:
-            sub_queries = []
-            for sidx, sg in enumerate(sub_granular, 1):
-                sub_queries.append({
-                    'id': f'Q{idx}.{sidx}',
-                    'category': sg['category'],
-                    'query_text': generate_granular_query_text(sg['category'], sg['transactions']),
-                    'transactions': sg['transactions'],
-                    'status': 'pending',
-                })
-
-        new_queries.append({
-            'id': f'Q{idx}',
-            'category': ccat,
-            'query_text': query_text,
-            'transactions': cg['transactions'],
-            'sub_queries': sub_queries,
-            'status': 'pending',
-        })
-
-    return new_queries, True, match_rate
+    update_progress(None, f'Phase 2: regroup — produced {len(new_queries)} query group(s).')
+    return new_queries, True, 1.0
 
 
 def run_bank_reconciliation_phase(job_id, fund_profile, job_type, api_key, scratch_dir, update_progress):
@@ -1800,43 +1959,13 @@ def run_bank_reconciliation_phase(job_id, fund_profile, job_type, api_key, scrat
 
     queries = []
     if unmatched_transactions:
-        groups = group_unmatched_transactions(unmatched_transactions)
-        coarse_text_map = run_coarse_query_text_call(
-            groups['coarse'], fund_name, api_key, update_progress
+        categories = load_transaction_categories(os.getcwd())
+        classified_txs = classify_transactions(
+            unmatched_transactions, categories, fund_name, api_key
         )
-
-        # Build granular lookup: coarse_category → [granular_groups]
-        coarse_to_granular: dict = defaultdict(list)
-        for g in groups['granular']:
-            cat = g['category']
-            ccat = 'Investment Income – Dividends & Distributions' if cat.startswith('Investment Income –') else cat
-            coarse_to_granular[ccat].append(g)
-
-        for idx, cg in enumerate(groups['coarse'], 1):
-            ccat = cg['category']
-            sub_granular = coarse_to_granular.get(ccat, [])
-            has_sub = ccat not in _NO_SUBQUERIES and len(sub_granular) > 1
-
-            sub_queries = None
-            if has_sub:
-                sub_queries = []
-                for sidx, sg in enumerate(sub_granular, 1):
-                    sub_queries.append({
-                        'id': f'Q{idx}.{sidx}',
-                        'category': sg['category'],
-                        'query_text': generate_granular_query_text(sg['category'], sg['transactions']),
-                        'transactions': sg['transactions'],
-                        'status': 'pending',
-                    })
-
-            queries.append({
-                'id': f'Q{idx}',
-                'category': ccat,
-                'query_text': coarse_text_map.get(ccat, ''),
-                'transactions': cg['transactions'],
-                'sub_queries': sub_queries,
-                'status': 'pending',
-            })
+        queries = _build_queries_from_classified(
+            classified_txs, categories, fund_name, api_key, update_progress
+        )
     else:
         update_progress(None, 'Phase 2: No unmatched transactions — skipping query generation.')
 

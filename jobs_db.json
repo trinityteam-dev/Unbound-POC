@@ -984,7 +984,7 @@
         {
           "id": "Q1",
           "category": "Bank Interest",
-          "query_text": "Dear Client, we are preparing the accounts for The Cobble Family Super Fund and require supporting documentation for the following bank interest credits received into the Macquarie CMA account: 31/07/2024 - $112.71, 30/08/2024 - $86.24, 30/09/2024 - $71.96, 31/10/2024 - $53.09, 29/11/2024 - $34.63, 31/12/2024 - $42.30, 31/01/2025 - $35.44, 28/02/2025 - $17.33, 31/03/2025 - $35.54, 30/04/2025 - $54.58, 30/05/2025 - $219.36 and 30/06/2025 - $427.62. Please provide the year-end interest statement or tax certificate from Macquarie Bank that details the total interest earned for the period.",
+          "query_text": "We have not sighted any supporting documentation for the following Bank Interest transactions in The Cobble Family Super Fund bank statements.\n\n30/06/2025 | MACQUARIE CMA INTEREST PAID | CR $427.62\n30/05/2025 | MACQUARIE CMA INTEREST PAID | CR $219.36\n30/04/2025 | MACQUARIE CMA INTEREST PAID | CR $54.58\n31/03/2025 | MACQUARIE CMA INTEREST PAID | CR $35.54\n28/02/2025 | MACQUARIE CMA INTEREST PAID | CR $17.33\n31/01/2025 | MACQUARIE CMA INTEREST PAID | CR $35.44\n31/12/2024 | MACQUARIE CMA INTEREST PAID | CR $42.30\n29/11/2024 | MACQUARIE CMA INTEREST PAID | CR $34.63\n31/10/2024 | MACQUARIE CMA INTEREST PAID | CR $53.09\n30/09/2024 | MACQUARIE CMA INTEREST PAID | CR $71.96\n30/08/2024 | MACQUARIE CMA INTEREST PAID | CR $86.24\n31/07/2024 | MACQUARIE CMA INTEREST PAID | CR $112.71\n\nPlease provide the annual interest statement for these transactions.",
           "transactions": [
             {
               "date": "30/06/2025",
@@ -1149,7 +1149,7 @@
         {
           "id": "Q2",
           "category": "Pension Payments",
-          "query_text": "Dear Client, we are preparing the accounts for The Cobble Family Super Fund and require supporting documentation for the following pension payment debits: 19/07/2024 - $7,500, 20/08/2024 - $7,500, 20/09/2024 - $7,500, 18/10/2024 - $7,500, 20/11/2024 - $7,500, 20/12/2024 - $7,500, 20/01/2025 - $7,500, 20/02/2025 - $7,500, 24/03/2025 - $7,500, 17/04/2025 - $7,500, 20/05/2025 - $7,500, 20/06/2025 - $7,500, 03/04/2025 - $5,980 (lump sum shortfall), and the large lump sum payments made in June 2025 to Mr Ian William Cobble of $100,000 (on 02/06, 04/06, 05/06 & 10/06), $60,000 (on 03/06) and $100,000 (on 30/05). Please provide the pension payment statements, recipient acknowledgements or any other supporting records for these transactions.",
+          "query_text": "We have not sighted any supporting documentation for the following Pension Payments transactions in The Cobble Family Super Fund bank statements.\n\n03/04/2025 | LUMP SUM SHORTFALL PENSION | DR $5,980.00\n10/06/2025 | MR IAN WILLIAM COBBLE COBBLE | DR $100,000.00\n05/06/2025 | MR IAN WILLIAM COBBLE COBBLE | DR $100,000.00\n04/06/2025 | MR IAN WILLIAM COBBLE COBBLE | DR $100,000.00\n03/06/2025 | MR IAN WILLIAM COBBLE COBBLE | DR $60,000.00\n02/06/2025 | MR IAN WILLIAM COBBLE COBBLE | DR $100,000.00\n30/05/2025 | MR IAN WILLIAM COBBLE Cobble | DR $100,000.00\n20/06/2025 | PENSION | DR $7,500.00\n20/05/2025 | PENSION | DR $7,500.00\n17/04/2025 | PENSION | DR $7,500.00\n24/03/2025 | PENSION | DR $7,500.00\n20/02/2025 | PENSION | DR $7,500.00\n20/01/2025 | PENSION | DR $7,500.00\n20/12/2024 | PENSION | DR $7,500.00\n20/11/2024 | PENSION | DR $7,500.00\n18/10/2024 | PENSION | DR $7,500.00\n20/09/2024 | PENSION | DR $7,500.00\n20/08/2024 | PENSION | DR $7,500.00\n19/07/2024 | PENSION | DR $7,500.00\n\nPlease provide the pension payment authorities for these transactions.",
           "transactions": [
             {
               "date": "03/04/2025",
@@ -1405,7 +1405,7 @@
         {
           "id": "Q3",
           "category": "Member Contributions",
-          "query_text": "Dear Client, we are preparing the accounts for The Cobble Family Super Fund and require supporting documentation for the following member contribution credits: 29/05/2025 - $100,000 (Re-contribution 1), 30/05/2025 - $100,000 (Re-contribution 2), 02/06/2025 - $100,000 (Re-contribution 3 & Mr Ian William Cobble), 03/06/2025 - $60,000 (Complete Recontribution 1), 04/06/2025 - $100,000 (Cheryl's Re-contribution), 05/06/2025 - $100,000 (Cheryl's Re-contribution), 10/06/2025 - $100,000 (Cheryl's Re-contribution), and 11/06/2025 - $60,000 (Cheryl's Re-contribution & Mr Ian William Cobble). Please provide the contribution notices, rollover or transfer statements, and any relevant tax deduction declarations or re-contribution documentation.",
+          "query_text": "We have not sighted any supporting documentation for the following Member Contributions transactions in The Cobble Family Super Fund bank statements.\n\n11/06/2025 | CHERYL'S RE-CONTRIBUTION | CR $60,000.00\n10/06/2025 | CHERYL'S RE-CONTRIBUTION | CR $100,000.00\n05/06/2025 | CHERYL'S RE-CONTRIBUTION | CR $100,000.00\n04/06/2025 | CHERYL'S RE-CONTRIBUTION | CR $100,000.00\n03/06/2025 | COMPLETE RECONTRIBUTION 1 | CR $60,000.00\n11/06/2025 | MR IAN WILLIAM COBBLE COBBLE | CR $60,000.00\n02/06/2025 | MR IAN WILLIAM COBBLE COBBLE | CR $100,000.00\n29/05/2025 | RE-CONTRIBUTION 1 | CR $100,000.00\n30/05/2025 | RE-CONTRIBUTION 2 | CR $100,000.00\n02/06/2025 | RE-CONTRIBUTION 3 | CR $100,000.00\n\nPlease provide the contribution notices for these transactions.",
           "transactions": [
             {
               "date": "11/06/2025",
@@ -1544,7 +1544,7 @@
         {
           "id": "Q4",
           "category": "ATO Tax Payment",
-          "query_text": "Dear Client, we are preparing the accounts for The Cobble Family Super Fund and require the supporting documentation for the ATO tax payment debit on 20/05/2025 of $21,462.80 (reference ATO002000021374899). Please provide a copy of the notice of assessment or the payment advice from the ATO that corresponds to this amount.",
+          "query_text": "We have not sighted any supporting documentation for the following ATO Tax Payment transactions in The Cobble Family Super Fund bank statements.\n\n20/05/2025 | ATO ATO002000021374899 | DR $21,462.80\n\nPlease provide the ATO notice of assessment for this transaction.",
           "transactions": [
             {
               "date": "20/05/2025",

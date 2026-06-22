@@ -1443,9 +1443,9 @@ def _tx_amount_str(tx):
     debit = tx.get('debit')
     credit = tx.get('credit')
     if debit:
-        return f'DR ${debit}'
+        return f'DR ${float(debit):,.2f}'
     if credit:
-        return f'CR ${credit}'
+        return f'CR ${float(credit):,.2f}'
     amount = tx.get('amount', '')
     return amount if amount else 'Amount unknown'
 
@@ -1579,45 +1579,55 @@ def build_coarse_query_text_prompt(coarse_groups, fund_name):
     system_prompt = (
         'IMPORTANT: Your entire response must be a single valid JSON object. '
         'Do not include any text, explanation, or markdown before or after the JSON.\n\n'
-        f'You are an expert SMSF accountant preparing client queries for {fund_name}.\n\n'
-        'You have been given pre-grouped categories of unmatched bank transactions. '
-        'For each category write a clear, professional query text that the accountant '
-        'can send to the client requesting the missing supporting documentation. '
+        f'You are an SMSF audit back-office assistant preparing internal document-request queries for {fund_name}.\n\n'
+        'These queries are sent between back-office staff and the client\'s accountant or auditor — '
+        'NOT directly to the fund member. Use a direct, formal tone. '
         'Do NOT regroup the transactions — only write the query_text per category.\n\n'
         '## REQUIRED JSON SCHEMA\n'
         '{\n'
         '  "groups": [\n'
         '    {\n'
         '      "category": "<exact category name as provided>",\n'
-        '      "query_text": "Professional query text listing specific transactions and requesting documentation"\n'
+        '      "query_text": "<structured multi-line query — see format rules below>"\n'
         '    }\n'
         '  ]\n'
         '}\n\n'
-        'Rules:\n'
-        '- Return EXACTLY the same categories provided — do not rename, merge, or split them\n'
-        '- query_text must be addressed to the client in professional tone\n'
-        '- Include specific dates and amounts from the transaction list\n'
-        '- State what documentation is needed (e.g. dividend statements, distribution notices, tax certificates)\n'
+        '## FORMAT RULES FOR query_text\n'
+        'Each query_text must follow this exact 3-part structure, using \\n for line breaks:\n\n'
+        'PART 1 — Opening statement (1–2 sentences):\n'
+        '  State what is missing. Example: "We have not sighted any supporting documentation '
+        f'for the following [category] transactions in {fund_name} bank statements." '
+        '(Use the fund name exactly as provided — do NOT prefix it with "the".)\n\n'
+        'PART 2 — Transaction list (one transaction per line, preceded by a blank line):\n'
+        '  List each transaction exactly as provided: date | description | amount\n'
+        '  Use the same date/description/amount from the input — do not summarise or group further.\n\n'
+        'PART 3 — Document request (1–2 sentences, preceded by a blank line):\n'
+        '  State exactly what document(s) are required. Be specific to the category '
+        '(e.g. "annual interest statement", "pension payment authorities", "contribution notice", '
+        '"ATO notice of assessment", "dividend statement", "broker contract notes").\n\n'
+        'Additional rules:\n'
+        '- No salutation (no "Dear ...") and no sign-off\n'
+        '- No inline comma-separated transaction summaries — each transaction must be on its own line\n'
+        '- Return EXACTLY the same categories as provided — do not rename, merge, or split\n'
         '- Use the same order as the input\n'
         '- Respond with ONLY the JSON object — no other text\n'
     )
 
     user_content = (
-        f'Please write query_text for each of the following {len(coarse_groups)} '
-        f'pre-grouped transaction categories for {fund_name}:\n\n'
+        f'Write query_text for each of the following {len(coarse_groups)} '
+        f'transaction categories for {fund_name}:\n\n'
         + '\n\n'.join(groups_block)
     )
 
     return system_prompt, user_content
 
 
-def generate_granular_query_text(category, transactions):
+def generate_granular_query_text(category, transactions, fund_name=''):
     """Generate query text for a granular Investment Income group using a Python template (no LLM).
 
     Infers the document type from keywords in the transaction descriptions.
     """
     payee = category.replace('Investment Income – ', '')
-    total = sum(_tx_credit_float(tx) for tx in transactions)
 
     # Infer document type from description keywords
     descs_upper = ' '.join(tx.get('description', '') for tx in transactions).upper()
@@ -1631,7 +1641,8 @@ def generate_granular_query_text(category, transactions):
         doc_type = 'supporting documentation'
 
     n = len(transactions)
-    total_str = f'${total:,.2f}' if total > 0 else 'an unknown total'
+    fund_display = (fund_name[4:] if fund_name.startswith('The ') else fund_name).strip()
+    fund_clause = f' in the {fund_display} bank statements' if fund_display else ''
 
     tx_lines = '\n'.join(
         f"  {tx.get('date', '?')} | {tx.get('description', '')} | {_tx_amount_str(tx)}"
@@ -1639,12 +1650,11 @@ def generate_granular_query_text(category, transactions):
     )
 
     return (
-        f'We have identified {n} unmatched {payee} transaction{"s" if n != 1 else ""} '
-        f'totalling {total_str} that require{"s" if n == 1 else ""} supporting documentation. '
-        f'Please provide the relevant {doc_type} for each of the following:\n\n'
+        f'We have not sighted any supporting documentation for the following {payee} '
+        f'transaction{"s" if n != 1 else ""}{fund_clause}.\n\n'
         f'{tx_lines}\n\n'
-        f'Kindly forward the {doc_type} at your earliest convenience so we can complete '
-        f'the reconciliation for the period.'
+        f'Please provide the {doc_type} confirming the above amount{"s" if n != 1 else ""} '
+        f'so we can complete the reconciliation for the period.'
     )
 
 
@@ -1871,7 +1881,7 @@ def _build_queries_from_classified(classified_txs, categories, fund_name, api_ke
                 {
                     'id': f'Q{idx}.{sidx}',
                     'category': sg['category'],
-                    'query_text': generate_granular_query_text(sg['category'], sg['transactions']),
+                    'query_text': generate_granular_query_text(sg['category'], sg['transactions'], fund_name),
                     'transactions': sg['transactions'],
                     'status': 'pending',
                 }

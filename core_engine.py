@@ -5,6 +5,7 @@ import json
 import shutil
 import tempfile
 import subprocess
+import datetime
 import requests
 from collections import defaultdict
 from pypdf import PdfReader, PdfWriter
@@ -99,6 +100,60 @@ def ocr_pdf_single_page(filepath, page_idx, scratch_dir):
         else:
             raise RuntimeError("Tesseract output file not found")
 
+# ---------------------------------------------------------------------------
+# Token economics helpers (Story T)
+# ---------------------------------------------------------------------------
+
+def load_llm_pricing(workspace_dir):
+    """Load llm_pricing.json from workspace_dir. Returns pricing dict keyed by model ID."""
+    path = os.path.join(workspace_dir, 'llm_pricing.json')
+    if not os.path.exists(path):
+        raise FileNotFoundError(f'llm_pricing.json not found at {path}.')
+    with open(path, 'r', encoding='utf-8') as fh:
+        data = json.load(fh)
+    return data.get('models', {})
+
+
+def calculate_call_cost(model, prompt_tokens, completion_tokens, pricing):
+    """Return estimated USD cost for one LLM call. Returns 0.0 for unknown models."""
+    rates = pricing.get(model)
+    if not rates:
+        print(f'[TokenEconomics] Unknown model {model!r} — cost recorded as $0.00', file=sys.stderr)
+        return 0.0
+    return round(
+        (prompt_tokens / 1_000_000) * rates['input_per_million']
+        + (completion_tokens / 1_000_000) * rates['output_per_million'],
+        6,
+    )
+
+
+def record_token_usage(job, call_id, phase, usage, cost_usd):
+    """Append a call record to job['token_usage'] and keep phase + job rollups in sync.
+
+    Mutates `job` in place. Caller is responsible for persisting to jobs_db.json.
+    """
+    token_usage = job.setdefault(
+        'token_usage',
+        {'calls': [], 'phases': {}, 'job_total': {'total_tokens': 0, 'cost_usd': 0.0}},
+    )
+    token_usage['calls'].append({
+        'call_id': call_id,
+        'phase': phase,
+        'model': usage['model'],
+        'prompt_tokens': usage['prompt_tokens'],
+        'completion_tokens': usage['completion_tokens'],
+        'total_tokens': usage['total_tokens'],
+        'cost_usd': round(cost_usd, 6),
+        'timestamp': datetime.datetime.utcnow().isoformat() + 'Z',
+    })
+    phase_total = token_usage['phases'].setdefault(phase, {'total_tokens': 0, 'cost_usd': 0.0})
+    phase_total['total_tokens'] += usage['total_tokens']
+    phase_total['cost_usd'] = round(phase_total['cost_usd'] + cost_usd, 6)
+    total = token_usage['job_total']
+    total['total_tokens'] += usage['total_tokens']
+    total['cost_usd'] = round(total['cost_usd'] + cost_usd, 6)
+
+
 def query_openrouter(api_key, system_prompt, user_content, response_format=None, model="x-ai/grok-4.20", timeout=120):
     """Generic OpenRouter query helper with fallback model option."""
     url = "https://openrouter.ai/api/v1/chat/completions"
@@ -127,7 +182,14 @@ def query_openrouter(api_key, system_prompt, user_content, response_format=None,
         choices = res_data.get("choices", [])
         if not choices:
             raise ValueError(f"No choices returned. Response: {res_data}")
-        return choices[0]["message"]["content"]
+        raw_usage = res_data.get("usage", {})
+        usage = {
+            "model": model,
+            "prompt_tokens": raw_usage.get("prompt_tokens", 0),
+            "completion_tokens": raw_usage.get("completion_tokens", 0),
+            "total_tokens": raw_usage.get("total_tokens", 0),
+        }
+        return choices[0]["message"]["content"], usage
     except Exception as e:
         if model == "x-ai/grok-4.20":
             print(f"Grok model query failed: {e}. Trying fallback model google/gemini-2.5-flash...")
@@ -215,7 +277,7 @@ You must return a valid JSON object matching this structure exactly (do not outp
     user_content = f"Here are the text snippets from the documents:\n\n{all_snippets}\n\nPlease extract the SMSF profile."
     
     try:
-        res = query_openrouter(api_key, system_prompt, user_content, response_format={"type": "json_object"})
+        res, _ = query_openrouter(api_key, system_prompt, user_content, response_format={"type": "json_object"})
         profile = json.loads(res)
         return profile
     except Exception as e:
@@ -319,7 +381,7 @@ def get_unique_filepath(dest_dir, filename):
         counter += 1
     return os.path.join(dest_dir, new_filename)
 
-def classify_papers(input_dir, workpapers_dir, fund_profile, api_key, scratch_dir, update_progress, job_type="Accounting_Audit"):
+def classify_papers(input_dir, workpapers_dir, fund_profile, api_key, scratch_dir, update_progress, job_type="Accounting_Audit", record_usage=None):
     """Processes, OCRs, classifies files, and dynamically splits/groups bank statement pages by account."""
     os.makedirs(workpapers_dir, exist_ok=True)
     
@@ -435,7 +497,9 @@ You must return a valid JSON object matching this structure:
 
         # 3. Query OpenRouter
         try:
-            res = query_openrouter(api_key, system_prompt, f"Document content:\n```\n{text[:3500]}\n```\n\nClassify this document.", response_format={"type": "json_object"})
+            res, usage = query_openrouter(api_key, system_prompt, f"Document content:\n```\n{text[:3500]}\n```\n\nClassify this document.", response_format={"type": "json_object"})
+            if record_usage:
+                record_usage(f'phase1_classify_{filename}', 'phase1', usage)
             classification = json.loads(res)
         except Exception as e:
             # Local keyword classification fallback in case LLM fails
@@ -690,7 +754,7 @@ def fallback_classify_by_keywords(filename, text, keywords_config, fund_profile)
         "reasoning": "Classified using fallback keyword rules matching metadata."
     }
 
-def reconcile_papers(workpapers_dir, fund_profile, api_key, scratch_dir, update_progress, job_type="Accounting_Audit"):
+def reconcile_papers(workpapers_dir, fund_profile, api_key, scratch_dir, update_progress, job_type="Accounting_Audit", record_usage=None):
     """Performs reconciliations using the custom templated LLM prompt based on discovered profile."""
     update_progress(70, "Starting dynamic audit checklist and reconciliations...")
     
@@ -890,9 +954,11 @@ JSON Schema:
     update_progress(80, "Querying OpenRouter AI (x-ai/grok-4.20) for dynamic audit analysis...")
     ai_results = {}
     use_fallback = False
-    
+
     try:
-        res = query_openrouter(api_key, system_prompt, f"Here is the text extracted from the working papers:\n\n{all_docs_context}", response_format={"type": "json_object"})
+        res, usage = query_openrouter(api_key, system_prompt, f"Here is the text extracted from the working papers:\n\n{all_docs_context}", response_format={"type": "json_object"})
+        if record_usage:
+            record_usage('phase2_checklist', 'phase2', usage)
         ai_results = json.loads(res)
         update_progress(90, "Successfully received audit analysis from AI!")
     except Exception as e:
@@ -1049,7 +1115,7 @@ def build_phase2_context(job_id, fund_profile, job_record):
     }
 
 
-def _parse_via_llm(text, account, api_key, model=None):
+def _parse_via_llm(text, account, api_key, model=None, record_usage=None):
     """LLM-based transaction parser for Approach A (swappable with _parse_via_regex)."""
     system_prompt = """You are an expert at parsing Australian bank statement text.
 Extract every transaction from the provided bank statement text and return them as structured JSON.
@@ -1081,16 +1147,19 @@ Rules:
         f"Account: {account.get('name', 'Unknown')} (Number: {account.get('number', 'Unknown')})\n\n"
         f"Bank statement text:\n```\n{text}\n```\n\nExtract all transactions."
     )
-    res = query_openrouter(
+    res, usage = query_openrouter(
         api_key, system_prompt, user_content,
         response_format={"type": "json_object"},
         timeout=180,
         **({"model": model} if model else {}),
     )
+    if record_usage:
+        acc_num = account.get('number', 'unknown')
+        record_usage(f'phase2_extract_txns_{acc_num}', 'phase2', usage)
     return json.loads(res)
 
 
-def extract_transactions_from_statement(pdf_path, account, api_key, model=None):
+def extract_transactions_from_statement(pdf_path, account, api_key, model=None, record_usage=None):
     """Extract structured transaction rows from a bank statement PDF (Approach A — LLM-based).
 
     Returns a list of transaction dicts: { date, description, debit, credit, balance, raw_line }.
@@ -1119,7 +1188,7 @@ def extract_transactions_from_statement(pdf_path, account, api_key, model=None):
         except Exception as e:
             raise RuntimeError(f"OCR fallback failed for {pdf_path}: {e}")
 
-    result = _parse_via_llm(text, account, api_key, model=model)
+    result = _parse_via_llm(text, account, api_key, model=model, record_usage=record_usage)
     transactions = result.get("transactions", [])
 
     if not transactions and len(text.strip()) > 50:
@@ -1138,12 +1207,158 @@ def extract_transactions_from_statement(pdf_path, account, api_key, model=None):
     return transactions
 
 
-def build_reconciliation_prompt(phase2_context, transactions_by_account):
+# Words that look like ASX ticker codes but appear as standalone lines in portfolio-valuation
+# text (description suffixes, legal designations, state codes, common abbreviations).
+_PV_NON_TICKER = {
+    'UNITS', 'FORUS', 'STPD', 'STP', 'FPO', 'CDI', 'ORD',
+    'ABN', 'AFS', 'AFSL', 'NSW', 'VIC', 'QLD', 'WA', 'SA', 'TAS', 'ACT', 'NT',
+    'ASX', 'ASIC', 'ATO', 'GPO', 'AUD', 'USD', 'GST', 'CGT',
+    'TSB', 'TFN', 'ETF', 'NAV', 'BSB', 'REF', 'BOX', 'CHQ',
+    # Ord Minnett portfolio section sub-headers that look like ASX tickers
+    'REIT', 'HYBD', 'PROP', 'INTL', 'BOND', 'DEBT', 'INFRA', 'CASH', 'ALTV',
+}
+
+# ASX ticker pattern — 2–6 chars, first must be a letter, rest letters or digits (e.g. S32).
+_ASX_TICKER_RE = re.compile(r'^[A-Z][A-Z0-9]{1,5}$')
+
+
+def _extract_portfolio_holdings(full_text, doc_name):
+    """Parse portfolio valuation raw text into a compact one-line-per-holding summary.
+
+    Format: 'CODE: Description Name (N units)' — one security per line.
+    Falls back to the first 6,000 chars of raw text if the ticker-anchored parse finds nothing.
+    """
+    # Trim legal disclaimer footer so it doesn't generate false tickers.
+    for marker in ('This document was prepared', 'Ord Minnett Limited', 'A Market Participant'):
+        idx = full_text.find(marker)
+        if 0 < idx:
+            full_text = full_text[:idx]
+            break
+
+    # Anchor search to the Equity table section (skips header address block).
+    equity_idx = full_text.find('Equity\n')
+    search_text = full_text[equity_idx:] if equity_idx >= 0 else full_text
+
+    lines = [l.strip() for l in search_text.split('\n') if l.strip()]
+
+    # Find every line that is an ASX ticker code.
+    ticker_positions = [
+        i for i, line in enumerate(lines)
+        if _ASX_TICKER_RE.match(line) and line not in _PV_NON_TICKER
+    ]
+
+    if not ticker_positions:
+        return full_text[:6000]
+
+    holdings = []
+    for pos_idx, tpos in enumerate(ticker_positions):
+        ticker = lines[tpos]
+        # Slice the block between this ticker and the next (up to 15 lines max).
+        next_tpos = ticker_positions[pos_idx + 1] if pos_idx + 1 < len(ticker_positions) else tpos + 15
+        block = lines[tpos + 1: min(next_tpos, tpos + 15)]
+
+        # Description: non-numeric lines at the start of the block.
+        desc_parts = []
+        for bl in block:
+            if re.match(r'^[\d$\(]', bl):
+                break
+            desc_parts.append(bl)
+        desc = ' '.join(desc_parts).strip()
+        if not desc or len(desc) < 2:
+            continue
+
+        # Units: first plain-integer line after description.
+        units = None
+        for bl in block[len(desc_parts):]:
+            candidate = bl.replace(',', '')
+            if re.match(r'^\d+$', candidate):
+                units = bl
+                break
+            if re.match(r'^\$', bl):
+                break  # into dollar amounts — no units line present
+
+        entry = f"{ticker}: {desc}"
+        if units:
+            entry += f" ({units} units)"
+        holdings.append(entry)
+
+    if not holdings:
+        return full_text[:6000]
+
+    return f"[{doc_name}]\n" + '\n'.join(holdings)
+
+
+def _extract_supporting_doc_text(doc_path, scratch_dir=None):
+    """Extract text from a supporting document for the reconciliation prompt.
+
+    1. Try pypdf across ALL pages.
+    2. If sparse (< 100 chars total), fall back to Tesseract OCR on every page and concatenate.
+
+    Returns the extracted text string (may be empty if all methods fail).
+    """
+    if not doc_path or not os.path.exists(doc_path):
+        return ''
+
+    # 1. PDF text extraction.
+    pages_text = []
+    num_pages = 0
+    try:
+        reader = PdfReader(doc_path)
+        num_pages = len(reader.pages)  # capture before loop so mid-loop exceptions don't lose count
+        for page in reader.pages:
+            pages_text.append(page.extract_text() or '')
+        full_text = '\n'.join(pages_text).strip()
+    except Exception as e:
+        print(
+            f'[Phase 2] _extract_supporting_doc_text: pypdf failed for '
+            f'{os.path.basename(doc_path)}: {e}',
+            file=sys.stderr,
+        )
+        full_text = ''
+
+    if len(full_text) >= 100:
+        return full_text
+
+    # 2. OCR fallback — process every page.
+    if scratch_dir is None:
+        # Derive from doc path: jobs/{job_id}/workpaper/... → jobs/{job_id}/scratch
+        scratch_dir = os.path.join(os.path.dirname(os.path.dirname(doc_path)), 'scratch')
+    os.makedirs(scratch_dir, exist_ok=True)
+
+    if num_pages == 0:
+        try:
+            num_pages = len(PdfReader(doc_path).pages)
+        except Exception:
+            return ''
+
+    print(
+        f'[Phase 2] sparse text ({len(full_text)} chars) — '
+        f'OCR all {num_pages} page(s) of {os.path.basename(doc_path)}',
+        file=sys.stderr,
+    )
+    ocr_pages = []
+    for page_idx in range(num_pages):
+        try:
+            page_text = ocr_pdf_single_page(doc_path, page_idx, scratch_dir)
+            if page_text:
+                ocr_pages.append(page_text)
+        except Exception as e:
+            print(
+                f'[Phase 2] OCR page {page_idx + 1} failed for '
+                f'{os.path.basename(doc_path)}: {e}',
+                file=sys.stderr,
+            )
+
+    return '\n'.join(ocr_pages).strip()
+
+
+def build_reconciliation_prompt(phase2_context, transactions_by_account, scratch_dir=None):
     """Build the (system_prompt, user_content) pair for the reconciliation LLM call.
 
     Preamble: reconciliation notes (if present).
     Subject: all transactions across all accounts.
-    Evidence: supporting document text excerpts.
+    Evidence: supporting document text excerpts (OCR fallback for scanned PDFs; structured
+    extraction for Portfolio Valuations).
     """
     # Reconciliation notes preamble
     notes_preamble = ""
@@ -1163,21 +1378,24 @@ def build_reconciliation_prompt(phase2_context, transactions_by_account):
         except Exception:
             pass
 
-    # Supporting document excerpts (max 3000 chars each)
+    # Supporting document excerpts — RC#1 fix: OCR fallback for scanned PDFs.
+    # RC#2 fix: structured extraction for Portfolio Valuations instead of raw truncation.
     supporting_docs_lines = []
     for doc in phase2_context.get("supporting_documents", []):
         doc_path = doc.get("path")
+        doc_name = doc.get("classified_name", "")
+        doc_category = doc.get("category", "")
         if not doc_path or not os.path.exists(doc_path):
             continue
         try:
-            reader = PdfReader(doc_path)
-            doc_text = "".join(
-                (page.extract_text() or "") + "\n" for page in reader.pages
-            ).strip()[:3000]
+            doc_text = _extract_supporting_doc_text(doc_path, scratch_dir)
+            if not doc_text:
+                continue
+            if "Portfolio Valuation" in doc_category:
+                doc_text = _extract_portfolio_holdings(doc_text, doc_name)
             if doc_text:
                 supporting_docs_lines.append(
-                    f"=== {doc.get('classified_name')} "
-                    f"(Category: {doc.get('category')}) ===\n{doc_text}"
+                    f"=== {doc_name} (Category: {doc_category}) ===\n{doc_text}"
                 )
         except Exception:
             continue
@@ -1260,7 +1478,9 @@ def build_reconciliation_prompt(phase2_context, transactions_by_account):
 
 def run_reconciliation_call(phase2_context, api_key, update_progress,
                             model=PHASE2_DEFAULT_MODEL,
-                            transactions_by_account=None):
+                            transactions_by_account=None,
+                            record_usage=None,
+                            scratch_dir=None):
     """Run LLM Call 1 for Story 2: extract transactions then reconcile against supporting docs.
 
     Returns reconciliation_results dict keyed by account number.
@@ -1281,7 +1501,7 @@ def run_reconciliation_call(phase2_context, api_key, update_progress,
                 continue
             update_progress(None, f"Phase 2: Parsing transactions for {account['name']}...")
             transactions = extract_transactions_from_statement(
-                statement_path, account, api_key, model=model
+                statement_path, account, api_key, model=model, record_usage=record_usage
             )
             if transactions:
                 transactions_by_account[account["number"]] = transactions
@@ -1291,14 +1511,18 @@ def run_reconciliation_call(phase2_context, api_key, update_progress,
         return {}
 
     update_progress(None, "Phase 2: Reconciling transactions against supporting documents...")
-    system_prompt, user_content = build_reconciliation_prompt(phase2_context, transactions_by_account)
+    system_prompt, user_content = build_reconciliation_prompt(
+        phase2_context, transactions_by_account, scratch_dir=scratch_dir
+    )
 
-    res = query_openrouter(
+    res, usage = query_openrouter(
         api_key, system_prompt, user_content,
         response_format={"type": "json_object"},
         model=model,
         timeout=240,
     )
+    if record_usage:
+        record_usage('phase2_reconcile', 'phase2', usage)
     result = json.loads(res)
 
     reconciliation_results = {}
@@ -1377,7 +1601,7 @@ def build_query_generation_prompt(unmatched_transactions, fund_name):
 
 
 def run_query_generation_call(unmatched_transactions, fund_name, api_key, update_progress,
-                              model=PHASE2_DEFAULT_MODEL):
+                              model=PHASE2_DEFAULT_MODEL, record_usage=None):
     """Run LLM Call 2 for Story 3: group unmatched transactions and generate client queries.
 
     Returns queries list: [{ id, category, query_text, transactions }]
@@ -1392,12 +1616,14 @@ def run_query_generation_call(unmatched_transactions, fund_name, api_key, update
     )
     system_prompt, user_content = build_query_generation_prompt(unmatched_transactions, fund_name)
 
-    res = query_openrouter(
+    res, usage = query_openrouter(
         api_key, system_prompt, user_content,
         response_format={"type": "json_object"},
         model=model,
         timeout=180,
     )
+    if record_usage:
+        record_usage('phase2_query_gen', 'phase2', usage)
     result = json.loads(res)
     queries = result.get("queries", [])
 
@@ -1659,7 +1885,7 @@ def generate_granular_query_text(category, transactions, fund_name=''):
 
 
 def run_coarse_query_text_call(coarse_groups, fund_name, api_key, update_progress,
-                               model=PHASE2_DEFAULT_MODEL):
+                               model=PHASE2_DEFAULT_MODEL, record_usage=None):
     """Call the LLM once to write query_text for all coarse groups.
 
     Returns a dict { category → query_text }.
@@ -1669,12 +1895,14 @@ def run_coarse_query_text_call(coarse_groups, fund_name, api_key, update_progres
         f'Phase 2: Generating query text for {len(coarse_groups)} coarse groups...',
     )
     system_prompt, user_content = build_coarse_query_text_prompt(coarse_groups, fund_name)
-    res = query_openrouter(
+    res, usage = query_openrouter(
         api_key, system_prompt, user_content,
         response_format={'type': 'json_object'},
         model=model,
         timeout=180,
     )
+    if record_usage:
+        record_usage('phase2_coarse_query_text', 'phase2', usage)
     result = json.loads(res)
     groups_out = result.get('groups', [])
     mapping = {g['category']: g.get('query_text', '') for g in groups_out if 'category' in g}
@@ -1772,7 +2000,7 @@ def build_classification_prompt(unmatched_transactions, categories):
 
 
 def classify_transactions(unmatched_transactions, categories, fund_name, api_key,
-                          model=PHASE2_DEFAULT_MODEL):
+                          model=PHASE2_DEFAULT_MODEL, record_usage=None):
     """Call the LLM to classify each transaction into the taxonomy from categories.
 
     Returns the original transaction list with 'smsf_category' added to each dict.
@@ -1792,12 +2020,14 @@ def classify_transactions(unmatched_transactions, categories, fund_name, api_key
 
     system_prompt, user_content = build_classification_prompt(unmatched_transactions, categories)
 
-    res = query_openrouter(
+    res, usage = query_openrouter(
         api_key, system_prompt, user_content,
         response_format={'type': 'json_object'},
         model=model,
         timeout=120,
     )
+    if record_usage:
+        record_usage('phase2_classify_transactions', 'phase2', usage)
     result = json.loads(res)
     classified = result.get('classified', [])
 
@@ -1834,7 +2064,7 @@ def classify_transactions(unmatched_transactions, categories, fund_name, api_key
 
 
 def _build_queries_from_classified(classified_txs, categories, fund_name, api_key,
-                                   update_progress, model=PHASE2_DEFAULT_MODEL):
+                                   update_progress, model=PHASE2_DEFAULT_MODEL, record_usage=None):
     """Shared helper: group classified transactions, call LLM for coarse text, assemble queries.
 
     Used by both run_bank_reconciliation_phase() and regroup_stored_queries().
@@ -1861,7 +2091,7 @@ def _build_queries_from_classified(classified_txs, categories, fund_name, api_ke
     ]
 
     coarse_text_map = run_coarse_query_text_call(
-        coarse_list, fund_name, api_key, update_progress, model=model
+        coarse_list, fund_name, api_key, update_progress, model=model, record_usage=record_usage
     )
 
     queries = []
@@ -1900,7 +2130,7 @@ def _build_queries_from_classified(classified_txs, categories, fund_name, api_ke
     return queries
 
 
-def regroup_stored_queries(existing_queries, fund_name, api_key, update_progress):
+def regroup_stored_queries(existing_queries, fund_name, api_key, update_progress, record_usage=None):
     """Re-group queries from a stored job using LLM semantic classification (Story 3S).
 
     Always re-classifies all transactions — no match-rate gate.
@@ -1919,16 +2149,16 @@ def regroup_stored_queries(existing_queries, fund_name, api_key, update_progress
 
     update_progress(None, f'Phase 2: regroup — classifying {len(all_txs)} transactions...')
     categories = load_transaction_categories(os.getcwd())
-    classified_txs = classify_transactions(all_txs, categories, fund_name, api_key)
+    classified_txs = classify_transactions(all_txs, categories, fund_name, api_key, record_usage=record_usage)
 
     new_queries = _build_queries_from_classified(
-        classified_txs, categories, fund_name, api_key, update_progress
+        classified_txs, categories, fund_name, api_key, update_progress, record_usage=record_usage
     )
     update_progress(None, f'Phase 2: regroup — produced {len(new_queries)} query group(s).')
     return new_queries, True, 1.0
 
 
-def run_bank_reconciliation_phase(job_id, fund_profile, job_type, api_key, scratch_dir, update_progress):
+def run_bank_reconciliation_phase(job_id, fund_profile, job_type, api_key, scratch_dir, update_progress, record_usage=None):
     """Phase 2 orchestrator: classify context → extract transactions → reconcile → generate queries.
 
     Returns { phase2_context, reconciliation_results, queries, summary }.
@@ -1947,7 +2177,10 @@ def run_bank_reconciliation_phase(job_id, fund_profile, job_type, api_key, scrat
     phase2_context = build_phase2_context(job_id, fund_profile, job_record)
 
     update_progress(None, "Phase 2: Running bank transaction reconciliation...")
-    reconciliation_results = run_reconciliation_call(phase2_context, api_key, update_progress)
+    reconciliation_results = run_reconciliation_call(
+        phase2_context, api_key, update_progress,
+        record_usage=record_usage, scratch_dir=scratch_dir,
+    )
 
     # Story 3R: collect unmatched transactions, group deterministically, generate queries
     total = matched = unmatched_count = 0
@@ -1971,10 +2204,10 @@ def run_bank_reconciliation_phase(job_id, fund_profile, job_type, api_key, scrat
     if unmatched_transactions:
         categories = load_transaction_categories(os.getcwd())
         classified_txs = classify_transactions(
-            unmatched_transactions, categories, fund_name, api_key
+            unmatched_transactions, categories, fund_name, api_key, record_usage=record_usage
         )
         queries = _build_queries_from_classified(
-            classified_txs, categories, fund_name, api_key, update_progress
+            classified_txs, categories, fund_name, api_key, update_progress, record_usage=record_usage
         )
     else:
         update_progress(None, 'Phase 2: No unmatched transactions — skipping query generation.')
@@ -1991,7 +2224,7 @@ def run_bank_reconciliation_phase(job_id, fund_profile, job_type, api_key, scrat
     }
 
 
-def run_ai_processor_phase(folder_path, run_id, fund_profile, job_type, api_key, scratch_dir, update_progress):
+def run_ai_processor_phase(folder_path, run_id, fund_profile, job_type, api_key, scratch_dir, update_progress, record_usage=None):
     """Runs Phase 1: Scans directory, extracts texts/OCR, and suggests classifications."""
     # Staging folder in run_id directory
     run_dir = os.path.join(os.getcwd(), run_id)
@@ -2003,12 +2236,13 @@ def run_ai_processor_phase(folder_path, run_id, fund_profile, job_type, api_key,
     # We will copy the files to the staging folder while running classification
     # Run the classification engine
     processed, unprocessed = classify_papers(
-        folder_path, staging_dir, fund_profile, api_key, scratch_dir, update_progress, job_type
+        folder_path, staging_dir, fund_profile, api_key, scratch_dir, update_progress, job_type,
+        record_usage=record_usage,
     )
     
     return processed, unprocessed
 
-def run_ai_reviewer_phase(run_id, fund_profile, job_type, api_key, scratch_dir, update_progress):
+def run_ai_reviewer_phase(run_id, fund_profile, job_type, api_key, scratch_dir, update_progress, record_usage=None):
     """Runs Phase 2: Performs dynamic lead schedule calculations and checklist verifications."""
     run_dir = os.path.join(os.getcwd(), run_id)
     workpapers_dir = os.path.join(run_dir, "workpaper")
@@ -2016,6 +2250,7 @@ def run_ai_reviewer_phase(run_id, fund_profile, job_type, api_key, scratch_dir, 
     
     update_progress(70, "AI Reviewer: Reconciling ledger balances and validating checklist...")
     results = reconcile_papers(
-        workpapers_dir, fund_profile, api_key, scratch_dir, update_progress, job_type
+        workpapers_dir, fund_profile, api_key, scratch_dir, update_progress, job_type,
+        record_usage=record_usage,
     )
     return results

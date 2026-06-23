@@ -10,7 +10,7 @@ from flask import Flask, jsonify, request, render_template, send_file
 from dotenv import load_dotenv
 
 load_dotenv()
-from core_engine import determine_target_filename, discover_fund_profile
+from core_engine import determine_target_filename, discover_fund_profile, load_llm_pricing, calculate_call_cost, record_token_usage
 
 
 app = Flask(__name__, template_folder="templates")
@@ -70,15 +70,31 @@ def run_phase1_worker(job_id, folder_path, fund_profile, job_type, api_key):
     try:
         update_job_progress(10, "Scanning folder and initiating AI Processor Agent...")
         from core_engine import run_ai_processor_phase
-        
+
+        try:
+            pricing = load_llm_pricing(WORKSPACE_DIR)
+        except Exception as _pricing_err:
+            print(f"Warning: could not load llm_pricing.json: {_pricing_err}", file=sys.stderr)
+            pricing = {}
+
+        def record_llm_usage_p1(call_id, phase, usage):
+            cost = calculate_call_cost(usage['model'], usage['prompt_tokens'], usage['completion_tokens'], pricing)
+            _jobs = load_jobs()
+            for _j in _jobs:
+                if _j['job_id'] == job_id:
+                    record_token_usage(_j, call_id, phase, usage, cost)
+                    break
+            save_jobs(_jobs)
+
         processed, unprocessed = run_ai_processor_phase(
-            folder_path, 
-            os.path.join("jobs", job_id), 
-            fund_profile, 
-            job_type, 
-            api_key, 
-            scratch_dir, 
-            update_job_progress
+            folder_path,
+            os.path.join("jobs", job_id),
+            fund_profile,
+            job_type,
+            api_key,
+            scratch_dir,
+            update_job_progress,
+            record_usage=record_llm_usage_p1,
         )
         
         jobs = load_jobs()
@@ -129,6 +145,21 @@ def run_phase2_worker(job_id, fund_profile, job_type, api_key):
         update_job_progress(70, "Initiating AI Reviewer Agent reconciliations and calculations...")
         from core_engine import run_ai_reviewer_phase, build_phase2_context, run_bank_reconciliation_phase
 
+        try:
+            pricing = load_llm_pricing(WORKSPACE_DIR)
+        except Exception as _pricing_err:
+            print(f"Warning: could not load llm_pricing.json: {_pricing_err}", file=sys.stderr)
+            pricing = {}
+
+        def record_llm_usage_p2(call_id, phase, usage):
+            cost = calculate_call_cost(usage['model'], usage['prompt_tokens'], usage['completion_tokens'], pricing)
+            _jobs = load_jobs()
+            for _j in _jobs:
+                if _j['job_id'] == job_id:
+                    record_token_usage(_j, call_id, phase, usage, cost)
+                    break
+            save_jobs(_jobs)
+
         # Build Phase 2 context and persist it before any AI calls
         jobs = load_jobs()
         job_record = next((j for j in jobs if j["job_id"] == job_id), None)
@@ -143,7 +174,8 @@ def run_phase2_worker(job_id, fund_profile, job_type, api_key):
         # Run bank transaction reconciliation and query generation (Stories 2–3R)
         update_job_progress(None, "Phase 2: Running bank transaction reconciliation and query generation...")
         bank_recon = run_bank_reconciliation_phase(
-            job_id, fund_profile, job_type, api_key, scratch_dir, update_job_progress
+            job_id, fund_profile, job_type, api_key, scratch_dir, update_job_progress,
+            record_usage=record_llm_usage_p2,
         )
         jobs = load_jobs()
         for j in jobs:
@@ -164,7 +196,8 @@ def run_phase2_worker(job_id, fund_profile, job_type, api_key):
             job_type,
             api_key,
             scratch_dir,
-            update_job_progress
+            update_job_progress,
+            record_usage=record_llm_usage_p2,
         )
         
         # Compile automated auditor notes / exceptions based on results
@@ -328,8 +361,8 @@ def api_funds_discover():
         if os.path.abspath(entry.path) in registered_paths:
             continue
         pdf_count = sum(
-            1 for f in os.scandir(entry.path)
-            if f.is_file() and f.name.lower().endswith(".pdf")
+            1 for _, _, files in os.walk(entry.path)
+            for f in files if f.lower().endswith(".pdf")
         )
         discovered.append({
             "folder_name": entry.name,
@@ -372,9 +405,9 @@ def api_funds_bootstrap():
 
         warning = None
         has_pdfs = any(
-            f.name.lower().endswith(".pdf")
-            for f in os.scandir(abs_path)
-            if f.is_file()
+            fn.lower().endswith(".pdf")
+            for _, _, files in os.walk(abs_path)
+            for fn in files
         ) if os.path.isdir(abs_path) else False
 
         if not has_pdfs:
@@ -657,6 +690,49 @@ def api_update_query_status(job_id, query_id):
     return jsonify({"status": "success", "query_id": query_id, "new_status": status})
 
 # API - Regroup stored queries (Story 3R)
+@app.route("/api/jobs/<job_id>/token-usage", methods=["GET"])
+def api_job_token_usage(job_id):
+    jobs = load_jobs()
+    job = next((j for j in jobs if j["job_id"] == job_id), None)
+    if not job:
+        return jsonify({"error": "Job not found."}), 404
+    token_usage = job.get("token_usage")
+    if not token_usage:
+        return jsonify({"available": False})
+    return jsonify({"available": True, **token_usage})
+
+
+@app.route("/api/funds/<fund_id>/cost-summary", methods=["GET"])
+def api_fund_cost_summary(fund_id):
+    jobs = load_jobs()
+    fund_jobs = [j for j in jobs if j.get("fund_id") == fund_id]
+    total_cost = 0.0
+    jobs_included = 0
+    jobs_excluded_na = 0
+    job_breakdown = []
+    for j in fund_jobs:
+        tu = j.get("token_usage")
+        cost = tu["job_total"]["cost_usd"] if tu else None
+        if cost is not None:
+            total_cost += cost
+            jobs_included += 1
+        else:
+            jobs_excluded_na += 1
+        job_breakdown.append({
+            "job_id": j["job_id"],
+            "date": j.get("created_at", ""),
+            "status": j.get("status", ""),
+            "cost_usd": cost,
+        })
+    return jsonify({
+        "fund_id": fund_id,
+        "total_cost_usd": round(total_cost, 6),
+        "jobs_included": jobs_included,
+        "jobs_excluded_na": jobs_excluded_na,
+        "job_breakdown": job_breakdown,
+    })
+
+
 @app.route("/api/jobs/<job_id>/regroup-queries", methods=["POST"])
 def api_regroup_queries(job_id):
     jobs = load_jobs()
@@ -681,9 +757,21 @@ def api_regroup_queries(job_id):
     def noop_progress(pct, msg):
         pass
 
+    try:
+        regroup_pricing = load_llm_pricing(WORKSPACE_DIR)
+    except Exception:
+        regroup_pricing = {}
+
+    def record_regroup_usage(call_id, phase, usage):
+        cost = calculate_call_cost(usage['model'], usage['prompt_tokens'], usage['completion_tokens'], regroup_pricing)
+        for _j in jobs:
+            if _j['job_id'] == job_id:
+                record_token_usage(_j, call_id, phase, usage, cost)
+                break
+
     from core_engine import regroup_stored_queries
     new_queries, regrouped, match_rate = regroup_stored_queries(
-        existing_queries, fund_name, api_key, noop_progress
+        existing_queries, fund_name, api_key, noop_progress, record_usage=record_regroup_usage
     )
 
     if not ("phase2_context" in job):

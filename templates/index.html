@@ -1674,6 +1674,10 @@
             <div class="jobs-list" id="jobs-list-container">
                 <!-- Loaded dynamically -->
             </div>
+            <div id="fund-cost-summary" style="display:none;margin-top:0.5rem;padding:0.4rem 0.5rem;border-top:1px solid var(--border-color);font-size:0.72rem;color:var(--text-muted);">
+                Fund total: <strong id="fund-cost-total" style="color:var(--text-primary);"></strong>
+                <span id="fund-cost-breakdown"></span>
+            </div>
         </div>
 
         <div class="sidebar-section" style="margin-top: auto;">
@@ -1694,7 +1698,14 @@
                 <h2 id="top-title-fund">No Fund Selected</h2>
                 <p id="top-subtitle-abn">Select or run a job to get started</p>
             </div>
-            <div class="header-actions">
+            <div class="header-actions" style="display:flex;align-items:center;gap:0.75rem;">
+                <div id="cost-badge-container" style="display:none;text-align:right;line-height:1.2;">
+                    <div style="font-size:0.85rem;font-weight:600;color:var(--text-primary);">
+                        Cost: <span id="cost-badge-value">N/A</span>
+                    </div>
+                    <div id="cost-badge-tokens" style="font-size:0.72rem;color:var(--text-muted);"></div>
+                    <div id="cost-badge-phases" style="font-size:0.70rem;color:var(--text-muted);"></div>
+                </div>
                 <span id="global-status-badge" class="badge badge-queued">● IDLE</span>
             </div>
         </header>
@@ -2505,16 +2516,24 @@
                 div.onclick = () => selectJob(job.job_id);
 
                 let statusText = job.status.replace("_", " ").toUpperCase();
+                const tu = job.token_usage;
+                const costStr = tu && tu.job_total
+                    ? `$${tu.job_total.cost_usd.toFixed(3)}`
+                    : 'N/A';
                 div.innerHTML = `
                     <div class="job-item-header">
                         <span class="job-item-title">${job.fund_name}</span>
                         <span class="job-item-date">${job.created_at.split(" ")[1]}</span>
                     </div>
                     <div class="job-item-desc">${job.job_type.replace("_", " & ")}</div>
-                    <span class="badge badge-${job.status}">● ${statusText}</span>
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.2rem;">
+                        <span class="badge badge-${job.status}">● ${statusText}</span>
+                        <span style="font-size:0.70rem;color:var(--text-muted);">${costStr}</span>
+                    </div>
                 `;
                 container.appendChild(div);
             });
+            renderFundCostSummary();
         }
 
         function selectJob(jobId) {
@@ -2585,13 +2604,71 @@
             .catch(err => console.error("Error initiating audit job:", err));
         }
 
+        function renderCostBadge() {
+            const container = document.getElementById('cost-badge-container');
+            if (!activeJob) {
+                container.style.display = 'none';
+                return;
+            }
+            container.style.display = 'block';
+            const tu = activeJob.token_usage;
+            if (!tu) {
+                document.getElementById('cost-badge-value').textContent = 'N/A';
+                document.getElementById('cost-badge-tokens').textContent = '';
+                document.getElementById('cost-badge-phases').textContent = '';
+                return;
+            }
+            const total = tu.job_total || {};
+            const cost = total.cost_usd != null ? `$${total.cost_usd.toFixed(3)}` : 'N/A';
+            document.getElementById('cost-badge-value').textContent = cost;
+            const tokens = total.total_tokens ? total.total_tokens.toLocaleString() + ' tokens' : '';
+            document.getElementById('cost-badge-tokens').textContent = tokens;
+            const phases = tu.phases || {};
+            const phaseParts = Object.entries(phases).map(([k, v]) =>
+                `${k === 'phase1' ? 'P1' : 'P2'}: $${(v.cost_usd || 0).toFixed(3)}`
+            );
+            document.getElementById('cost-badge-phases').textContent = phaseParts.join(' · ');
+        }
+
+        function renderFundCostSummary() {
+            const summaryEl = document.getElementById('fund-cost-summary');
+            if (!activeJob || jobs.length === 0) {
+                summaryEl.style.display = 'none';
+                return;
+            }
+            const fundJobs = jobs.filter(j => j.fund_id === activeJob.fund_id);
+            if (fundJobs.length <= 1) {
+                summaryEl.style.display = 'none';
+                return;
+            }
+            let total = 0;
+            let included = 0;
+            let na = 0;
+            fundJobs.forEach(j => {
+                const tu = j.token_usage;
+                if (tu && tu.job_total != null) {
+                    total += tu.job_total.cost_usd || 0;
+                    included++;
+                } else {
+                    na++;
+                }
+            });
+            summaryEl.style.display = 'block';
+            document.getElementById('fund-cost-total').textContent = `$${total.toFixed(3)}`;
+            const parts = [];
+            if (included > 0) parts.push(`${included} job${included > 1 ? 's' : ''}`);
+            if (na > 0) parts.push(`${na} N/A`);
+            document.getElementById('fund-cost-breakdown').textContent = parts.length ? ` (${parts.join(', ')})` : '';
+        }
+
         function updateJobUIState() {
             if (!activeJob) {
                 document.getElementById("welcome-view").style.display = "flex";
                 document.getElementById("main-job-view").style.display = "none";
                 document.getElementById("top-title-fund").textContent = "No Fund Selected";
                 document.getElementById("top-subtitle-abn").textContent = "Select or run a job to get started";
-                
+                document.getElementById('cost-badge-container').style.display = 'none';
+
                 // Disable and reset top horizontal tabs
                 document.getElementById('tab-btn-docs').classList.add('disabled');
                 document.getElementById('tab-btn-orch').classList.add('disabled');
@@ -2611,7 +2688,11 @@
             // Header state
             document.getElementById("top-title-fund").textContent = activeJob.fund_name;
             document.getElementById("top-subtitle-abn").textContent = `ABN: ${activeJob.abn} | ID: ${activeJob.job_id}`;
-            
+
+            // Cost badge and fund total
+            renderCostBadge();
+            renderFundCostSummary();
+
             const badge = document.getElementById("global-status-badge");
             badge.className = `badge badge-${activeJob.status}`;
             badge.textContent = `● ${activeJob.status.replace("_", " ").toUpperCase()}`;

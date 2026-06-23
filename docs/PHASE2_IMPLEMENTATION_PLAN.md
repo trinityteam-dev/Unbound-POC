@@ -699,3 +699,223 @@ Cost is flat and predictable. The classification call's output is small (index +
 - [x] **8.5** Verify checklist, lead schedules, and exception log are unaffected
 - [x] **8.6** Verify query edit + Send CTA + confirmation flow works end-to-end
 - [ ] **8.7** Sign-off review with stakeholder; update `PHASE2_SPRINT_PLAN.md` story statuses
+
+---
+
+## Story T — Token Economics & Cost Visibility
+
+**Done when:** Every LLM call records token usage and estimated cost in real time; costs roll up from call → phase → job → fund; the job header (alongside fund name, ABN, job ID) shows a live cost figure as the job processes; fund-level total cost is visible aggregated across all jobs for that fund; historical jobs without token data show N/A throughout.
+
+---
+
+### Goals & Non-Goals
+
+**Goals:**
+- Give BeFree operators clear sight of the cost of processing each fund
+- Real-time cost feedback as a job runs (not just post-completion)
+- Stable, auditable cost records per job in `jobs_db.json`
+- Token counts as a supporting detail alongside the primary cost figure
+
+**Non-Goals:**
+- Client billing or invoicing
+- Cost alerting or budget enforcement
+- Backfilling token data for historical jobs (show N/A, no re-run)
+
+---
+
+### Data Model
+
+Token usage is stored per job in `jobs_db.json` under a `token_usage` key. The three sub-keys form the rollup hierarchy.
+
+```json
+"token_usage": {
+  "calls": [
+    {
+      "call_id": "phase1_classify_pass",
+      "phase": "phase1",
+      "model": "x-ai/grok-4.20",
+      "prompt_tokens": 14200,
+      "completion_tokens": 1340,
+      "total_tokens": 15540,
+      "cost_usd": 0.0346,
+      "timestamp": "2026-06-22T10:23:41Z"
+    },
+    {
+      "call_id": "phase2_extract_transactions_BSB001",
+      "phase": "phase2",
+      "model": "x-ai/grok-4.20",
+      "prompt_tokens": 8800,
+      "completion_tokens": 2100,
+      "total_tokens": 10900,
+      "cost_usd": 0.0581,
+      "timestamp": "2026-06-22T10:31:05Z"
+    }
+  ],
+  "phases": {
+    "phase1": {
+      "total_tokens": 45000,
+      "cost_usd": 0.312
+    },
+    "phase2": {
+      "total_tokens": 22400,
+      "cost_usd": 0.183
+    }
+  },
+  "job_total": {
+    "total_tokens": 67400,
+    "cost_usd": 0.495
+  }
+}
+```
+
+**Field notes:**
+- `call_id` is a human-readable label describing the call's purpose (e.g. `phase2_classify_transactions`, `phase2_coarse_query_text`) — not a UUID. Used for debugging and audit.
+- `phases` and `job_total` are always derived and kept in sync immediately after each call is recorded. No separate aggregation step is needed at read time.
+- `token_usage` key is absent on jobs created before this story ships. The UI treats `null`/absent as N/A throughout.
+
+**Phase labels used across the codebase:**
+
+| Phase label | What it covers |
+|---|---|
+| `phase1` | All `query_openrouter()` calls in `classify_papers()` |
+| `phase2` | All Phase 2 calls: `extract_transactions_from_statement()`, `run_reconciliation_call()`, `classify_transactions()`, `run_coarse_query_text_call()` |
+
+---
+
+### Pricing Configuration
+
+Cost is calculated using a `llm_pricing.json` file at the workspace root. OpenRouter's chat completions response returns `usage.prompt_tokens` and `usage.completion_tokens` but does not include a cost field. Per-model pricing is therefore config-driven in USD.
+
+```json
+{
+  "version": 1,
+  "currency": "USD",
+  "models": {
+    "x-ai/grok-4.20": {
+      "input_per_million": 3.00,
+      "output_per_million": 15.00
+    },
+    "google/gemini-2.5-flash": {
+      "input_per_million": 0.15,
+      "output_per_million": 0.60
+    },
+    "anthropic/claude-sonnet-4-6": {
+      "input_per_million": 3.00,
+      "output_per_million": 15.00
+    }
+  }
+}
+```
+
+**Pricing update process:** Edit `llm_pricing.json` directly — no code change or restart required. Verify against the OpenRouter dashboard at the time of any model change.
+
+*Rates above are correct as of Story 4 benchmarking (2026-06-19). Always verify before using for operational reporting.*
+
+---
+
+### Fund-Level Cost Aggregation
+
+A fund's total cost is the sum of `token_usage.job_total.cost_usd` across all jobs for that `fund_id` in `jobs_db.json`. No separate fund-level store is needed — the aggregation is computed at read time from existing job records. Historical jobs (missing `token_usage`) are excluded from the sum but flagged in the breakdown.
+
+---
+
+### API
+
+| Endpoint | Purpose |
+|---|---|
+| `GET /api/jobs/<job_id>/token-usage` | Returns `token_usage` for a single job. If the key is absent, returns `{ "available": false }`. |
+| `GET /api/funds/<fund_id>/cost-summary` | Returns: total cost across all jobs, per-job breakdown (job_id, date, cost, status), count of historical jobs excluded (N/A). |
+
+The job-level endpoint is polled by the UI during active runs to deliver real-time cost updates. No webhook or push mechanism is needed.
+
+---
+
+### UI Changes
+
+**Job header (where fund name, ABN, job ID appear):**
+
+- Add a cost badge: `Cost: $0.495` (USD, 3 decimal places)
+- During an active job: badge updates live (polls `GET /api/jobs/<job_id>/token-usage` on the same interval as job status polling)
+- Phase breakdown available on hover or expand: `Phase 1: $0.312 | Phase 2: $0.183`
+- Token count shown as secondary detail beneath cost: `67,400 tokens`
+- If `token_usage` is absent (historical job): badge shows `Cost: N/A`
+
+**Fund-level cost summary:**
+
+- Shown in the fund's job list or a collapsible section of the fund header
+- Displays: total cost across all jobs (USD), number of jobs included, number excluded (N/A)
+- Per-job row: date, job ID, status, cost — so an operator can see which runs drove the spend
+
+---
+
+### Tasks
+
+- [ ] **T.1** Create `llm_pricing.json` at the workspace root
+  - Initial rates for the three candidate models from Story 4 benchmarking
+  - Verified against OpenRouter dashboard before commit
+
+- [ ] **T.2** Write `load_llm_pricing(workspace_dir)` in `core_engine.py`
+  - Reads and parses `llm_pricing.json`
+  - Raises `FileNotFoundError` with a clear message if absent
+  - Returns a pricing dict keyed by model ID
+  - Called once per job at worker startup; result is passed to `record_token_usage()`
+
+- [ ] **T.3** Write `calculate_call_cost(model, prompt_tokens, completion_tokens, pricing)` in `core_engine.py`
+  - Looks up per-million rates from the `pricing` dict
+  - If the model is not in `pricing`, logs a warning and returns `0.0` — never raises; an unknown model must not crash a job
+  - Returns cost as a `float` rounded to 6 decimal places
+
+- [ ] **T.4** Extend `query_openrouter()` return value to include usage data
+  - Current return: the response content string
+  - New return: a tuple `(content: str, usage: dict)` where `usage = { "model": str, "prompt_tokens": int, "completion_tokens": int, "total_tokens": int }`
+  - `usage` is populated from `response_json["usage"]` if present; defaults to `{ ..., "prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0 }` if the field is absent (defensive — should not happen with OpenRouter)
+  - All existing callers must be updated to unpack the tuple (T.6)
+
+- [ ] **T.5** Write `record_token_usage(job, call_id, phase, usage, cost_usd)` in `core_engine.py`
+  - Appends a full call record to `job["token_usage"]["calls"]`
+  - Recalculates `phases[phase]` totals and `job_total` in place
+  - Initialises `job["token_usage"]` if the key doesn't exist yet
+  - Called immediately after each `query_openrouter()` call; `jobs_db.json` is persisted by the worker's existing save mechanism after each call
+
+- [ ] **T.6** Update all `query_openrouter()` call sites in `core_engine.py` to unpack the new tuple and call `record_token_usage()`
+  - Phase 1: classification call(s) in `classify_papers()` → phase label `"phase1"`
+  - Phase 2 call sites (all phase label `"phase2"`):
+    - `extract_transactions_from_statement()` — one call per bank account; `call_id` includes the account number (e.g. `phase2_extract_txns_062-001-123456789`)
+    - `run_reconciliation_call()` — `call_id`: `phase2_reconcile`
+    - `classify_transactions()` — `call_id`: `phase2_classify_transactions`
+    - `run_coarse_query_text_call()` — `call_id`: `phase2_coarse_query_text`
+  - The `pricing` dict (loaded in T.2) must be available at each call site — pass it down from the worker or load once and thread through
+
+- [ ] **T.7** Add `GET /api/jobs/<job_id>/token-usage` endpoint in `app.py`
+  - Returns `job["token_usage"]` if present, or `{ "available": false }` if absent
+  - No authentication changes needed
+
+- [ ] **T.8** Add `GET /api/funds/<fund_id>/cost-summary` endpoint in `app.py`
+  - Scans `jobs_db.json` for all jobs where `job["fund_id"] == fund_id`
+  - Sums `token_usage.job_total.cost_usd` for jobs that have the key; counts jobs without it as N/A
+  - Returns: `{ fund_id, total_cost_usd, jobs_included, jobs_excluded_na, job_breakdown: [{ job_id, date, status, cost_usd|null }] }`
+
+- [ ] **T.9** Update job header in `templates/index.html`
+  - Add cost badge alongside the existing fund name / ABN / job ID row
+  - Badge format: `Cost: $0.495` — USD, always 3 decimal places
+  - Token sub-detail: `67,400 tokens` — shown below the badge, formatted with thousands separator
+  - Phase breakdown: shown on hover (tooltip) or in a collapsible — `Phase 1: $0.312 | Phase 2: $0.183`
+  - Historical jobs (no `token_usage`): badge shows `Cost: N/A`; no token detail shown
+
+- [ ] **T.10** Wire real-time polling in `templates/index.html`
+  - Poll `GET /api/jobs/<job_id>/token-usage` on the same interval as existing job status polling (while job state is `processing_phase1` or `processing_phase2`)
+  - Update cost badge and token detail in place without full page reload
+  - Stop polling once job reaches a terminal state (`pending_processor_approval`, `pending_reviewer_approval`, `completed`, `failed`)
+
+- [ ] **T.11** Add fund-level cost summary to the UI
+  - Shown in the fund header or alongside the fund's job list
+  - Displays: `Total processing cost: $1.24` (sum across all jobs with data)
+  - Sub-line: `3 jobs included · 2 jobs N/A (no data)`
+  - Per-job cost visible in the existing job list rows: add a `Cost` column showing `$0.495` or `N/A`
+
+- [ ] **T.12** Validate against ADMCM
+  - Run a full Phase 1 + Phase 2 ADMCM job; confirm all expected call sites record usage
+  - Verify phase totals and job total match manual sum of individual call records
+  - Verify cost badge appears in job header and updates during the run
+  - Verify fund-level summary shows the job in its breakdown
+  - Open an old job (pre-story); verify N/A appears correctly — no errors, no partial data shown

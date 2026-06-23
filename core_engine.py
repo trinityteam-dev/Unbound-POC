@@ -114,11 +114,17 @@ def load_llm_pricing(workspace_dir):
     return data.get('models', {})
 
 
-def calculate_call_cost(model, prompt_tokens, completion_tokens, pricing):
-    """Return estimated USD cost for one LLM call. Returns 0.0 for unknown models."""
+def calculate_call_cost(model, prompt_tokens, completion_tokens, pricing, openrouter_cost=None):
+    """Return USD cost for one LLM call.
+
+    Prefers openrouter_cost (direct from API response) over calculated rates.
+    Falls back to llm_pricing.json rates only when OpenRouter does not provide cost.
+    """
+    if openrouter_cost is not None:
+        return round(float(openrouter_cost), 6)
     rates = pricing.get(model)
     if not rates:
-        print(f'[TokenEconomics] Unknown model {model!r} — cost recorded as $0.00', file=sys.stderr)
+        print(f'[TokenEconomics] Unknown model {model!r} and no OpenRouter cost — recorded as $0.00', file=sys.stderr)
         return 0.0
     return round(
         (prompt_tokens / 1_000_000) * rates['input_per_million']
@@ -188,6 +194,7 @@ def query_openrouter(api_key, system_prompt, user_content, response_format=None,
             "prompt_tokens": raw_usage.get("prompt_tokens", 0),
             "completion_tokens": raw_usage.get("completion_tokens", 0),
             "total_tokens": raw_usage.get("total_tokens", 0),
+            "openrouter_cost": raw_usage.get("cost"),  # USD cost from OpenRouter; None if absent
         }
         return choices[0]["message"]["content"], usage
     except Exception as e:

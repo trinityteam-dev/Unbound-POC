@@ -78,7 +78,7 @@ def run_phase1_worker(job_id, folder_path, fund_profile, job_type, api_key):
             pricing = {}
 
         def record_llm_usage_p1(call_id, phase, usage):
-            cost = calculate_call_cost(usage['model'], usage['prompt_tokens'], usage['completion_tokens'], pricing)
+            cost = calculate_call_cost(usage['model'], usage['prompt_tokens'], usage['completion_tokens'], pricing, openrouter_cost=usage.get('openrouter_cost'))
             _jobs = load_jobs()
             for _j in _jobs:
                 if _j['job_id'] == job_id:
@@ -152,7 +152,7 @@ def run_phase2_worker(job_id, fund_profile, job_type, api_key):
             pricing = {}
 
         def record_llm_usage_p2(call_id, phase, usage):
-            cost = calculate_call_cost(usage['model'], usage['prompt_tokens'], usage['completion_tokens'], pricing)
+            cost = calculate_call_cost(usage['model'], usage['prompt_tokens'], usage['completion_tokens'], pricing, openrouter_cost=usage.get('openrouter_cost'))
             _jobs = load_jobs()
             for _j in _jobs:
                 if _j['job_id'] == job_id:
@@ -763,7 +763,7 @@ def api_regroup_queries(job_id):
         regroup_pricing = {}
 
     def record_regroup_usage(call_id, phase, usage):
-        cost = calculate_call_cost(usage['model'], usage['prompt_tokens'], usage['completion_tokens'], regroup_pricing)
+        cost = calculate_call_cost(usage['model'], usage['prompt_tokens'], usage['completion_tokens'], regroup_pricing, openrouter_cost=usage.get('openrouter_cost'))
         for _j in jobs:
             if _j['job_id'] == job_id:
                 record_token_usage(_j, call_id, phase, usage, cost)

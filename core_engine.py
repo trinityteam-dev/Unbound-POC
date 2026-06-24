@@ -214,21 +214,24 @@ def discover_fund_profile(input_dir, api_key, scratch_dir):
     if not pdf_files:
         raise ValueError("No PDF files found in the input folder.")
 
-    target_keywords = ["valuation", "ledger", "statement", "ica", "ita", "member", "tsb", "audit", "invoice"]
+    target_keywords = [
+        "valuation", "ledger", "statement", "ica", "ita", "member", "tsb", "audit", "invoice",
+        "bank", "transaction", "mac",
+    ]
     representative_files = []
-    
+
     for keyword in target_keywords:
         for filepath in pdf_files:
             fn = os.path.basename(filepath).lower()
             if keyword in fn and filepath not in representative_files:
                 representative_files.append(filepath)
                 break
-                
-    if len(representative_files) < 3:
+
+    if len(representative_files) < 8:
         for filepath in pdf_files:
             if filepath not in representative_files:
                 representative_files.append(filepath)
-            if len(representative_files) >= 6:
+            if len(representative_files) >= 8:
                 break
                 
     text_snippets = []
